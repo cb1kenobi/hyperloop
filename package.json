@@ -1,0 +1,50 @@
+{
+  "name": "hyperloop",
+  "preferGlobal": true,
+  "version": "0.0.1",
+  "author": "Appcelerator <support@appcelerator.com>",
+  "description": "hyperloop compiler",
+  "license": "Apache Public License, Version 2",
+  "contributors": [
+    {
+      "name": "Jeff Haynie",
+      "email": "jhaynie@appcelerator.com"
+    }
+  ],
+  "bin": {
+    "hyperloop": "./bin/hyperloop"
+  },
+  "scripts": {
+    "test": "mocha --recursive --reporter list ./specs"
+  },
+  "main": "./lib/hyperloop",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/appcelerator/hyperloop.git"
+  },
+  "keywords": [
+    "ios",
+    "android",
+    "win8",
+    "titanium",
+    "appcelerator"
+  ],
+  "dependencies": {
+    "async": "~0.2.9",
+    "temp": "~0.5.1",
+    "commander": "~2.0.0",
+    "underscore": "~1.5.1",
+    "uglify-js": "~2.3.6",
+    "ejs": "~0.8.4",
+    "byline": "~3.1.2",
+    "stream-buffers": "~0.2.5",
+    "wrench": "~1.5.1"
+  },
+  "devDependencies": {
+    "mocha": "~1.12.0",
+    "should": "~1.2.2"
+  },
+  "engines": {
+    "node": ">=10.0.5"
+  }
+}

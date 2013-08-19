@@ -1,0 +1,122 @@
+#!/usr/bin/env node
+/**
+ * hyperloop compiler
+ */
+
+var fs = require('fs'),
+	colors = require('colors'),
+	hyperloop = require('../lib/hyperloop'),
+	log = require('../lib/log'),
+	EventEmitter = require('events').EventEmitter,
+	pkg = JSON.parse(fs.readFileSync(__dirname + '/../package.json', 'utf8')),
+	noColors = false,
+	argRE = /^--([\w-_]+)=?(.*)?/;
+
+// infinite stack traces
+Error.stackTraceLimit = Infinity;
+
+/**
+ * you're probably asking "why not use commander?".  
+ * short answer: if you want to do something like
+ * --cflags "-DDEBUG=1", it will try and treat the 
+ * value of cflags as another command.  we need to 
+ * handle this specifically and unfortunately, it
+ * would have been too much work to fork commander
+ * to change it's behavior.  I also couldn't seem to 
+ * override it and subclass it to change this behavior
+ * easily either.  So, we have a custom command line 
+ * arg parser.  
+ */
+function Processor() {
+	this.options = {};
+	this.args = [];
+}
+
+Processor.prototype.__proto__ = EventEmitter.prototype;
+
+/**
+ * parse out the command line into a specific set of options and 
+ * arguments.  
+ */
+Processor.prototype.parse = function(callback) {
+	var self = this;
+	process.argv.slice(2).forEach(function(arg){
+		var m = argRE.exec(arg);
+		if (m) {
+			var key = m[1],
+				value = m[2] || true,
+				m = /^no-(\w+)/.exec(key)
+			if (m) {
+				key = m[1];
+				value = value==='0' || value==='false' ? true : false;
+			}
+			if (key in self.options) {
+				// turn it in to an array if multiple exist on command line
+				self.options[key] = [self.options[key], value];
+			}
+			else {
+				self.options[key] = value;
+			}
+			self.emit(key, value);
+		}
+		else {
+			self.args.push(arg);
+		}
+	});
+	callback && callback(null, this.options, this.args);
+}
+
+var processor = new Processor();
+
+processor.on('help',function(){ 
+	log.console("");
+	log.console("Usage: "+pkg.name.red.bold.underline+" [command] <options>");
+	log.console("");
+	log.console("Commands:");
+	log.console("");
+
+	hyperloop.getCommands().forEach(function(cmd){
+		var help = cmd.getHelp(),
+			name = cmd.getName();
+		log.console("  "+name.magenta+"                "+help.grey);
+	});
+
+	log.console("");
+	log.console("Options:");
+	log.console("");
+	log.console("  --help".cyan+"                 usage information (you're looking at it)".grey);
+	log.console("  --version".cyan+"              output version of this program".grey);
+	log.console("  --debug".cyan+"                print debugging information".grey);
+	log.console("  --[no-]colors".cyan+"          turn on/off color output".grey);
+	log.console("  --platform=<p>".cyan+"         target platform (such as ios, win, android)".grey);
+	log.console("  --cflags=<f>".cyan+"           compiler flag to pass to native compiler".grey);
+	log.console("  --includes=<i>".cyan+"         directory where headers can be found".grey);
+	log.console("  --src=<s>".cyan+"              native source file to include in compile".grey);
+	log.console("  --dest=<d>".cyan+"             destination directory to write output".grey);
+	log.console("");
+	process.exit(0);
+});
+
+processor.on('version',function(){ 
+	log.console(pkg.version);
+	process.exit(0);
+});
+
+processor.on('colors',function(v){
+	log.stripColors = !v;
+});
+
+processor.on('debug',function(v){
+	log.debugLevel = v;
+});
+
+processor.parse(function(err,options,args){
+	if (args.length < 1) {
+		log.console("Missing required command argument. Run `"+(pkg.name+" --help").magenta.bold+"` to get information");
+		process.exit(1);
+	}
+	var command = args[0],
+		args = args.slice(1);
+
+	hyperloop.run(command,options,args);
+});
