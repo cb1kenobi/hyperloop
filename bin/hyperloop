@@ -66,11 +66,17 @@ Processor.prototype.parse = function(callback) {
 	callback && callback(null, this.options, this.args);
 }
 
+function banner() {
+	log.console('(('.yellow+pkg.name.red.bold.underline+'))'.yellow+' by Appcelerator, Inc.'.grey);
+	log.console(('For more information, visit '+pkg.repository.url.replace('.git','')).grey);
+}
+
 var processor = new Processor();
 
 processor.on('help',function(){ 
+	banner();
 	log.console("");
-	log.console("Usage: "+pkg.name.red.bold.underline+" [command] <options>");
+	log.console("Usage: "+pkg.name.magenta+" [command] <options>");
 	log.console("");
 	log.console("Commands:");
 	log.console("");
@@ -112,8 +118,7 @@ processor.on('debug',function(v){
 
 processor.parse(function(err,options,args){
 	if (args.length < 1) {
-		log.console("Missing required command argument. Run `"+(pkg.name+" --help").magenta.bold+"` to get information");
-		process.exit(1);
+		return processor.emit('help');
 	}
 	var command = args[0],
 		args = args.slice(1);
