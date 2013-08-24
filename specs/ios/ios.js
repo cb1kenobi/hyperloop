@@ -6,7 +6,7 @@ var should = require('should'),
 	fs = require('fs'),
 	temp = require('temp'),
 	exec = require('child_process').exec,
-	buildlib = require('../lib/ios/buildlib'),
+	buildlib = require('../../lib/ios/buildlib'),
 	settings;
 
 describe("ios buildlib", function(){
@@ -93,7 +93,7 @@ describe("ios buildlib", function(){
 				srcfiles: [srcfile],
 				outdir: build,
 				cflags: [],
-				linkflags: [],
+				linkflags: []
 			};
 
 			buildlib.compileAndMakeStaticLib(options,function(err,results){
@@ -161,7 +161,7 @@ describe("ios buildlib", function(){
 				srcfiles: [srcfile],
 				outdir: build,
 				cflags: ['-DFOO'],
-				linkflags: [],
+				linkflags: []
 			};
 
 			buildlib.compileAndMakeStaticLib(options,function(err,results){
@@ -218,7 +218,7 @@ describe("ios buildlib", function(){
 				srcfiles: [srcfile],
 				outdir: build,
 				cflags: ['-DFOO'],
-				linkflags: [],
+				linkflags: []
 			};
 
 			buildlib.compileAndMakeStaticLib(options,function(err,results){
@@ -273,7 +273,7 @@ describe("ios buildlib", function(){
 				srcfiles: [srcfile],
 				outdir: build,
 				cflags: ['-DFOO'],
-				linkflags: [],
+				linkflags: []
 			};
 
 			buildlib.compileAndMakeStaticLib(options,function(err){
@@ -293,7 +293,7 @@ describe("ios buildlib", function(){
 			srcfiles: ['foo.m'],
 			outdir: build,
 			cflags: ['-DFOO'],
-			linkflags: [],
+			linkflags: []
 		};
 
 		buildlib.compileAndMakeStaticLib(options,function(err,results){
@@ -313,7 +313,7 @@ describe("ios buildlib", function(){
 				srcfiles: [],
 				outdir: build,
 				cflags: ['-DFOO'],
-				linkflags: [],
+				linkflags: []
 			};
 
 		buildlib.compileAndMakeStaticLib(options,function(err){
