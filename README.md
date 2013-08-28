@@ -16,7 +16,7 @@ To install hyperloop, using node npm:
 
 ## Design
 
-Hyperlook works by using a high-level [DSL](http://en.wikipedia.org/wiki/Domain-specific_language) written in JavaScript into native code using an [AOT](http://en.wikipedia.org/wiki/AOT_compiler) compiler. 
+Hyperloop works by using a high-level [DSL](http://en.wikipedia.org/wiki/Domain-specific_language) written in JavaScript into native code using an [AOT](http://en.wikipedia.org/wiki/AOT_compiler) compiler. 
 
 The compiler is broken into two subsystems: _backend_ and _frontend_.  The _frontend_ will parse the input JavaScript source code and transform it into an [AST](http://en.wikipedia.org/wiki/Abstract_syntax_tree) and will resolve special reserved JavaScript keywords which instruct the compiler to perform specific code transformations (we call this CNI, short for Common Native Interface).  Once CNI instructions are encountered, the _backend_ compiler will emit the appropriate language and OS specific code for the target platform.  The _backend_ compiler is specific to each OS while the _frontend_ compiler is generic for all platforms.
 
@@ -101,5 +101,5 @@ To protect the interests of the Hyperloop contributors, Appcelerator, customers 
 
 Copyright (c) 2013 by [Appcelerator, Inc](http://www.appcelerator.com). All Rights Reserved.
 This code contains patents and/or patents pending by Appcelerator, Inc.
-Hyperlook is a trademark of Appcelerator, Inc.
+Hyperloop is a trademark of Appcelerator, Inc.
 This project is licensed under the Apache Public License, version 2.  Please see details in the LICENSE file. 
