@@ -2,9 +2,13 @@
 
 Hyperloop is a next-generation compiler that converts JavaScript source code into native code for targeting different native OS platforms.
 
+## Requirements
+
+Hyperloop requires at least [Node.js](http://nodejs.org/) 10.0.5.  _Currently, hyperloop is only being developed and tested on OSX, however, Windows and Linux will eventually be supported officially._
+
 ## Install
 
-To install hyperloop, using npm:
+To install hyperloop, using node npm:
 
 ```bash
 > npm install hyperloop -g
