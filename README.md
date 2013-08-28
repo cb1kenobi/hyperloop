@@ -12,13 +12,13 @@ The compiler is broken into two subsystems: _backend_ and _frontend_.  The _fron
 
 The DSL provides a small number of specific reserved keywords which form the DSL for CNI.  While the keywords are platform independent, the specific values passed are usually platform dependent.
 
-# `import` - import a specific symbol.  Typically this is used to import a static symbol or class.  
-# `native` - instruct the native compiler to use specific settings which are passed as an object.
-# `interface` - create a class implementation of a specific interface or an anonymous (classless) implementation.
+# _import_ - import a specific symbol.  Typically this is used to import a static symbol or class.  
+# _native_ - instruct the native compiler to use specific settings which are passed as an object.
+# _interface_ - create a class implementation of a specific interface or an anonymous (classless) implementation.
 
 For example, in iOS, you could do something such as:
 
-```
+```javascript
 import('UIKit/UIView');
 var view = new UIView();
 ```
@@ -27,14 +27,14 @@ In the above example, the _import_ keyword will cause the compiler to import the
 
 You can now perform specific platform dependent methods that are defined in the OS interface:
 
-```
+```javascript
 view.frame = CGRectMake(0,0,200,200);
 view.backgroundColor = UIColor.blueColor();
 ```
 
 However, before we can compile this code, we will need to add the additional imports for the additional native functions (before the code above):
 
-```
+```javascript
 import('CoreGraphics/CGRectMake');
 import('UIKit/UIColor');
 ```
@@ -58,7 +58,7 @@ You can see examples under the `examples` directory.
 
 To compile, package and launch for iOS, use an example of the following command-line:
 
-```
+```bash
 hyperloop package --platform=ios --src=examples/simple/ --dest=build --name=foo --appid=com.foo --launch
 ```
 
