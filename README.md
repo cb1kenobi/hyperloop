@@ -2,6 +2,14 @@
 
 Hyperloop is a next-generation compiler that converts JavaScript source code into native code for targeting different native OS platforms.
 
+## Install
+
+To install hyperloop, using npm:
+
+```bash
+> npm install hyperloop -g
+```
+
 ## Design
 
 Hyperlook works by using a high-level [DSL](http://en.wikipedia.org/wiki/Domain-specific_language) written in JavaScript into native code using an [AOT](http://en.wikipedia.org/wiki/AOT_compiler) compiler. 
