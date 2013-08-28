@@ -79,15 +79,15 @@ NSData* decompressBuffer (NSData*  _data) {
     JSVirtualMachine *vm = [[JSVirtualMachine alloc] init];
     self.context = [[JSContext alloc] initWithVirtualMachine:vm];
     
+    // setup the root window and root view controller
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.backgroundColor = [UIColor whiteColor];
-    
     self.window.rootViewController = [[UIViewController alloc] init];
-
-    Class cls = NSClassFromString(@"<%=main_js%>");
-    [cls performSelector:@selector(load:) withObject:self.context];
-
     [self.window makeKeyAndVisible];
+
+    // load our application
+    Class cls = NSClassFromString(@"<%=main_js%>");
+    [cls performSelector:NSSelectorFromString(@"load:") withObject:self.context];
 
     return YES;
 }

@@ -38,7 +38,9 @@
     "ejs": "~0.8.4",
     "byline": "~3.1.2",
     "stream-buffers": "~0.2.5",
-    "wrench": "~1.5.1"
+    "wrench": "~1.5.1",
+    "ios-sim": "~1.8.2",
+    "colors": "~0.6.0-1"
   },
   "devDependencies": {
     "mocha": "~1.12.0",
