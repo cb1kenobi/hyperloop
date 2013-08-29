@@ -4,7 +4,7 @@ Hyperloop is a next-generation compiler that converts JavaScript source code int
 
 ## Requirements
 
-Hyperloop requires at least [Node.js](http://nodejs.org/) 10.0.5.  _Currently, hyperloop is only being developed and tested on OSX, however, Windows and Linux will eventually be supported officially._
+Hyperloop requires at least [Node.js](http://nodejs.org/) 10.0.5 and iOS SDK 7.0.  _Currently, hyperloop is only being developed and tested on OSX, however, Windows and Linux will eventually be supported officially._
 
 ## Install
 
@@ -24,18 +24,18 @@ The compiler is broken into two subsystems: _backend_ and _frontend_.  The _fron
 
 The DSL provides a small number of specific reserved keywords which form the DSL for CNI.  While the keywords are platform independent, the specific values passed are usually platform dependent.
 
-* _import_ - import a specific symbol.  Typically this is used to import a static symbol or class.  
-* _native_ - instruct the native compiler to use specific settings which are passed as an object.
-* _interface_ - create a class implementation of a specific interface or an anonymous (classless) implementation.
+* _@import_ - import a specific symbol.  Typically this is used to import a static symbol or class.  
+* _@native_ - instruct the native compiler to use specific settings which are passed as an object.
+* _@interface_ - create a class implementation of a specific interface or an anonymous (classless) implementation.
 
 For example, in iOS, you could do something such as:
 
 ```javascript
-import('UIKit/UIView');
+@import('UIKit/UIView');
 var view = new UIView();
 ```
 
-In the above example, the _import_ keyword will cause the compiler to import the `UIKit` framework and load the `UIView` interface and make it available in the current JS scope of the file.  Notice that `UIView` doesn't need to be defined, it is automatically available in scope when the JS is executed.  We can now treat `UIView` as a normal class.  In the second line, we will then instantiate the class using normal JS semantics.  This will create a native `UIView` implementation and return a pointer to it in the JS variable `view`.
+In the above example, the _@import_ keyword will cause the compiler to import the `UIKit` framework and load the `UIView` interface and make it available in the current JS scope of the file.  Notice that `UIView` doesn't need to be defined, it is automatically available in scope when the JS is executed.  We can now treat `UIView` as a normal class.  In the second line, we will then instantiate the class using normal JS semantics.  This will create a native `UIView` implementation and return a pointer to it in the JS variable `view`.
 
 You can now perform specific platform dependent methods that are defined in the OS interface:
 
@@ -47,8 +47,8 @@ view.backgroundColor = UIColor.blueColor();
 However, before we can compile this code, we will need to add the additional imports for the additional native functions (before the code above):
 
 ```javascript
-import('CoreGraphics/CGRectMake');
-import('UIKit/UIColor');
+@import('CoreGraphics/CGRectMake');
+@import('UIKit/UIColor');
 ```
 
 You'll notice that we're importing a static method defined in the `CoreGraphics` framework named `CGRectMake`.  We can use this C function as we would any standard JS function.
