@@ -14,6 +14,28 @@ To install hyperloop, using node npm:
 [sudo] npm install hyperloop -g
 ```
 
+## Platforms Supported
+
+The following Platforms are being targeted for supported.
+
+### Current (already working)
+
+- _iOS_ - iOS 7.0
+
+### Planned (in development)
+
+- _Android_ - Android
+- _Windows 8_ - Win8 desktop 
+- _Windows Phone 8_ - Windows Phone / Tablet
+- _OSX_ - OSX desktop
+
+### Possible, Likely (dreaming, wanna help?)
+
+- _Blackberry_ - BB 10 
+- _Tizen_ - Tizen OS
+- _Leapmotion_ - Leapmotion SDK
+
+
 ## Design
 
 Hyperloop works by using a high-level [DSL](http://en.wikipedia.org/wiki/Domain-specific_language) written in JavaScript and compiling that into native code using an [AOT](http://en.wikipedia.org/wiki/AOT_compiler) compiler. 
