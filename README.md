@@ -107,6 +107,9 @@ For JSCore, we have extended it to support additional platforms beyond iOS, such
 
 ### iOS / OSX
 
+
+#### Instances with other than init constructors
+
 To create a new instance, typically `[[obj alloc] init]`, you should use `new Object` in CNI. However, often, you want to call a specific init method.  For example:
 
 ~~~objective-c
@@ -120,6 +123,10 @@ var window = new NSWindow('initWithContentRect:styleMask:backing:style:',NSRectM
 ~~~
 
 Whereby the first parameter to a constructor equals the selector of an initXXX constructor in Objective-C.  In this case, instead of the normal `init` method being invoked, the selector would be invoked to construct the instance.
+
+#### Resources
+
+Currently, we don't copy assets (such as images) into your Resources directory on package. That will be resolved quickly.
 
 
 ## FAQ
@@ -139,6 +146,10 @@ Sure. I guess. Just like Titanium is like PhoneGap.  No.
 #### Why the funky non-standard JS symbols like @?
 
 Well, we wanted to specifically confuse JSLint and wreak havoc for your editors. Seriously, we wanted to specifically distinguish specific keywords that we're using as _special_ CNI keywords distinctly.  We want developers to understand that these keywords are specific to CNI and special and do magic things, thus the special `@` symbol prefix.  This is very similar to what other compilers do such as clang using `@import` to import modules or C pre-processor using `#ifdef` to tell the compiler that it wants to do something special before compiling the language.  
+
+#### Can I write modules?
+
+For Titanium (and Hyperloop), modules just become Hyperloop CNI code packaged as [Common JS](http://wiki.commonjs.org/wiki/CommonJS) and loaded via `require`.  We will make a new packaging mechanism to make it easier to distribute them such as Node does with NPM modules. 
 
 
 ## Hyperloop and Titanium
