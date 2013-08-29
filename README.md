@@ -136,6 +136,10 @@ Any JS Object (i.e. Class) imported in principle is a first-class JS object wher
 
 Sure. I guess. Just like Titanium is like PhoneGap.  No.
 
+#### Why the funky non-standard JS symbols like @?
+
+Well, we wanted to specifically confuse JSLint and wreak havoc for your editors. Seriously, we wanted to specifically distinguish specific keywords that we're using as _special_ CNI keywords distinctly.  We want developers to understand that these keywords are specific to CNI and special and do magic things, thus the special `@` symbol prefix.  This is very similar to what other compilers do such as clang using `@import` to import modules or C pre-processor using `#ifdef` to tell the compiler that it wants to do something special before compiling the language.  
+
 
 ## Hyperloop and Titanium
 
