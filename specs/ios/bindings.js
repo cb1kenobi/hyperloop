@@ -55,6 +55,7 @@ describe("ios bindings",function(){
 		console.log('executing clang, this will take a minute');
 
 		buildlib.clang(headerfile,minversion,nativeargs,function(err,result){
+			if (err) return done(err);
 			should.not.exist(err);
 			should.exist(result);
 
@@ -74,6 +75,7 @@ describe("ios bindings",function(){
 			else {
 
 				clangparser.parseBuffer(result,function(err,ast){
+					if (err) return done(err);
 					should.not.exist(err);
 					should.exist(ast);
 					metadata = ast.toJSON();
