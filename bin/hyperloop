@@ -67,7 +67,7 @@ Processor.prototype.parse = function(callback) {
 }
 
 function banner() {
-	log.console('(('.yellow+pkg.name.red.bold.underline+'))'.yellow+' by Appcelerator, Inc.'.grey);
+	log.console('∞ '.yellow+pkg.name.red.bold.underline+' ∞'.yellow+' by Appcelerator, Inc.'.grey);
 	log.console(('For more information, visit '+pkg.repository.url.replace('.git','')).grey);
 }
 

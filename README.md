@@ -1,4 +1,4 @@
-# Hyperloop
+# Hyperloop ∞
 
 Hyperloop is a next-generation compiler that converts JavaScript source code into native code for targeting different native OS platforms.
 
