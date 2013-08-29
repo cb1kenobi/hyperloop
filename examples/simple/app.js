@@ -13,7 +13,7 @@
 @import('UIKit/UIControlStateNormal');
 @import('UIKit/UIControlEventTouchDown');
 
-@native({
+@compiler({
 	cflags: ['-DDEBUG=1']
 });
 
@@ -26,7 +26,7 @@ var view = new UIView();
 view.frame = CGRectMake(0,0,200,200);
 view.backgroundColor = UIColor.blueColor();
 keyWindow.addSubview(view);
-var callback = @interface(function(sender) {
+var callback = @class(function(sender) {
 	NSLog('clicked on button=%@',sender);
 });
 

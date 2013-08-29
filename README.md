@@ -64,8 +64,8 @@ The compiler is broken into two subsystems: _backend_ and _frontend_.  The _fron
 The DSL provides a small number of specific reserved keywords which form the DSL for CNI.  While the keywords are platform independent, the specific values passed are usually platform dependent.
 
 * _@import_ - import a specific symbol.  Typically this is used to import a static symbol or class.  
-* _@native_ - instruct the native compiler to use specific settings which are passed as an object.
-* _@interface_ - create a class implementation of a specific interface or an anonymous (classless) implementation.
+* _@compiler_ - instruct the native compiler to use specific settings which are passed as an object.
+* _@class_ - create a class implementation of a specific interface or an anonymous (classless) implementation.
 
 For example, in iOS, you could do something such as:
 
