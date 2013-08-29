@@ -120,6 +120,21 @@ var window = new NSWindow('initWithContentRect:styleMask:backing:style:',NSRectM
 Whereby the first parameter to a constructor equals the selector of an initXXX constructor in Objective-C.  In this case, instead of the normal `init` method being invoked, the selector would be invoked to construct the instance.
 
 
+## FAQ
+
+### Will this work with iOS 5 or iOS 6?
+
+RTFM. No, look above.
+
+### [iOS] What happens when I add my own methods to UIView (for example)?  i.e. subclass it?  Does it get compiled in to the native class?  Or is it JS only?  Or maybe there's a specific syntax used to make it a native method vs. JS-only method?
+
+Any JS Object (i.e. Class) imported in principle is a first-class JS object where the native methods and properties are prototypes on the returned JS Object.  This will allow you to also add your own functions and properties to the returned Object as either direct properties of the object or on the prototype of the JS class.
+
+### Is this like XYZ?
+
+Sure. I guess. Just like Titanium is like PhoneGap.  No.
+
+
 ## Hyperloop and Titanium
 
 The next generation Titanium SDK, called [Ti.Next](http://ceogeek.tumblr.com/post/54456815189/thoughts-on-ti-next), is being rebuilt around Hyperloop.  However, we are separating the new compiler (hyperloop) in a standalone project so that developers can use hyperloop without Titanium.  Ti.Next uses the hyperloop compiler to build the new Titanium SDK.
