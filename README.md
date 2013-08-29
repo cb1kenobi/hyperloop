@@ -14,6 +14,21 @@ To install hyperloop, using node npm:
 [sudo] npm install hyperloop -g
 ```
 
+## Quick Start
+
+You can see examples under the `examples` directory.
+
+To compile, package and launch for iOS, use an example of the following command-line:
+
+```bash
+hyperloop package --platform=ios --src=examples/simple/ --dest=build --name=foo --appid=com.foo --launch
+```
+
+The initial compile will take a minute or so to generate the AST for the system frameworks. However, subsequent compiles will be almost instantaneous as it will be cached.  In the future, we plan on speeding this up greatly.
+
+If all goes well, this should compile the application source code and the native application and launch it in the iOS Simulator.
+
+
 ## Platforms Supported
 
 The following Platforms are being targeted for supported.
@@ -86,19 +101,23 @@ The backend code will generate JS VM specific code, depending on the engine spec
 For JSCore, we have extended it to support additional platforms beyond iOS, such as Android and Windows 8.  In addition, we have extended JSCore to include additional capabilities which work with our compiler instructions.  All of our extensions are available in our public fork of [WebKit](https://github.com/appcelerator/webkit), currently on the branch named `javascriptcore_jsexport_api`.
 
 
-## Quick Start
+## Current Limitations
 
-You can see examples under the `examples` directory.
+### iOS / OSX
 
-To compile, package and launch for iOS, use an example of the following command-line:
+To create a new instance, typically `[[obj alloc] init]`, you should use `new Object` in CNI. However, often, you want to call a specific init method.  For example:
 
-```bash
-hyperloop package --platform=ios --src=examples/simple/ --dest=build --name=foo --appid=com.foo --launch
-```
+~~~objective-c
+var window = [[NSWindow alloc] initWithContentRect:NSRectMake(0,0,100,200) styleMask:NSTitledWindowMask backing:NSBackingStoreBuffered defer:NO];
+~~~
 
-The initial compile will take a minute or so to generate the AST for the system frameworks. However, subsequent compiles will be almost instantaneous as it will be cached.  In the future, we plan on speeding this up greatly.
+Right now, there's no way to do this in CNI. However, this is coming quickly.  You will likely do something like the following in CNI (although not yet supported):
 
-If all goes well, this should compile the application source code and the native application and launch it in the iOS Simulator.
+~~~javascript
+var window = new NSWindow('initWithContentRect:styleMask:backing:style:',NSRectMake(0,0,100,200),NSTitledWindowMask,false);
+~~~
+
+Whereby the first parameter to a constructor equals the selector of an initXXX constructor in Objective-C.  In this case, instead of the normal `init` method being invoked, the selector would be invoked to construct the instance.
 
 
 ## Hyperloop and Titanium
