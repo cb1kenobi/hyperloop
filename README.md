@@ -131,7 +131,7 @@ Currently, we don't copy assets (such as images) into your Resources directory o
 
 ## FAQ
 
-#### Will this work with iOS 5 or iOS 6?
+#### [iOS] Will this work with iOS 5 or iOS 6?
 
 RTFM. No, look above.
 
