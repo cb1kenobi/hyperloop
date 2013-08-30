@@ -15,6 +15,7 @@ enum
 {
     UNIFORM_MODELVIEWPROJECTION_MATRIX,
     UNIFORM_NORMAL_MATRIX,
+	UNIFORM_TEXTURE_SAMPLER,
     NUM_UNIFORMS
 };
 GLint uniforms[NUM_UNIFORMS];
@@ -27,51 +28,58 @@ enum
     NUM_ATTRIBUTES
 };
 
-GLfloat gCubeVertexData[216] = 
+GLfloat gCubeVertexData[] =
 {
     // Data layout for each line below is:
     // positionX, positionY, positionZ,     normalX, normalY, normalZ,
-    0.5f, -0.5f, -0.5f,        1.0f, 0.0f, 0.0f,
-    0.5f, 0.5f, -0.5f,         1.0f, 0.0f, 0.0f,
-    0.5f, -0.5f, 0.5f,         1.0f, 0.0f, 0.0f,
-    0.5f, -0.5f, 0.5f,         1.0f, 0.0f, 0.0f,
-    0.5f, 0.5f, -0.5f,          1.0f, 0.0f, 0.0f,
-    0.5f, 0.5f, 0.5f,         1.0f, 0.0f, 0.0f,
+	
+	// right wall
+    0.5f, -0.5f, -0.5f,        1.0f, 0.0f, 0.0f,	1.0f, 0.0f,// right-side,	bottom,		back
+    0.5f, 0.5f, -0.5f,         1.0f, 0.0f, 0.0f,	1.0f, 1.0f, // right-side,	top,		back
+    0.5f, -0.5f, 0.5f,         1.0f, 0.0f, 0.0f,	0.0f, 0.0f,		// right-side,	bottom,		front
+    0.5f, -0.5f, 0.5f,         1.0f, 0.0f, 0.0f,	0.0f, 0.0f,		// right-side,	bottom,		front
+    0.5f, 0.5f, -0.5f,          1.0f, 0.0f, 0.0f,	1.0f, 1.0f, // right-side,	top,		back
+    0.5f, 0.5f, 0.5f,         1.0f, 0.0f, 0.0f,		0.0f, 1.0f, // right-side,	top,		front
     
-    0.5f, 0.5f, -0.5f,         0.0f, 1.0f, 0.0f,
-    -0.5f, 0.5f, -0.5f,        0.0f, 1.0f, 0.0f,
-    0.5f, 0.5f, 0.5f,          0.0f, 1.0f, 0.0f,
-    0.5f, 0.5f, 0.5f,          0.0f, 1.0f, 0.0f,
-    -0.5f, 0.5f, -0.5f,        0.0f, 1.0f, 0.0f,
-    -0.5f, 0.5f, 0.5f,         0.0f, 1.0f, 0.0f,
+	// top wall
+    0.5f, 0.5f, -0.5f,         0.0f, 1.0f, 0.0f,	1.0f, 0.0f,// right-side,	top,		back
+    -0.5f, 0.5f, -0.5f,        0.0f, 1.0f, 0.0f,	1.0f, 1.0f,// left-side,	top,		back
+    0.5f, 0.5f, 0.5f,          0.0f, 1.0f, 0.0f,	0.0f, 0.0f,// right-side,	top,		front
+    0.5f, 0.5f, 0.5f,          0.0f, 1.0f, 0.0f,	0.0f, 0.0f,// right-side,	top,		front
+    -0.5f, 0.5f, -0.5f,        0.0f, 1.0f, 0.0f,	1.0f, 1.0f,// left-side,	top,		back
+    -0.5f, 0.5f, 0.5f,         0.0f, 1.0f, 0.0f,	0.0f, 1.0f,// left-side,	top,		front
     
-    -0.5f, 0.5f, -0.5f,        -1.0f, 0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,       -1.0f, 0.0f, 0.0f,
-    -0.5f, 0.5f, 0.5f,         -1.0f, 0.0f, 0.0f,
-    -0.5f, 0.5f, 0.5f,         -1.0f, 0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,       -1.0f, 0.0f, 0.0f,
-    -0.5f, -0.5f, 0.5f,        -1.0f, 0.0f, 0.0f,
+	// left wall
+    -0.5f, 0.5f, -0.5f,        -1.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,       -1.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+    -0.5f, 0.5f, 0.5f,         -1.0f, 0.0f, 0.0f,	0.0f, 0.0f,
+    -0.5f, 0.5f, 0.5f,         -1.0f, 0.0f, 0.0f,	0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,       -1.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+    -0.5f, -0.5f, 0.5f,        -1.0f, 0.0f, 0.0f,	0.0f, 1.0f,
     
-    -0.5f, -0.5f, -0.5f,       0.0f, -1.0f, 0.0f,
-    0.5f, -0.5f, -0.5f,        0.0f, -1.0f, 0.0f,
-    -0.5f, -0.5f, 0.5f,        0.0f, -1.0f, 0.0f,
-    -0.5f, -0.5f, 0.5f,        0.0f, -1.0f, 0.0f,
-    0.5f, -0.5f, -0.5f,        0.0f, -1.0f, 0.0f,
-    0.5f, -0.5f, 0.5f,         0.0f, -1.0f, 0.0f,
+	// bottom wall
+    -0.5f, -0.5f, -0.5f,       0.0f, -1.0f, 0.0f,	1.0f, 0.0f,
+    0.5f, -0.5f, -0.5f,        0.0f, -1.0f, 0.0f,	1.0f, 1.0f,
+    -0.5f, -0.5f, 0.5f,        0.0f, -1.0f, 0.0f,	0.0f, 0.0f,
+    -0.5f, -0.5f, 0.5f,        0.0f, -1.0f, 0.0f,	0.0f, 0.0f,
+    0.5f, -0.5f, -0.5f,        0.0f, -1.0f, 0.0f,	1.0f, 1.0f,
+    0.5f, -0.5f, 0.5f,         0.0f, -1.0f, 0.0f,	0.0f, 1.0f,
     
-    0.5f, 0.5f, 0.5f,          0.0f, 0.0f, 1.0f,
-    -0.5f, 0.5f, 0.5f,         0.0f, 0.0f, 1.0f,
-    0.5f, -0.5f, 0.5f,         0.0f, 0.0f, 1.0f,
-    0.5f, -0.5f, 0.5f,         0.0f, 0.0f, 1.0f,
-    -0.5f, 0.5f, 0.5f,         0.0f, 0.0f, 1.0f,
-    -0.5f, -0.5f, 0.5f,        0.0f, 0.0f, 1.0f,
+	// front wall
+    0.5f, 0.5f, 0.5f,          0.0f, 0.0f, 1.0f,	1.0f, 0.0f,
+    -0.5f, 0.5f, 0.5f,         0.0f, 0.0f, 1.0f,	1.0f, 1.0f,
+    0.5f, -0.5f, 0.5f,         0.0f, 0.0f, 1.0f,	0.0f, 0.0f,
+    0.5f, -0.5f, 0.5f,         0.0f, 0.0f, 1.0f,	0.0f, 0.0f,
+    -0.5f, 0.5f, 0.5f,         0.0f, 0.0f, 1.0f,	1.0f, 1.0f,
+    -0.5f, -0.5f, 0.5f,        0.0f, 0.0f, 1.0f,	0.0f, 1.0f,
     
-    0.5f, -0.5f, -0.5f,        0.0f, 0.0f, -1.0f,
-    -0.5f, -0.5f, -0.5f,       0.0f, 0.0f, -1.0f,
-    0.5f, 0.5f, -0.5f,         0.0f, 0.0f, -1.0f,
-    0.5f, 0.5f, -0.5f,         0.0f, 0.0f, -1.0f,
-    -0.5f, -0.5f, -0.5f,       0.0f, 0.0f, -1.0f,
-    -0.5f, 0.5f, -0.5f,        0.0f, 0.0f, -1.0f
+	// back wall
+    0.5f, -0.5f, -0.5f,        0.0f, 0.0f, -1.0f,	1.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,       0.0f, 0.0f, -1.0f,	1.0f, 1.0f,
+    0.5f, 0.5f, -0.5f,         0.0f, 0.0f, -1.0f,	0.0f, 0.0f,
+    0.5f, 0.5f, -0.5f,         0.0f, 0.0f, -1.0f,	0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,       0.0f, 0.0f, -1.0f,	1.0f, 1.0f,
+    -0.5f, 0.5f, -0.5f,        0.0f, 0.0f, -1.0f, 	0.0f, 1.0f
 };
 
 @interface ViewController () {
@@ -86,6 +94,7 @@ GLfloat gCubeVertexData[216] =
 }
 @property (strong, nonatomic) EAGLContext *context;
 @property (strong, nonatomic) GLKBaseEffect *effect;
+@property (strong, nonatomic) GLKTextureInfo* textureInfo;
 
 - (void)setupGL;
 - (void)tearDownGL;
@@ -149,29 +158,57 @@ GLfloat gCubeVertexData[216] =
 	GLint max_texture_size;
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
 	NSLog(@"Max texture size is %d", max_texture_size);
-	
+
+	NSDictionary * options = [NSDictionary dictionaryWithObjectsAndKeys:
+                              [NSNumber numberWithBool:YES],
+                              GLKTextureLoaderOriginBottomLeft,
+                              nil];
+	NSError* out_error = nil;
+	NSString* bundlepath = [[NSBundle mainBundle] pathForResource:@"AppcLanicaHyperloop1024" ofType:@"jpg"];
+	self.textureInfo = [GLKTextureLoader textureWithContentsOfFile:bundlepath
+		options:options              /* Options that control how the image is loaded. */
+		error:&out_error
+	];
+	if(nil == self.textureInfo && nil != out_error)
+	{
+		NSLog(@"error %@", [out_error localizedDescription]);
+		NSLog(@"GL Error = %u", glGetError());
+		
+	}
+
 	
     [self loadShaders];
-    
+
     self.effect = [[GLKBaseEffect alloc] init];
     self.effect.light0.enabled = GL_TRUE;
     self.effect.light0.diffuseColor = GLKVector4Make(1.0f, 0.4f, 0.4f, 1.0f);
-    
+	
+	self.effect.texture2d0.enabled = GL_TRUE;
+	self.effect.texture2d0.envMode = GLKTextureEnvModeDecal;
+	self.effect.texture2d0.target = GLKTextureTarget2D;
+//	self.effect.texture2d0.target = self.textureInfo.target;
+	self.effect.texture2d0.name = self.textureInfo.name;
+
     glEnable(GL_DEPTH_TEST);
-    
+
     glGenVertexArraysOES(1, &_vertexArray);
     glBindVertexArrayOES(_vertexArray);
     
     glGenBuffers(1, &_vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(gCubeVertexData), gCubeVertexData, GL_STATIC_DRAW);
-    
+
     glEnableVertexAttribArray(GLKVertexAttribPosition);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 24, BUFFER_OFFSET(0));
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 32, BUFFER_OFFSET(0));
     glEnableVertexAttribArray(GLKVertexAttribNormal);
-    glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, 24, BUFFER_OFFSET(12));
-    
+    glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, 32, BUFFER_OFFSET(12));
+	glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
+    glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, 32, BUFFER_OFFSET(24));
+
     glBindVertexArrayOES(0);
+
+
+	
 }
 
 - (void)tearDownGL
@@ -224,7 +261,11 @@ GLfloat gCubeVertexData[216] =
 {
     glClearColor(0.65f, 0.65f, 0.65f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
+
+	//	glBindTexture( GL_TEXTURE_2D, self.textureInfo.name);
+	// target should be GL_TEXTURE_2D in this case, but this is more flexible if it changes
+	glBindTexture(self.textureInfo.target, self.textureInfo.name);
+
     glBindVertexArrayOES(_vertexArray);
     
     // Render the object with GLKit
@@ -237,7 +278,11 @@ GLfloat gCubeVertexData[216] =
     
     glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
     glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
-    
+    // Set the sampler texture unit to 0
+	glUniform1i(uniforms[UNIFORM_TEXTURE_SAMPLER], 0);
+	
+
+
     glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
@@ -250,7 +295,6 @@ GLfloat gCubeVertexData[216] =
     
     // Create shader program.
     _program = glCreateProgram();
-    
     // Create and compile vertex shader.
     vertShaderPathname = [[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"vsh"];
     if (![self compileShader:&vertShader type:GL_VERTEX_SHADER file:vertShaderPathname]) {
@@ -275,6 +319,7 @@ GLfloat gCubeVertexData[216] =
     // This needs to be done prior to linking.
     glBindAttribLocation(_program, GLKVertexAttribPosition, "position");
     glBindAttribLocation(_program, GLKVertexAttribNormal, "normal");
+    glBindAttribLocation(_program, GLKVertexAttribTexCoord0, "texCoord");
     
     // Link program.
     if (![self linkProgram:_program]) {
@@ -299,7 +344,8 @@ GLfloat gCubeVertexData[216] =
     // Get uniform locations.
     uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX] = glGetUniformLocation(_program, "modelViewProjectionMatrix");
     uniforms[UNIFORM_NORMAL_MATRIX] = glGetUniformLocation(_program, "normalMatrix");
-    
+    uniforms[UNIFORM_TEXTURE_SAMPLER] = glGetUniformLocation(_program, "texture");
+
     // Release vertex and fragment shaders.
     if (vertShader) {
         glDetachShader(_program, vertShader);
@@ -309,7 +355,7 @@ GLfloat gCubeVertexData[216] =
         glDetachShader(_program, fragShader);
         glDeleteShader(fragShader);
     }
-    
+
     return YES;
 }
 
