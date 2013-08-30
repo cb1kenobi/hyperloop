@@ -2,7 +2,6 @@ build
 node_modules
 out
 dist
-#js
 *.sublime-*
 *.xcuserdatad
 *.xccheckout
