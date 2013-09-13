@@ -13,9 +13,9 @@
 @import('UIKit/UIControlStateNormal');
 @import('UIKit/UIControlEventTouchDown');
 
-@compiler({
-	cflags: ['-DDEBUG=1']
-});
+// @compiler({
+// 	cflags: ['-DDEBUG=1']
+// });
 
 require('test/foo');
 

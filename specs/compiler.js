@@ -109,8 +109,8 @@ describe("compiler", function() {
 		sourcefile.symbols[0].source.should.be.eql('hyperloop_compiler'+toJS(obj));
 	});
 
-	it("should transform simple @class", function() {
-		var source = "@import('UIKit/UIButton'); @class(UIButton,{})",
+	it.only("should transform simple @class", function() {
+		var source = "@import('UIKit/UIButton'); var Class = @class(UIButton,[Foo],{callback:function(){}})",
 			sourcefile = new MockSourceFile(),
 			ast = compiler.compile(source, 'test', sourcefile),
 			code = compiler.compress(ast,{},'test');
