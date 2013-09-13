@@ -109,4 +109,20 @@ describe("compiler", function() {
 		sourcefile.symbols[0].source.should.be.eql('hyperloop_compiler'+toJS(obj));
 	});
 
+	it.only("should transform simple @class", function() {
+		var source = "@import('UIKit/UIButton'); var Class = @class(UIButton,[Foo],{callback:function(){}})",
+			sourcefile = new MockSourceFile(),
+			ast = compiler.compile(source, 'test', sourcefile),
+			code = compiler.compress(ast,{},'test');
+		sourcefile.name.should.be.eql('test');
+		sourcefile.filename.should.be.eql('/test');
+		sourcefile.dirname.should.be.eql('/');
+		console.log(sourcefile)
+		sourcefile.symbols.should.not.be.empty;
+		sourcefile.symbols.should.have.length(3);
+		sourcefile.symbols[0].should.have.property('type');
+		sourcefile.symbols[0].should.have.property('value');
+		sourcefile.symbols[0].type.should.be.eql('package');
+	});
+
 });
