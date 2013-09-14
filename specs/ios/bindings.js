@@ -61,12 +61,9 @@ describe("ios bindings",function(){
 			should.not.exist(err);
 			should.exist(result);
 
-			// if cached, let's compare them since they should always be same
-			if (fs.existsSync(cached)) {
-				var buf = fs.readFileSync(cached);
-				result.should.equal(buf.toString());
+			if (!fs.existsSync(cached)) {
+				fs.writeFileSync(cached,result);
 			}
-			fs.writeFileSync(cached,result);
 
 			if (fs.existsSync(cachedAST)) {
 				var buf = fs.readFileSync(cachedAST);
