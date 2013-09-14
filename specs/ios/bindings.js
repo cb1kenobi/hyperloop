@@ -45,14 +45,15 @@ function shouldBeSame(t) {
 describe("ios bindings",function(){
 	
 	before(function(done){
-		
-		var headerfile = path.join(__dirname,'src','header.h'),
+
+		var TMPDIR = process.env.TMPDIR || '/tmp/',
+			headerfile = path.join(__dirname,'src','header.h'),
 			minversion = '7.0',
 			nativeargs = null,
-			cached = path.join(__dirname,'src','clangout.txt'),
-			cachedAST = path.join(__dirname,'src','clangout.ast');
+			cached = path.join(TMPDIR,'clangout.txt'),
+			cachedAST = path.join(TMPDIR,'clangout.ast');
 
-		console.log('executing clang, this will take a minute');
+		console.log('executing clang, this will take a minute. if you get a timeout error, re-run with --timeout 60s');
 
 		buildlib.clang(headerfile,minversion,nativeargs,function(err,result){
 			if (err) return done(err);
