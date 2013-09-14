@@ -56,7 +56,7 @@ describe("ios bindings",function(){
 		console.log('executing clang, this will take a minute. if you get a timeout error, re-run with --timeout 60s');
 		console.log('writing ast out to ',cached);
 
-		buildlib.clang(headerfile,minversion,nativeargs,function(err,result){
+		buildlib.clang(headerfile,minversion,nativeargs,true,function(err,result){
 			if (err) return done(err);
 			should.not.exist(err);
 			should.exist(result);
