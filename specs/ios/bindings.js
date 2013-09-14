@@ -54,6 +54,7 @@ describe("ios bindings",function(){
 			cachedAST = path.join(TMPDIR,'clangout.ast');
 
 		console.log('executing clang, this will take a minute. if you get a timeout error, re-run with --timeout 60s');
+		console.log('writing ast out to ',cached);
 
 		buildlib.clang(headerfile,minversion,nativeargs,function(err,result){
 			if (err) return done(err);
@@ -74,7 +75,6 @@ describe("ios bindings",function(){
 				done();
 			}
 			else {
-
 				clangparser.parseBuffer(result,function(err,ast){
 					if (err) return done(err);
 					should.not.exist(err);
@@ -82,9 +82,7 @@ describe("ios bindings",function(){
 					metadata = ast.toJSON();
 					fs.writeFile(cachedAST,JSON.stringify(ast,null,'  '),done);
 				});
-
 			}
-
 		});
 
 	});
