@@ -4,7 +4,7 @@
 var should = require('should'),
     path = require('path'),
     fs = require('fs'),
-    binding = require(path.join(__dirname,'..','..','lib','ios','jscore','codegen.js')),
+    binding = require(path.join(__dirname,'..','..','lib','ios','jsc_oo','codegen.js')),
     buildlib = require(path.join(__dirname,'..','..','lib','ios','buildlib.js')),
     clangparser = require(path.join(__dirname,'..','..','lib','ios','clangparser.js')),
     metadata;

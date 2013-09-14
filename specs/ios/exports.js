@@ -3,7 +3,7 @@
  */
 var should = require('should'),
     path = require('path'),
-    binding = require(path.join(__dirname,'..','..','lib','ios','jscore','codegen.js'));
+    binding = require(path.join(__dirname,'..','..','lib','ios','jsc_oo','codegen.js'));
 
 
 describe("ios exports",function(){
