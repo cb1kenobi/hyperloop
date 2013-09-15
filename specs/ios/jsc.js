@@ -23,11 +23,9 @@ describe("jsc", function(){
 			if (err) return done(err);
 
 			var srcdir = path.join(dirPath,"src"),
-				headerdir = path.join(dirPath,"header"),
 				build = path.join(dirPath,"build");
 
 			fs.mkdirSync(srcdir);
-			fs.mkdirSync(headerdir);
 			fs.mkdirSync(build);
 
 			// micro test that will run inside ios simulator
@@ -137,26 +135,24 @@ describe("jsc", function(){
 
 			}).toString().trim().replace(/^function \(\){/,'').replace(/}$/,'').replace(/[\n]/g,'\\n').replace(/"/g,'\\"').trim();
 
-			fs.writeFileSync(path.join(headerdir,"JSBuffer.h"),fs.readFileSync(path.join(__dirname,"../../lib/ios/jsc/templates/source/JSBuffer.h")));	
-			fs.writeFileSync(path.join(srcdir,"JSBuffer.c"),fs.readFileSync(path.join(__dirname,"../../lib/ios/jsc/templates/source/JSBuffer.c")));
+			// write out source file and replace token with actually source
 			fs.writeFileSync(path.join(srcdir,"jsc_test.m"),fs.readFileSync(path.join(__dirname,"src","jsc_test.m")).toString().replace("JS_TEST_SRC",js_test_src));
 
-
-			var options = {
-				minVersion : "7.0",
-				libname: "libjsc_test.a",
-				srcfiles: [path.join(srcdir,"JSBuffer.c"),path.join(srcdir,"jsc_test.m")],
-				outdir: build,
-				cflags: ["-I"+headerdir],
-				linkflags: ['-framework JavaScriptCore'],
-				name: 'jsc_test',
-				appid: 'org.appcelerator.jsc_test',
-				dest: build,
-				debug: true,
-				launch: true
-			};
-
-			var failures = 0,
+			var headerPath = path.join(__dirname,"../../lib/ios/jsc/templates/source"),
+				options = {
+					minVersion : "7.0",
+					libname: "libjsc_test.a",
+					srcfiles: [path.join(headerPath,"JSBuffer.c"),path.join(srcdir,"jsc_test.m")],
+					outdir: build,
+					cflags: ["-I"+headerPath],
+					linkflags: ['-framework JavaScriptCore'],
+					name: 'jsc_test',
+					appid: 'org.appcelerator.jsc_test',
+					dest: build,
+					debug: true,
+					launch: true
+				},
+				failures = 0,
 				failureRegex = /^FAIL:/;
 
 			options.logger = {

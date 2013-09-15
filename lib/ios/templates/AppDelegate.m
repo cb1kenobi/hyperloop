@@ -1,6 +1,18 @@
 #import "AppDelegate.h"
 #import <zlib.h>
+@import JavaScriptCore;
 
+//TODO: remove these
+typedef JSObjectRef (*ObjectMaker)(JSContextRef,id);
+typedef JSObjectRef (*ClassMaker)(JSContextRef,Class);
+
+void RegisterJSObjectMakerForType(NSString* className, ObjectMaker maker)
+{
+}
+void RegisterJSClassMakerForType(NSString* className, ClassMaker maker)
+{
+}
+//TODO: remove these ^^^
 
 NSData* decompressBuffer (NSData*  _data) {
     
