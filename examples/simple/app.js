@@ -8,6 +8,7 @@
 @import('UIKit/UIButton');
 
 @import('Foundation/NSLog');
+@import('Foundation/NSString');
 @import('CoreGraphics/CGRectMake');
 @import('UIKit/UIButtonTypeSystem');
 @import('UIKit/UIControlStateNormal');
@@ -17,15 +18,21 @@
 // 	cflags: ['-DDEBUG=1']
 // });
 
-require('test/foo');
+//require('test/foo');
+var format = NSString.stringWithUTF8String('%@');
 
 var keyWindow = UIApplication.sharedApplication().keyWindow;
+
+NSLog(format, keyWindow);
+
 keyWindow.backgroundColor = UIColor.blackColor();
+/*
 
 var view = new UIView();
 view.frame = CGRectMake(0,0,200,200);
 view.backgroundColor = UIColor.blueColor();
 keyWindow.addSubview(view);
+
 var callback = @class(function(sender) {
 	NSLog('clicked on button=%@',sender);
 });
@@ -37,3 +44,4 @@ btn.backgroundColor = UIColor.redColor();
 keyWindow.addSubview(btn);
 btn.addTarget(callback,callback.selector(),UIControlEventTouchDown);
 
+*/
