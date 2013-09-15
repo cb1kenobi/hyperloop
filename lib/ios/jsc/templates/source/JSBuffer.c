@@ -8,7 +8,7 @@
  */
 
 #include "JSBuffer.h"
-
+#include <hyperloop.h>
 
 static JSClassDefinition ClassDefinitionForJSBufferConstructor;
 static JSClassDefinition ClassDefinitionForJSBuffer;
@@ -17,7 +17,7 @@ static JSClassRef JSBufferClassDef;
 
 
 #define BUFFER(name) \
-JSBuffer *name = (JSBuffer*)JSObjectGetPrivate(object);\
+JSBuffer *name = (JSBuffer*)HyperloopGetPrivateObjectAsJSBuffer(object);\
 if (buffer==NULL)\
 {\
     return JSValueMakeUndefined(ctx);\
@@ -130,19 +130,7 @@ return JSObjectMakeArray(ctx,len,array,exception);\
  */
 void ReleaseBuffer (JSObjectRef object)
 {
-    JSBuffer *buffer = (JSBuffer*)JSObjectGetPrivate(object);
-    if (buffer!=NULL)
-    {
-        if (buffer->length)
-        {
-            free(buffer->buffer);
-            buffer->buffer = NULL;
-            buffer->length = 0;
-        }
-        free(buffer);
-        buffer = NULL;
-        JSObjectSetPrivate(object,0);
-    }
+    HyperloopDestroyPrivateObject(object);
 }
 
 /**
@@ -217,7 +205,7 @@ JSValueRef putForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef o
     }
     JSObjectRef bufObjectRef = JSValueToObject(ctx,bufValueRef,exception);
     CHECK_EXCEPTION_UNDEFINED
-    JSBuffer *srcBuffer = (JSBuffer*)JSObjectGetPrivate(bufObjectRef);
+    JSBuffer *srcBuffer = (JSBuffer*)HyperloopGetPrivateObjectAsJSBuffer(bufObjectRef);
     if (srcBuffer==NULL)
     {
         JSStringRef string = JSStringCreateWithUTF8CString("first argument must be a buffer object (JSBuffer NULL)");
@@ -381,6 +369,26 @@ JSValueRef putCharForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectR
     CHECK_SIZE_AND_GROW(sizeof(char),index);
     PRIMITIVE_SET(char,index);
     return object;
+}
+
+/**
+ * putString
+ */
+JSValueRef putStringForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef object, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
+{
+    BUFFER(buffer);
+    ARGCOUNTMIN(1);
+    if (JSValueIsString(ctx,arguments[0])) 
+    {
+        CHECK_EXCEPTION_UNDEFINED;
+        JSStringRef string = JSValueToStringCopy(ctx, arguments[0], exception);
+        CHECK_EXCEPTION_UNDEFINED;
+        size_t length = JSStringGetMaximumUTF8CStringSize(string);
+        CHECK_SIZE_AND_GROW(length,0);
+        JSStringGetUTF8CString(string,buffer->buffer,length);
+        JSStringRelease(string);
+    }
+    return JSValueMakeUndefined(ctx);
 }
 
 /**
@@ -685,6 +693,7 @@ static JSStaticFunction StaticFunctionArrayForJSBuffer [] = {
     { "putLongLong", putLongLongForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
     { "putBool", putBoolForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
     { "putChar", putCharForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
+    { "putString", putStringForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
 
     { "duplicate", duplicateForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
     { "slice", sliceForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
@@ -760,7 +769,7 @@ JSClassRef CreateClassForJSBuffer ()
  */
 JSObjectRef MakeObjectForJSBuffer (JSContextRef ctx, JSBuffer *instance)
 {
-    JSObjectRef object = JSObjectMake(ctx, CreateClassForJSBuffer(), instance);
+    JSObjectRef object = JSObjectMake(ctx, CreateClassForJSBuffer(), HyperloopMakePrivateObjectForJSBuffer(instance));
     JSObjectRef value = JSObjectMake(ctx, CreateClassForJSBufferConstructor(), 0);
     
     JSStringRef cproperty = JSStringCreateWithUTF8CString("constructor");
@@ -805,4 +814,17 @@ JSObjectRef MakeObjectForJSBufferConstructor (JSContextRef ctx)
 
 
     return object;
+}
+
+void RegisterJSBuffer (JSContextRef ctx, JSObjectRef global)
+{
+    static bool init;
+    if (!init) {
+        JSStringRef property = JSStringCreateWithUTF8CString("JSBuffer");
+        JSObjectRef object = MakeObjectForJSBufferConstructor(ctx);
+        JSObjectSetProperty(ctx, global, property, object, kJSPropertyAttributeDontEnum, 0);
+        JSStringRelease(property);
+        init = true;
+        printf("[INFO] RegisterJSBuffer called\n");
+    }
 }

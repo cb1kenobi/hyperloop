@@ -20,5 +20,6 @@ typedef struct JSBuffer {
 
 JSObjectRef MakeObjectForJSBuffer (JSContextRef ctx, JSBuffer *instance);
 JSObjectRef MakeObjectForJSBufferConstructor (JSContextRef ctx);
+void RegisterJSBuffer (JSContextRef ctx, JSObjectRef global);
 
 #endif

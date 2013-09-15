@@ -142,7 +142,7 @@ describe("jsc", function(){
 				options = {
 					minVersion : "7.0",
 					libname: "libjsc_test.a",
-					srcfiles: [path.join(headerPath,"JSBuffer.c"),path.join(srcdir,"jsc_test.m")],
+					srcfiles: [path.join(headerPath,"JSBuffer.c"),path.join(headerPath,"hyperloop.m"),path.join(srcdir,"jsc_test.m")],
 					outdir: build,
 					cflags: ["-I"+headerPath],
 					linkflags: ['-framework JavaScriptCore'],
@@ -150,7 +150,8 @@ describe("jsc", function(){
 					appid: 'org.appcelerator.jsc_test',
 					dest: build,
 					debug: true,
-					launch: true
+					launch: true,
+					no_arc: true
 				},
 				failures = 0,
 				failureRegex = /^FAIL:/;

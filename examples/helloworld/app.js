@@ -1,9 +1,18 @@
 @import("Foundation/NSLog");
 @import("Foundation/NSString");
 
+// create a NSString from JS string
+var format = NSString.stringWithUTF8String('Hello %@');
 
-var s1 = NSString.stringWithUTF8String('Hello %@'),
-	s2 = NSString.stringWithUTF8String('world');
+// create a direct memory buffer
+var buffer = @memory();
 
-NSLog(s1,s2);
+// write a string into the buffer
+buffer.putString('world');
+
+// create an NSString from the buffer
+var message = NSString.stringWithUTF8String(buffer);
+
+// log
+NSLog(format,message);
 
