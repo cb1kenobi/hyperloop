@@ -66,6 +66,7 @@ The DSL provides a small number of specific reserved keywords which form the DSL
 * _@import_ - import a specific symbol.  Typically this is used to import a static symbol or class.  
 * _@compiler_ - instruct the native compiler to use specific settings which are passed as an object.
 * _@class_ - create a class implementation of a specific interface or an anonymous (classless) implementation.
+* _@memory_ - create a direct memory buffer (equivalent to C malloc).
 
 For example, in iOS, you could do something such as:
 
