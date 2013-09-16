@@ -24,7 +24,7 @@ if (buffer==NULL)\
 }\
 
 #define CHECK_SIZE_AND_GROW(size,index) \
-if (buffer->length <= ( index * size ))\
+if (buffer->length <= ( index * size ) || (index == 0 && buffer->length < size))\
 {\
     if (index == 0)\
     {\

@@ -19,20 +19,17 @@
 // });
 
 //require('test/foo');
-var format = NSString.stringWithUTF8String('%@');
 
 var keyWindow = UIApplication.sharedApplication().keyWindow;
 
-NSLog(format, keyWindow);
-
 keyWindow.backgroundColor = UIColor.blackColor();
-/*
 
 var view = new UIView();
 view.frame = CGRectMake(0,0,200,200);
 view.backgroundColor = UIColor.blueColor();
-keyWindow.addSubview(view);
 
+keyWindow.addSubview(view);
+/*
 var callback = @class(function(sender) {
 	NSLog('clicked on button=%@',sender);
 });
