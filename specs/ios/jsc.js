@@ -92,6 +92,9 @@ describe("jsc", function(){
 				emptyBuffer.putFloat(parseFloat("20.110000610351562"));
 				assert(emptyBuffer.toFloat()===20.110000610351562, "emptyBuffer.toFloat() should be 20.110000610351562, was: "+emptyBuffer.toFloat());
 
+				emptyBuffer.reset();
+				assert(emptyBuffer.length===1, "emptyBuffer.reset() should have length of 1, was: "+emptyBuffer.length);
+
 				emptyBuffer.putChar("a");
 				assert(emptyBuffer.toChar()==="a", "emptyBuffer.toChar() should be a, was: "+emptyBuffer.toChar());
 

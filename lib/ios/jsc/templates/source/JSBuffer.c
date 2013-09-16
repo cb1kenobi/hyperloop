@@ -553,7 +553,7 @@ JSValueRef toCharArrayForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObj
 {
     BUFFER(buffer);
     PRIMITIVE_GET_ARRAY(char);
-    size_t len = buffer->length;
+    size_t len = buffer->length / sizeof(char);
     JSChar buf[len];
     for (size_t c = 0; c < len; c++)
     {
@@ -609,6 +609,21 @@ JSValueRef sliceForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef
     newbuffer->length = length;
     
     return MakeObjectForJSBuffer(ctx,newbuffer);
+}
+
+/**
+ * reset
+ */
+JSValueRef resetForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef object, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
+{
+    BUFFER(buffer);
+    if (buffer->length) 
+    {
+        free(buffer->buffer);
+        buffer->length = 1;
+        buffer->buffer = malloc(1);
+    }
+    return object;
 }
 
 JSObjectRef MakeInstance (JSContextRef ctx, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
@@ -698,6 +713,7 @@ static JSStaticFunction StaticFunctionArrayForJSBuffer [] = {
     { "duplicate", duplicateForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
     { "slice", sliceForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
     { "isNaN", isNaNForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
+    { "reset", resetForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum | kJSPropertyAttributeDontDelete },
     
     { "release", releaseForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum | kJSPropertyAttributeDontDelete },
     { "toString", toStringForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum | kJSPropertyAttributeDontDelete },
