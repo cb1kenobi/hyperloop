@@ -6,7 +6,7 @@ Hyperloop is a next-generation compiler that converts JavaScript source code int
 
 ## Requirements
 
-Hyperloop requires at least [Node.js](http://nodejs.org/) 10.0.5 and iOS SDK 7.0.  _Currently, hyperloop is only being developed and tested on OSX, however, Windows and Linux will eventually be supported officially._
+Hyperloop requires at least [Node.js](http://nodejs.org/) 0.10.5 and iOS SDK 7.0.  _Currently, hyperloop is only being developed and tested on OSX, however, Windows and Linux will eventually be supported officially._
 
 ## Install
 
