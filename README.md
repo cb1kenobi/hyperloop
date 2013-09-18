@@ -120,7 +120,7 @@ var window = [[NSWindow alloc] initWithContentRect:NSRectMake(0,0,100,200) style
 Right now, there's no way to do this in CNI. However, this is coming quickly.  You will likely do something like the following in CNI (although not yet supported):
 
 ~~~javascript
-var window = new NSWindow('initWithContentRect:styleMask:backing:style:',NSRectMake(0,0,100,200),NSTitledWindowMask,false);
+var window = new NSWindow('initWithContentRect:styleMask:backing:defer:',NSRectMake(0,0,100,200),NSTitledWindowMask,NSBackingStoreBuffered,false);
 ~~~
 
 Whereby the first parameter to a constructor equals the selector of an initXXX constructor in Objective-C.  In this case, instead of the normal `init` method being invoked, the selector would be invoked to construct the instance.
