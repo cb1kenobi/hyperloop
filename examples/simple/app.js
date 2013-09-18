@@ -30,7 +30,7 @@ view.backgroundColor = UIColor.blueColor();
 
 keyWindow.addSubview(view);
 /*
-var callback = @class(function(sender) {
+var callback = @callback(function(sender) {
 	NSLog('clicked on button=%@',sender);
 });
 

@@ -832,15 +832,20 @@ JSObjectRef MakeObjectForJSBufferConstructor (JSContextRef ctx)
     return object;
 }
 
+/**
+ * register JSBuffer into global context. you can call this safely multiple times but it
+ * will only register into the global context once.  however, this is currently not safe if 
+ * you have *multiple* JSContextRef you're trying to use.
+ */
 void RegisterJSBuffer (JSContextRef ctx, JSObjectRef global)
 {
     static bool init;
-    if (!init) {
+    if (!init) 
+    {
         JSStringRef property = JSStringCreateWithUTF8CString("JSBuffer");
         JSObjectRef object = MakeObjectForJSBufferConstructor(ctx);
         JSObjectSetProperty(ctx, global, property, object, kJSPropertyAttributeDontEnum, 0);
         JSStringRelease(property);
         init = true;
-        printf("[INFO] RegisterJSBuffer called\n");
     }
 }

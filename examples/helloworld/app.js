@@ -34,3 +34,5 @@ NSLog(format,'world');
 
 // log with multiple args
 NSLog(format2,'world','string');
+
+

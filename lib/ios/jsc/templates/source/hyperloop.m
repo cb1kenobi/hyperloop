@@ -26,7 +26,7 @@ JSPrivateObject* HyperloopMakePrivateObjectForID(id object)
 JSPrivateObject* HyperloopMakePrivateObjectForJSBuffer(JSBuffer *buffer)
 {
 	JSPrivateObject *p = (JSPrivateObject*)malloc(sizeof(JSPrivateObject));
-	p->object = (void*)buffer;
+	p->object = (void *)buffer;
 	p->type = JSPrivateObjectTypeJSBuffer;
 	return p;
 }
@@ -37,7 +37,7 @@ JSPrivateObject* HyperloopMakePrivateObjectForJSBuffer(JSBuffer *buffer)
 JSPrivateObject* HyperloopMakePrivateObjectForClass(Class cls)
 {
 	JSPrivateObject *p = (JSPrivateObject*)malloc(sizeof(JSPrivateObject));
-	p->object = (void*)cls;
+	p->object = (void *)cls;
 	p->type = JSPrivateObjectTypeClass;
 	return p;
 }
