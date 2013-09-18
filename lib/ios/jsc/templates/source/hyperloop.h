@@ -7,6 +7,7 @@
  * or patents pending by Appcelerator, Inc.
  */
 @import JavaScriptCore;
+#import <objc/runtime.h>
 #import "JSBuffer.h"
 
 typedef enum JSPrivateObjectType {
@@ -19,6 +20,10 @@ typedef struct JSPrivateObject {
     void *object;
    	JSPrivateObjectType type; 
 } JSPrivateObject;
+
+@protocol HyperloopFactory
++(JSObjectRef)make:(JSContextRef)ctx instance:(id)instance;
+@end
 
 /**
  * create a JSPrivateObject for storage in a JSObjectRef where the object is an id
