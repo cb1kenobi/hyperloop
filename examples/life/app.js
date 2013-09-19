@@ -1,9 +1,13 @@
+@import('Foundation/NSLog');
+@import('Foundation/NSString');
 @import('Foundation/NSTimer');
 @import('UIKit/UIApplication');
 @import('UIKit/UIColor');
 @import('UIKit/UIScreen');
 @import('UIKit/UIView');
 @import('CoreGraphics/CGRectMake');
+
+var __ = NSString.stringWithUTF8String;
 
 const TARGET_FPS = 60,
 	CELL_SIZE = 4,
@@ -68,6 +72,14 @@ for (var x = 0; x < xSize; x++) {
 	}
 }
 
+// initialize FPS calculations
+if (DEBUG) {
+	var lastTime = new Date().getTime(),
+		renderTime = 0,
+		ctr = 0,
+		thisTime, start;
+}
+
 // the render function
 function update() {
 	var x, y, cell;
@@ -92,6 +104,17 @@ function update() {
 		for (y = 0; y < ySize; y++) {
 			cell = cells[x][y];
 			cell.alive = getNextState(x, y, cell.lastAlive);
+		}
+	}
+
+	// calculate current average FPS
+	if (DEBUG) {
+		thisTime = new Date().getTime();
+		renderTime += thisTime - lastTime;
+		lastTime = thisTime;
+
+		if (++ctr % 50 === 0) {
+			NSLog(__('FPS: %@'), 1000.0/(renderTime/ctr));
 		}
 	}
 }
