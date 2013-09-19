@@ -9,6 +9,7 @@
 @import JavaScriptCore;
 #import <objc/runtime.h>
 #import "JSBuffer.h"
+#import "JSOwner.h"
 
 typedef enum JSPrivateObjectType {
 	JSPrivateObjectTypeID = 0,
@@ -18,7 +19,9 @@ typedef enum JSPrivateObjectType {
 
 typedef struct JSPrivateObject {
     void *object;
-   	JSPrivateObjectType type; 
+   	JSPrivateObjectType type;
+   	NSMapTable *map;
+   	JSContextRef context;
 } JSPrivateObject;
 
 @protocol HyperloopFactory
@@ -28,7 +31,7 @@ typedef struct JSPrivateObject {
 /**
  * create a JSPrivateObject for storage in a JSObjectRef where the object is an id
  */
-JSPrivateObject* HyperloopMakePrivateObjectForID(id object);
+JSPrivateObject* HyperloopMakePrivateObjectForID(JSContextRef ctx,id object);
 
 /**
  * create a JSPrivateObject for storage in a JSObjectRef where the object is a Class
@@ -66,6 +69,16 @@ bool HyperloopPrivateObjectIsType(JSObjectRef objectRef, JSPrivateObjectType typ
 void HyperloopDestroyPrivateObject(JSObjectRef object);
 
 /**
+ * set the owner for an object
+ */
+void HyperloopSetOwner(JSObjectRef object, id owner);
+
+/**
+ * get the owner for an object or nil if no owner or it's been released
+ */
+id HyperloopGetOwner(JSObjectRef object);
+
+/**
  * raise an exception
  */
 JSValueRef HyperloopMakeException(JSContextRef ctx, const char *message, JSValueRef *exception);
@@ -73,4 +86,4 @@ JSValueRef HyperloopMakeException(JSContextRef ctx, const char *message, JSValue
 /**
  * return a string representation as a JSValueRef for an id
  */
-JSValueRef HyperloopToString(JSContextRef ctx, id object); 
+JSValueRef HyperloopToString(JSContextRef ctx, id object);

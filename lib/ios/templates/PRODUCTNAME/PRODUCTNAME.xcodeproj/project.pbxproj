@@ -25,7 +25,6 @@
 		2486A6AC17CDD2BD009F6F82 /* PRODUCTNAME-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PRODUCTNAME-Prefix.pch"; sourceTree = "<group>"; };
 		2486A6AD17CDD2BD009F6F82 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		2486A6AE17CDD2BD009F6F82 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		2486A6B017CDD2BD009F6F82 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,7 +73,6 @@
 			children = (
 				2486A6AD17CDD2BD009F6F82 /* AppDelegate.h */,
 				2486A6AE17CDD2BD009F6F82 /* AppDelegate.m */,
-				2486A6B017CDD2BD009F6F82 /* Images.xcassets */,
 				2486A6A517CDD2BD009F6F82 /* Supporting Files */,
 			);
 			path = PRODUCTNAME;
@@ -84,7 +82,6 @@
 			isa = PBXGroup;
 			children = (
 				2486A6A617CDD2BD009F6F82 /* PRODUCTNAME-Info.plist */,
-				2486A6A717CDD2BD009F6F82 /* InfoPlist.strings */,
 				2486A6AA17CDD2BD009F6F82 /* main.m */,
 				2486A6AC17CDD2BD009F6F82 /* PRODUCTNAME-Prefix.pch */,
 			);
@@ -249,12 +246,17 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PRODUCTNAME/PRODUCTNAME-Prefix.pch";
 				INFOPLIST_FILE = "PRODUCTNAME/PRODUCTNAME-Info.plist";
+				OTHER_CFLAGS = (
+					"-I$(PROJECT_DIR)/src",
+				);
 				OTHER_LDFLAGS = (
-					"-LLIBDIR",
+					"-L$(PROJECT_DIR)",
 					"-lLIBNAME",
+					"-ObjC",
+					"-lz",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				VALID_ARCHS = armv7;
+				VALID_ARCHS = armv7s;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -267,12 +269,17 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PRODUCTNAME/PRODUCTNAME-Prefix.pch";
 				INFOPLIST_FILE = "PRODUCTNAME/PRODUCTNAME-Info.plist";
+				OTHER_CFLAGS = (
+					"-I$(PROJECT_DIR)/src",
+				);
 				OTHER_LDFLAGS = (
-					"-LLIBDIR",
+					"-L$(PROJECT_DIR)",
 					"-lLIBNAME",
+					"-ObjC",
+					"-lz",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				VALID_ARCHS = armv7;
+				VALID_ARCHS = armv7s;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

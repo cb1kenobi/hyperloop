@@ -94,8 +94,6 @@ function adjustAnchorPointForGestureRecognizer(gview, gestureRecognizer)
 		returnType: 'void',
 		arguments: [{type:'UIRotationGestureRecognizer',name:'gestureRecognizer'}],
 		action: function(params) {
-			NSLog(format, 'rotateView');
-			NSLog(format,params.gestureRecognizer);
 			var gestureRecognizer = params.gestureRecognizer,
 				state = gestureRecognizer.state;
 		    if (state == UIGestureRecognizerStateBegan ||
