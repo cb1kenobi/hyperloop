@@ -1,5 +1,6 @@
 @import('Foundation/NSObject');
 @import('Foundation/NSString');
+@import('Foundation/NSLog');
 @import('CoreGraphics/CGRectMake');
 
 @import('UIKit/UIApplication');
@@ -12,6 +13,8 @@
 @import("CoreLocation/CLLocationManager");
 @import("CoreLocation/CLLocation");
 @import("CoreLocation/CLHeading");
+@import("CoreLocation/kCLDistanceFilterNone");
+@import("CoreLocation/kCLLocationAccuracyBest");
 
 
 /*
@@ -34,6 +37,9 @@ var lastLocation,
 	totalMetersTraveled = 0;
 
 function handleNewPosition(params) {
+	var format = NSString.stringWithUTF8String('%@');
+	NSLog(format, params);
+	label.text = NSString.stringWithUTF8String('5');
 	var locations = params && params.didUpdateLocations || [];
 	for (var i = 0, iL = locations.length; i < iL; i++) {
 		var location = locations[i];
@@ -50,10 +56,8 @@ function handleNewPosition(params) {
  */
 var manager = new CLLocationManager();
 manager.purpose = NSString.stringWithUTF8String('To track how far you have traveled, of course!');
-// TODO: The constants don't seem to be accessible, at the moment.
 manager.distanceFilter = kCLDistanceFilterNone;
 manager.desiredAccuracy = kCLLocationAccuracyBest;
-// TODO: When the delegate isn't commented out, we get a build error.
 @class('LocDelegate', NSObject, [ 'CLLocationManagerDelegate' ], [
 	{
 		name: 'locationManager',
