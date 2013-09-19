@@ -32,12 +32,6 @@
 @import('CoreGraphics/CGAffineTransformIdentity');
 
 
-var format = NSString.stringWithUTF8String('%@');
-
-function log(msg) {
-	NSLog(format,msg);
-}
-
 var keyWindow = UIApplication.sharedApplication().keyWindow;
 keyWindow.backgroundColor = UIColor.blueColor();
 
@@ -206,5 +200,6 @@ try {
 	resetViews();
 }
 catch(E) {
-	log(E);
+	console.log(E);
 }
+
