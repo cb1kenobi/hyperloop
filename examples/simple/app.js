@@ -21,6 +21,7 @@
 @import('UIKit/UIRotationGestureRecognizer');
 @import('UIKit/UIGestureRecognizerStateBegan');
 @import('UIKit/UIGestureRecognizerStateChanged');
+@import('UIKit/UILongPressGestureRecognizer');
 
 @import('CoreGraphics/CGRectMake');
 @import('CoreGraphics/CGSizeMake');
@@ -45,7 +46,8 @@ contentView.frame = UIScreen.mainScreen().applicationFrame;
 contentView.backgroundColor = UIColor.darkTextColor();
 keyWindow.addSubview(contentView);
 
-var supportedColorNames = ['Cyan','Magenta','Yellow'];
+var supportedColorNames = ['Cyan','Magenta','Yellow'],
+	longPressClassType = UILongPressGestureRecognizer.class();
 
 function adjustAnchorPointForGestureRecognizer(gview, gestureRecognizer)
 {
@@ -113,9 +115,17 @@ function adjustAnchorPointForGestureRecognizer(gview, gestureRecognizer)
 	{
 		name: 'gestureRecognizer',
 		returnType: 'BOOL',
-		arguments: [{type:'UIGestureRecognizer',name:'gestureRecognizer'}, {type:'UIGestureRecognizer',name:'shouldRecognizeSimultaneouslyWithGestureRecognizer'}],
+		arguments: [{type:'UIGestureRecognizer',name:'gestureRecognizer'}, {type:'UIGestureRecognizer',name:'shouldRecognizeSimultaneouslyWithGestureRecognizer',property:'otherGestureRecognizer'}],
 		action: function(params){
-			NSLog(format,'gestureRecognizer called');
+			var gestureRecognizer = params.gestureRecognizer,
+				otherGestureRecognizer = params.otherGestureRecognizer;
+			if (gestureRecognizer.view!=otherGestureRecognizer.view) {
+				return false;
+			}
+		    if (gestureRecognizer.isKindOfClass(longPressClassType) ||
+		    	otherGestureRecognizer.isKindOfClass(longPressClassType)) {
+		    	return false;
+		    }
 			return true;
 		}
 	}
