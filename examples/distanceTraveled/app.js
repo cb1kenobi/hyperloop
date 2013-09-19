@@ -8,6 +8,7 @@
 @import('UIKit/UIColor');
 @import('UIKit/UIFont');
 @import('UIKit/UILabel');
+@import('UIKit/UILineBreakModeWordWrap');
 @import('UIKit/NSTextAlignmentCenter');
 
 @import("CoreLocation/CLLocationManager");
@@ -24,31 +25,39 @@ var win = UIApplication.sharedApplication().keyWindow,
 	label = new UILabel();
 //initWithRed:green:blue:alpha
 label.textColor = UIColor.darkTextColor;
-label.frame = CGRectMake(0, 0, 320, 320);
+label.frame = CGRectMake(20, 20, 280, 280);
 label.font = UIFont.systemFontOfSize(72);
 label.textAlignment = NSTextAlignmentCenter;
 label.text = NSString.stringWithUTF8String('Loading...');
+label.numberOfLines = 2;
+label.lineBreakMode = UILineBreakModeWordWrap;
 win.addSubview(label);
 
 /*
  Distance calculation.
  */
 var lastLocation,
-	totalMetersTraveled = 0;
+	totalFeetTraveled = 0;
 
 function handleNewPosition(params) {
-	var format = NSString.stringWithUTF8String('%@');
-	NSLog(format, params);
-	label.text = NSString.stringWithUTF8String('5');
-	var locations = params && params.didUpdateLocations || [];
-	for (var i = 0, iL = locations.length; i < iL; i++) {
-		var location = locations[i];
+	var locations = params.didUpdateLocations;
+	for (var i = 0, iL = locations.count(); i < iL; i++) {
+		var location = locations.objectAtIndex(i),
+			coordinate = location.coordinate;
+		console.log(location);
 		if (lastLocation) {
-			totalMetersTraveled += location.distanceFromLocation(lastLocation);
+			var lat1 = lastLocation.latitude, lon1 = lastLocation.longitude;
+			var lat2 = coordinate.latitude, lon2 = coordinate.longitude;
+			var kmTraveled = 3963.0 * Math.acos(
+				Math.sin(lat1 / 57.2958) * Math.sin(lat2 / 57.2958)
+					+ Math.cos(lat1 / 57.2958) * Math.cos(lat2 / 57.2958)
+					* Math.cos(lon2 / 57.2958 - lon1 / 57.2958)
+			);
+			totalFeetTraveled += kmTraveled * 3280.8399;
+			label.text = NSString.stringWithUTF8String('Traveled ' + totalFeetTraveled + 'ft!');
 		}
-		lastLocation = location;
+		lastLocation = location.coordinate;
 	}
-	label.text = NSString.stringWithUTF8String('Traveled\n' + (totalMetersTraveled * 3.28084) + 'ft!');
 }
 
 /*
