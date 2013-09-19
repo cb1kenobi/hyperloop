@@ -69,7 +69,9 @@ manager.desiredAccuracy = kCLLocationAccuracyBest;
 		action: handleNewPosition
 	}
 ]);
-manager.delegate = new LocDelegate();
+var locationDelegate = new LocDelegate();
+manager.delegate = locationDelegate;
+@owner(manager,locationDelegate);
 
 /*
  We're all set. Go for it!
