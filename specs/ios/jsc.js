@@ -11,7 +11,7 @@ var should = require('should'),
 describe("jsc", function(){
 
 	before(function(done){
-		buildlib.getXcodeSettings(function(err,xcode){	
+		buildlib.getXcodeSettings(function(err,xcode){
 			settings = xcode;
 			done(err);
 		});
@@ -32,7 +32,7 @@ describe("jsc", function(){
 			//
 			// everything inside this function will get compiled into the test app
 			// and then execute inside the simulator with the results coming to the console
-			// 
+			//
 			var js_test_src = (function(){
 
 
