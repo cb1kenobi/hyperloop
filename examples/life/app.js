@@ -1,15 +1,22 @@
 @import('Foundation/NSLog');
 @import('Foundation/NSString');
 @import('Foundation/NSTimer');
+@import('Foundation/NSRunLoop');
+@import('Foundation/NSDefaultRunLoopMode');
 @import('UIKit/UIApplication');
 @import('UIKit/UIColor');
 @import('UIKit/UIScreen');
 @import('UIKit/UIView');
 @import('CoreGraphics/CGRectMake');
+@import('QuartzCore/CADisplayLink');
 
-var __ = NSString.stringWithUTF8String;
+// shorthand for using NSLog
+var console = {
+	log: function(s) { NSLog(NSString.stringWithUTF8String(s), 1); },
+	debug: function(s) { DEBUG && console.log(s); }
+};
 
-const TARGET_FPS = 60,
+const TARGET_FPS = 100,
 	CELL_SIZE = 4,
 	screenSize = UIScreen.mainScreen().bounds.size,
 	height = screenSize.height,
@@ -114,13 +121,13 @@ function update() {
 		lastTime = thisTime;
 
 		if (++ctr % 50 === 0) {
-			NSLog(__('FPS: %@'), 1000.0/(renderTime/ctr));
+			console.log('FPS: ' + (1000.0/(renderTime/ctr)));
 		}
 	}
 }
 
-// Implement a class for our NSTimer call
-@class('TimerCallback', NSObject, [], [
+// Implement a class for our render loop update
+@class('RenderCallback', NSObject, [], [
 	{
 		name: 'update',
 		returnType: 'void',
@@ -128,8 +135,27 @@ function update() {
 		action: update
 	}
 ]);
+var renderCallback = new RenderCallback();
 
-// launch timer with TimerCallback as its target/selector
-var timer = NSTimer.scheduledTimerWithTimeInterval(
-	1.0/TARGET_FPS, new TimerCallback(), 'update:', null, true);
+// Determine how the render loop will be processed
+if (typeof TITANIUM_LINK !== 'undefined') {
+
+	console.debug('>>>>> Using CADisplayLink for render loop <<<<<');
+
+	// create a display link, using the render loop update function
+	var displayLink = CADisplayLink.displayLinkWithTarget(renderCallback, 'update:');
+
+	// attach the display link to the main run loop
+	displayLink.addToRunLoop(NSRunLoop.mainRunLoop(), NSDefaultRunLoopMode);
+
+} else {
+
+	console.debug('>>>>> Using NSTimer for render loop <<<<<');
+
+	// launch timer with TimerCallback as its target/selector
+	var timer = NSTimer.scheduledTimerWithTimeInterval(
+		1.0/TARGET_FPS, renderCallback, 'update:', null, true);
+
+}
+
 
