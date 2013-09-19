@@ -9,36 +9,43 @@
 @import('UIKit/UIViewController');
 @import('UIKit/UIScreen');
 @import('UIKit/UIView');
+@import('UIKit/UIImageView');
 @import('UIKit/UIButton');
+@import('UIKit/UIImage');
 @import('UIKit/UIButtonTypeSystem');
 @import('UIKit/UIControlStateNormal');
 @import('UIKit/UIControlEventTouchDown');
 @import('UIKit/UIGestureRecognizerDelegate');
 @import('UIKit/UIPanGestureRecognizer');
+@import('UIKit/UIPinchGestureRecognizer');
+@import('UIKit/UIRotationGestureRecognizer');
 @import('UIKit/UIGestureRecognizerStateBegan');
 @import('UIKit/UIGestureRecognizerStateChanged');
 
 @import('CoreGraphics/CGRectMake');
+@import('CoreGraphics/CGSizeMake');
 @import('CoreGraphics/CGPointMake');
 @import('CoreGraphics/CGPointZero');
+@import('CoreGraphics/CGAffineTransformScale');
+@import('CoreGraphics/CGAffineTransformRotate');
+@import('CoreGraphics/CGAffineTransformIdentity');
 
 
-// @compiler({
-// 	cflags: ['-DDEBUG=1']
-// });
+var format = NSString.stringWithUTF8String('%@');
 
-//require('test/foo');
+function log(msg) {
+	NSLog(format,msg);
+}
 
 var keyWindow = UIApplication.sharedApplication().keyWindow;
+keyWindow.backgroundColor = UIColor.blueColor();
 
-keyWindow.backgroundColor = UIColor.blackColor();
+var contentView = new UIView();
+contentView.frame = UIScreen.mainScreen().applicationFrame;
+contentView.backgroundColor = UIColor.darkTextColor();
+keyWindow.addSubview(contentView);
 
-var view = new UIView();
-view.frame = CGRectMake(0,0,200,200);
-view.backgroundColor = UIColor.blueColor();
-
-keyWindow.addSubview(view);
-var format = NSString.stringWithUTF8String('%@');
+var supportedColorNames = ['Cyan','Magenta','Yellow'];
 
 function adjustAnchorPointForGestureRecognizer(gview, gestureRecognizer)
 {
@@ -46,12 +53,12 @@ function adjustAnchorPointForGestureRecognizer(gview, gestureRecognizer)
         var locationInView = gestureRecognizer.locationInView(gview),
         	locationInSuperview = gestureRecognizer.locationInView(gview.superview);
 
-        gview.layer.anchorPoint = CGPointMake(locationInView.x / view.bounds.size.width, locationInView.y / view.bounds.size.height);
+        gview.layer.anchorPoint = CGPointMake(locationInView.x / gview.bounds.size.width, locationInView.y / gview.bounds.size.height);
         gview.center = locationInSuperview;
     }
 }
 
-@class('PanGestureRecognizer', NSObject, [], [
+@class('GestureRecognizer', NSObject, [ UIGestureRecognizerDelegate ], [
 	{
 		name: 'panView',
 		returnType: 'void',
@@ -59,24 +66,135 @@ function adjustAnchorPointForGestureRecognizer(gview, gestureRecognizer)
 		action: function(params) {
 			var gestureRecognizer = params.gestureRecognizer,
 				state = gestureRecognizer.state;
-			if (state == UIGestureRecognizerStateBegan || 
+			if (state == UIGestureRecognizerStateBegan ||
 				state == UIGestureRecognizerStateChanged)
 			{
 				var gview = gestureRecognizer.view;
-				adjustAnchorPointForGestureRecognizer(view,gestureRecognizer);
+				adjustAnchorPointForGestureRecognizer(gview,gestureRecognizer);
 				var translation = gestureRecognizer.translationInView(gview.superview);
 				gview.center = CGPointMake(gview.center.x + translation.x, gview.center.y + translation.y);
 				gestureRecognizer.setTranslation(CGPointZero,gview.superview);
 			}
 		}
+	},
+	{
+		name: 'scaleView',
+		returnType: 'void',
+		arguments: [{type:'UIPinchGestureRecognizer',name:'gestureRecognizer'}],
+		action: function(params) {
+			var gestureRecognizer = params.gestureRecognizer,
+				state = gestureRecognizer.state;
+		    if (state == UIGestureRecognizerStateBegan ||
+		    	state == UIGestureRecognizerStateChanged) {
+		    	var gview = gestureRecognizer.view;
+		        adjustAnchorPointForGestureRecognizer(gview,gestureRecognizer);
+		        gview.transform = CGAffineTransformScale(gview.transform, gestureRecognizer.scale, gestureRecognizer.scale);
+		        gestureRecognizer.scale = 1;
+		    }
+		}
+	},
+	{
+		name: 'rotateView',
+		returnType: 'void',
+		arguments: [{type:'UIRotationGestureRecognizer',name:'gestureRecognizer'}],
+		action: function(params) {
+			NSLog(format, 'rotateView');
+			NSLog(format,params.gestureRecognizer);
+			var gestureRecognizer = params.gestureRecognizer,
+				state = gestureRecognizer.state;
+		    if (state == UIGestureRecognizerStateBegan ||
+		    	state == UIGestureRecognizerStateChanged) {
+				var gview = gestureRecognizer.view;
+		        gview.transform = CGAffineTransformRotate(gview.transform, gestureRecognizer.rotation);
+		        gestureRecognizer.rotation = 0;
+		    }
+		}
+	},
+	{
+		name: 'gestureRecognizer',
+		returnType: 'BOOL',
+		arguments: [{type:'UIGestureRecognizer',name:'gestureRecognizer'}, {type:'UIGestureRecognizer',name:'shouldRecognizeSimultaneouslyWithGestureRecognizer'}],
+		action: function(params){
+			NSLog(format,'gestureRecognizer called');
+			return true;
+		}
 	}
 ]);
 
+function TouchableView(colorName) {
+	var imageBaseName = NSString.stringWithUTF8String(colorName+'Square'),
+		image = UIImage.imageNamed(imageBaseName),
+		imageViewAlloc = UIImageView.alloc(),
+		imageView = imageViewAlloc.initWithImage(image),
+		frame = imageView.frame,
+		viewAlloc = UIView.alloc(),
+		view = viewAlloc.initWithFrame(frame),
+		gestureRecognizerDelegate = new GestureRecognizer(),
+		panobj = UIPanGestureRecognizer.alloc(),
+		pinchobj = UIPinchGestureRecognizer.alloc(),
+		rotationobj = UIRotationGestureRecognizer.alloc(),
+		panGestureRecognizer = panobj.initWithTarget(gestureRecognizerDelegate,'panView:'),
+		pinchGestureRecognizer = pinchobj.initWithTarget(gestureRecognizerDelegate,'scaleView:'),
+		rotationGestureRecognizer = rotationobj.initWithTarget(gestureRecognizerDelegate,'rotateView:');
 
-var panGestureRecognizerDelegate = new PanGestureRecognizer(),
-	aobj = UIPanGestureRecognizer.alloc(),
-	panGestureRecognizer = aobj.initWithTarget(panGestureRecognizerDelegate,'panView:');
+	view.alpha = 0.9;
 
-view.addGestureRecognizer(panGestureRecognizer);
-keyWindow.addSubview(view);
+	view.addGestureRecognizer(panGestureRecognizer);
+	view.addGestureRecognizer(pinchGestureRecognizer);
+	view.addGestureRecognizer(rotationGestureRecognizer);
 
+	panGestureRecognizer.delegate = gestureRecognizerDelegate;
+	pinchGestureRecognizer.delegate = gestureRecognizerDelegate;
+	rotationGestureRecognizer.delegate = gestureRecognizerDelegate;
+
+	view.addSubview(imageView);
+	this.view = view;
+	return this;
+}
+
+var views = [];
+
+function resetViews() {
+
+	UIView.beginAnimations(null,null);
+
+	var totalViewSize = CGSizeMake(0,0),
+		anchorPoint = CGPointMake(0.5, 0.5);
+
+	views.forEach(function(view){
+		view.layer.anchorPoint = anchorPoint;
+		view.transform = CGAffineTransformIdentity;
+		var size = view.bounds.size;
+		totalViewSize.width  += size.width;
+        totalViewSize.height += size.height;
+	});
+
+	var containerViewSize = contentView.bounds.size,
+		locationInContainerView = CGPointMake(0,0);
+
+    locationInContainerView.x = (containerViewSize.width  - totalViewSize.width)  / 2;
+    locationInContainerView.y = (containerViewSize.height - totalViewSize.height) / 2;
+
+	views.forEach(function(view){
+		var frame = view.frame;
+		frame.origin = locationInContainerView;
+        view.frame = frame;
+        locationInContainerView.x += frame.size.width;
+        locationInContainerView.y += frame.size.height;
+	});
+
+	UIView.commitAnimations();
+}
+
+try {
+	supportedColorNames.forEach(function(name){
+		var touchView = new TouchableView(name);
+		contentView.addSubview(touchView.view);
+		views.push(touchView.view);
+	});
+
+	resetViews();
+}
+catch(E) {
+	log(E);
+}
