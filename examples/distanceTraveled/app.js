@@ -54,7 +54,7 @@ manager.purpose = NSString.stringWithUTF8String('To track how far you have trave
 manager.distanceFilter = kCLDistanceFilterNone;
 manager.desiredAccuracy = kCLLocationAccuracyBest;
 // TODO: When the delegate isn't commented out, we get a build error.
-@class('LocDelegate', NSObject, [], [
+@class('LocDelegate', NSObject, [ 'CLLocationManagerDelegate' ], [
 	{
 		name: 'locationManager',
 		returnType: 'void',
