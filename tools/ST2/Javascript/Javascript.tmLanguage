@@ -6,6 +6,7 @@
 	<string>JavaScript Syntax: version 2.0</string>
 	<key>fileTypes</key>
 	<array>
+		<string>hjs</string>
 		<string>js</string>
 		<string>htc</string>
 		<string>jsx</string>
@@ -536,6 +537,14 @@
 			<string>(&lt;!--|--&gt;)</string>
 			<key>name</key>
 			<string>comment.block.html.js</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>hyperloop instructions</string>
+			<key>match</key>
+			<string>\@(callback|class|compiler|import|memory)</string>
+			<key>name</key>
+			<string>support.function.js</string>
 		</dict>
 		<dict>
 			<key>match</key>
