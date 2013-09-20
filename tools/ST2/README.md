@@ -1,14 +1,7 @@
-Sublime Text 2 Package
-======================
+Sublime Text 2 Package Mod
+==========================
 
-This package adds Hyperloop support to the Javascript package in the [Sublime Text 2](http://www.sublimetext.com/2) editor.
-
-	NOTE: This is _not_ a full Sublime Text 2 package. Please follow the installation instructions below for adding this support.
-
-## Features
-
-* Syntax highlighting for Hyperloop instructions (i.e., @class)
-* Snippets for quick, informative creation of Hyperloop calls.
+This package mod adds Hyperloop support to the Javascript package in the [Sublime Text 2](http://www.sublimetext.com/2) editor. This is _not_ a full Sublime Text 2 package. The code here is to be overlayed on Sublime Text 2's existing Javascript package. Please follow the installation instructions below for adding this support.
 
 ![ST2 Hyperloop package demo](./demo.gif)
 
