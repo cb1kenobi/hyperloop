@@ -1,0 +1,17 @@
+<snippet>
+	<content><![CDATA[@class('${1:ClassName}', ${2:NSObject}, [${3:/* interfaces */}], [
+		{
+			name: '${4:functionName}',
+			returnType: '${5:returnType}',
+			arguments: [
+				{ type: '${6:id}', name: '${7:sender}' }
+			],
+			action: function(params) {
+				${0:// body...}
+			}
+		}
+]);]]></content>
+    <tabTrigger>@class</tabTrigger>
+    <scope>source.js</scope>
+    <description>@class</description>
+</snippet>

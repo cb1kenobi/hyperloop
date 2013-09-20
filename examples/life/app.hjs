@@ -1,21 +1,63 @@
 @import('Foundation/NSLog');
 @import('Foundation/NSString');
 @import('Foundation/NSTimer');
+@import('Foundation/NSRunLoop');
+@import('Foundation/NSDefaultRunLoopMode');
+@import('Foundation/NSDate');
 @import('UIKit/UIApplication');
 @import('UIKit/UIColor');
 @import('UIKit/UIScreen');
 @import('UIKit/UIView');
 @import('CoreGraphics/CGRectMake');
+@import('QuartzCore/CADisplayLink');
 
-var __ = NSString.stringWithUTF8String;
-
-const TARGET_FPS = 60,
+const TARGET_FPS = 100,
 	CELL_SIZE = 4,
 	screenSize = UIScreen.mainScreen().bounds.size,
 	height = screenSize.height,
 	width = screenSize.width,
 	xSize = width / CELL_SIZE,
 	ySize = height / CELL_SIZE;
+
+// shorthand for using NSLog
+var console = {
+	log: function(s) { NSLog(NSString.stringWithUTF8String('%@'), s); },
+	debug: function(s) { DEBUG && console.log(s); }
+};
+
+// set the FPS and rendering functions based on CLI args
+var getFPS, render, lastTime;
+if (typeof TITANIUM_LINK !== 'undefined') {
+	lastTime = 0;
+	getFPS = function(sender) {
+		var fps = Math.ceil(1.0 / (sender.timestamp - lastTime));
+		lastTime = sender.timestamp;
+		return fps;
+	};
+	render = function(callback) {
+		console.debug('>>>>> Using CADisplayLink for render loop <<<<<');
+
+		// create a display link, using the render loop update function
+		var displayLink = CADisplayLink.displayLinkWithTarget(callback, 'update:');
+
+		// attach the display link to the main run loop
+		displayLink.addToRunLoop(NSRunLoop.mainRunLoop(), NSDefaultRunLoopMode);
+	};
+} else {
+	lastTime = NSDate.date();
+	getFPS = function(sender) {
+		var fps = Math.ceil(1.0 / -lastTime.timeIntervalSinceNow());
+		lastTime = NSDate.date();
+		return fps;
+	};
+	render = function(callback) {
+		console.debug('>>>>> Using NSTimer for render loop <<<<<');
+
+		// launch timer with TimerCallback as its target/selector
+		var timer = NSTimer.scheduledTimerWithTimeInterval(
+			1.0/TARGET_FPS, callback, 'update:', null, true);
+	};
+}
 
 // calculate the next state of each cell
 function getNextState(x, y, alive) {
@@ -72,16 +114,8 @@ for (var x = 0; x < xSize; x++) {
 	}
 }
 
-// initialize FPS calculations
-if (DEBUG) {
-	var lastTime = new Date().getTime(),
-		renderTime = 0,
-		ctr = 0,
-		thisTime, start;
-}
-
 // the render function
-function update() {
+function update(params) {
 	var x, y, cell;
 
 	// render current generation
@@ -107,20 +141,13 @@ function update() {
 		}
 	}
 
-	// calculate current average FPS
-	if (DEBUG) {
-		thisTime = new Date().getTime();
-		renderTime += thisTime - lastTime;
-		lastTime = thisTime;
+	// show the average FPS
+	console.log('FPS: ' + getFPS(params.sender));
 
-		if (++ctr % 50 === 0) {
-			NSLog(__('FPS: %@'), 1000.0/(renderTime/ctr));
-		}
-	}
 }
 
-// Implement a class for our NSTimer call
-@class('TimerCallback', NSObject, [], [
+// Implement a class for our render loop update
+@class('RenderCallback', NSObject, [], [
 	{
 		name: 'update',
 		returnType: 'void',
@@ -129,7 +156,5 @@ function update() {
 	}
 ]);
 
-// launch timer with TimerCallback as its target/selector
-var timer = NSTimer.scheduledTimerWithTimeInterval(
-	1.0/TARGET_FPS, new TimerCallback(), 'update:', null, true);
-
+// Let's do this
+render(new RenderCallback());
