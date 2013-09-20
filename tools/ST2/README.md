@@ -10,7 +10,7 @@ This package adds Hyperloop support to the Javascript package in the [Sublime Te
 * Syntax highlighting for Hyperloop instructions (i.e., @class)
 * Snippets for quick, informative creation of Hyperloop calls.
 
-
+![ST2 Hyperloop package demo](./demo.gif)
 
 ## Installation (Mac OSX)
 
