@@ -3,6 +3,7 @@
 @import('Foundation/NSTimer');
 @import('Foundation/NSRunLoop');
 @import('Foundation/NSDefaultRunLoopMode');
+@import('Foundation/NSDate');
 @import('UIKit/UIApplication');
 @import('UIKit/UIColor');
 @import('UIKit/UIScreen');
@@ -25,8 +26,9 @@ var console = {
 };
 
 // set the FPS and rendering functions based on CLI args
-var getFPS, render, lastTime = 0;
+var getFPS, render, lastTime;
 if (typeof TITANIUM_LINK !== 'undefined') {
+	lastTime = 0;
 	getFPS = function(sender) {
 		var fps = Math.ceil(1.0 / (sender.timestamp - lastTime));
 		lastTime = sender.timestamp;
@@ -42,9 +44,10 @@ if (typeof TITANIUM_LINK !== 'undefined') {
 		displayLink.addToRunLoop(NSRunLoop.mainRunLoop(), NSDefaultRunLoopMode);
 	};
 } else {
+	lastTime = NSDate.date();
 	getFPS = function(sender) {
-		var fps = Math.ceil(1.0 / (sender.fireDate.timeIntervalSince1970 - lastTime));
-		lastTime = sender.fireDate.timeIntervalSince1970;
+		var fps = Math.ceil(1.0 / -lastTime.timeIntervalSinceNow());
+		lastTime = NSDate.date();
 		return fps;
 	};
 	render = function(callback) {
@@ -139,7 +142,7 @@ function update(params) {
 	}
 
 	// show the average FPS
-	console.log(getFPS(params.sender));
+	console.log('FPS: ' + getFPS(params.sender));
 
 }
 
