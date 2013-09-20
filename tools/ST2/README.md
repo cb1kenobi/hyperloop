@@ -8,11 +8,13 @@ This package adds Hyperloop support to the Javascript package in the [Sublime Te
 ## Features
 
 * Syntax highlighting for Hyperloop instructions (i.e., @class)
-* Snippets for quick, informative creation of Hyperloop calls
+* Snippets for quick, informative creation of Hyperloop calls.
+
+
 
 ## Installation (Mac OSX)
 
-`cp -r ./Javascript/* ~/Application\ Support/Sublime\ Text\ 2/Packages/Javascript/`
+`cp ./Javascript/* ~/Application\ Support/Sublime\ Text\ 2/Packages/Javascript/`
 
 ## TODO
 

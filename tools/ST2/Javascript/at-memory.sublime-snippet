@@ -1,0 +1,6 @@
+<snippet>
+	<content><![CDATA[@memory(${1:/* integer size */});]]></content>
+  <tabTrigger>@memory</tabTrigger>
+  <scope>source.js</scope>
+  <description>@memory</description>
+</snippet>

@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[@compiler({
+	${1:// options...}
+});]]></content>
+  <tabTrigger>@compiler</tabTrigger>
+  <scope>source.js</scope>
+  <description>@compiler</description>
+</snippet>

@@ -542,7 +542,7 @@
 			<key>comment</key>
 			<string>hyperloop instructions</string>
 			<key>match</key>
-			<string>\@(callback|class|compiler|import|memory)</string>
+			<string>\@(class|compiler|import|memory)</string>
 			<key>name</key>
 			<string>support.function.js</string>
 		</dict>
