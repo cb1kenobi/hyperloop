@@ -8,6 +8,7 @@
  */
 @import JavaScriptCore;
 #import <objc/runtime.h>
+#import <zlib.h>
 #import "JSBuffer.h"
 #import "JSOwner.h"
 
@@ -27,6 +28,11 @@ typedef struct JSPrivateObject {
 @protocol HyperloopFactory
 +(JSObjectRef)make:(JSContextRef)ctx instance:(id)instance;
 @end
+
+@protocol HyperloopModule
++(JSValue*)load:(JSContext*)context;
+@end
+
 
 /**
  * create a JSPrivateObject for storage in a JSObjectRef where the object is an id
@@ -87,3 +93,13 @@ JSValueRef HyperloopMakeException(JSContextRef ctx, const char *message, JSValue
  * return a string representation as a JSValueRef for an id
  */
 JSValueRef HyperloopToString(JSContextRef ctx, id object);
+
+/**
+ * attempt to convert a JSValueRef to a NSString
+ */
+NSString* HyperloopToNSString(JSContextRef ctx, JSValueRef value);
+
+/**
+ * create a hyperloop VM
+ */
+JSContext* HyperloopCreateVM (NSString *name);
