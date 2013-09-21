@@ -7,7 +7,7 @@ This package mod adds Hyperloop support to the Javascript package in the [Sublim
 
 ## Installation (Mac OSX)
 
-`cp ./Javascript/* ~/Application\ Support/Sublime\ Text\ 2/Packages/Javascript/`
+`cp ./Javascript/* ~/Library/Application\ Support/Sublime\ Text\ 2/Packages/Javascript/`
 
 ## TODO
 
