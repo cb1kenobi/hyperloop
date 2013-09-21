@@ -117,17 +117,17 @@ To create a new instance, typically `[[obj alloc] init]`, you should use `new Ob
 var window = [[NSWindow alloc] initWithContentRect:NSRectMake(0,0,100,200) styleMask:NSTitledWindowMask backing:NSBackingStoreBuffered defer:NO];
 ~~~
 
-Right now, there's no way to do this in CNI. However, this is coming quickly.  You will likely do something like the following in CNI (although not yet supported):
+For CNI, you would use the following method.
 
 ~~~javascript
-var window = new NSWindow('initWithContentRect:styleMask:backing:defer:',NSRectMake(0,0,100,200),NSTitledWindowMask,NSBackingStoreBuffered,false);
+var window = NSWindow.alloc().initWithContentRect(NSRectMake(0,0,100,200),NSTitledWindowMask,NSBackingStoreBuffered,false);
 ~~~
 
-Whereby the first parameter to a constructor equals the selector of an initXXX constructor in Objective-C.  In this case, instead of the normal `init` method being invoked, the selector would be invoked to construct the instance.
+## Tooling Plugins
 
-#### Resources
+#### Sublime Text 2
 
-Currently, we don't copy assets (such as images) into your Resources directory on package. That will be resolved quickly.
+See tools/ST2/README.md for information on how to install the ST2 plugin.
 
 
 ## FAQ
@@ -162,6 +162,14 @@ The target for "hyperloop standalone" is developers who would like to write nati
 ## Contributors
 
 The original source and design for this project was developed by [Jeff Haynie](http://github.com/jhaynie) ([@jhaynie](http://twitter.com/jhaynie)).
+
+The following people have contributed significantly to the development of Hyperloop:
+
+- [Matt Langston](https://github.com/matt-langston)
+- [Tony Lukasavage](https://github.com/tonylukasavage)
+- [Chris Barber](https://github.com/cb1kenobi)
+- [Dawson Toth](https://github.com/dawsontoth)
+
 
 ## Contributing
 

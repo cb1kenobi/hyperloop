@@ -3,13 +3,10 @@
 <plist version="1.0">
 <dict>
 	<key>comment</key>
-	<string>JavaScript Syntax: version 2.0</string>
+	<string>Hyperloop Syntax: version 1.0</string>
 	<key>fileTypes</key>
 	<array>
 		<string>hjs</string>
-		<string>js</string>
-		<string>htc</string>
-		<string>jsx</string>
 	</array>
 	<key>firstLineMatch</key>
 	<string>^#!/usr/bin/env node</string>
@@ -20,7 +17,7 @@
 	<key>keyEquivalent</key>
 	<string>^~J</string>
 	<key>name</key>
-	<string>JavaScript</string>
+	<string>Hyperloop</string>
 	<key>patterns</key>
 	<array>
 		<dict>
@@ -544,7 +541,7 @@
 			<key>match</key>
 			<string>\@(class|compiler|import|memory)</string>
 			<key>name</key>
-			<string>support.function.js</string>
+			<string>support.function.js.hyperloop</string>
 		</dict>
 		<dict>
 			<key>match</key>
@@ -725,8 +722,8 @@
 		</dict>
 	</array>
 	<key>scopeName</key>
-	<string>source.js</string>
+	<string>hyperloop.js</string>
 	<key>uuid</key>
-	<string>93E017CC-6F27-11D9-90EB-000D93589AF6</string>
+	<string>3733B485-C2D7-4E7C-8F36-801ACEEFA56A</string>
 </dict>
 </plist>

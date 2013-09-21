@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Symbol List Sub 2</string>
+	<key>scope</key>
+	<string>hyperloop.js meta.group meta.group object.property.function</string>
+	<key>settings</key>
+	<dict>
+		<key>showInSymbolList</key>
+		<string>1</string>
+		<key>symbolTransformation</key>
+		<string>
+      s/^/  :/g;
+   </string>
+	</dict>
+	<key>uuid</key>
+	<string>FDA70EC2-AE1E-47A6-847E-619054F42B65</string>
+</dict>
+</plist>

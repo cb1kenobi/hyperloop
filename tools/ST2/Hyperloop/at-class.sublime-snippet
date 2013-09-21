@@ -12,6 +12,6 @@
 		}
 ]);]]></content>
     <tabTrigger>@class</tabTrigger>
-    <scope>source.js</scope>
+    <scope>hyperloop.js</scope>
     <description>@class</description>
 </snippet>
