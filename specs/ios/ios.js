@@ -105,9 +105,11 @@ describe("ios buildlib", function(){
 				results.should.have.property('libfile');
 				results.should.have.property('libfiles');
 				results.objfiles.should.have.property('i386');
-				results.objfiles.should.have.property('armv7');
+				results.objfiles.should.have.property('armv7s');
+				results.objfiles.should.have.property('arm64');
 				results.libfiles.should.have.property('i386');
-				results.libfiles.should.have.property('armv7');
+				results.libfiles.should.have.property('armv7s');
+				results.libfiles.should.have.property('arm64');
 
 				exec(settings.otool+' -o "'+results.libfile+'"', function(err,stdout){
 					if (err) return done(err);
