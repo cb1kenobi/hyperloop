@@ -7,6 +7,7 @@ var should = require('should'),
     binding = require(path.join(__dirname,'..','..','lib','ios','jsc_oo','codegen.js')),
     buildlib = require(path.join(__dirname,'..','..','lib','ios','buildlib.js')),
     clangparser = require(path.join(__dirname,'..','..','lib','ios','clangparser.js')),
+    genmetadata = require('./metadata'),
     metadata;
 
 function shouldBeType(n,t,expect) {
@@ -46,40 +47,10 @@ describe("ios bindings",function(){
 	
 	before(function(done){
 
-		var TMPDIR = process.env.TMPDIR || '/tmp/',
-			headerfile = path.join(__dirname,'src','header.h'),
-			minversion = '7.0',
-			nativeargs = null,
-			cached = path.join(TMPDIR,'clangout.txt'),
-			cachedAST = path.join(TMPDIR,'clangout.ast');
-
-		console.log('executing clang, this will take a minute. if you get a timeout error, re-run with --timeout 60s');
-		console.log('writing ast out to ',cached);
-
-		buildlib.clang(headerfile,minversion,nativeargs,true,function(err,result){
+		genmetadata.getMetadata(function(err,m){
 			if (err) return done(err);
-			should.not.exist(err);
-			should.exist(result);
-
-			if (!fs.existsSync(cached)) {
-				fs.writeFileSync(cached,result);
-			}
-
-			if (fs.existsSync(cachedAST)) {
-				var buf = fs.readFileSync(cachedAST);
-				metadata = JSON.parse(buf.toString());
-				should.exist(metadata);
-				done();
-			}
-			else {
-				clangparser.parseBuffer(result,function(err,ast){
-					if (err) return done(err);
-					should.not.exist(err);
-					should.exist(ast);
-					metadata = ast.toJSON();
-					fs.writeFile(cachedAST,JSON.stringify(ast,null,'  '),done);
-				});
-			}
+			metadata = m;
+			done();
 		});
 
 	});

@@ -154,7 +154,8 @@ describe("jsc", function(){
 					dest: build,
 					debug: true,
 					launch: true,
-					no_arc: true
+					no_arc: true,
+					hide: true 
 				},
 				failures = 0,
 				failureRegex = /^FAIL:/;

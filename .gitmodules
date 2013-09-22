@@ -1,0 +1,3 @@
+[submodule "tools/xctool"]
+	path = tools/xctool
+	url = https://github.com/ryanrhee/xctool

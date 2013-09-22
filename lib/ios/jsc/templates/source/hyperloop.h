@@ -33,7 +33,6 @@ typedef struct JSPrivateObject {
 +(JSValue*)load:(JSContext*)context;
 @end
 
-
 /**
  * create a JSPrivateObject for storage in a JSObjectRef where the object is an id
  */

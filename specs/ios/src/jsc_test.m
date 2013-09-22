@@ -3,13 +3,17 @@
 
 #import "JSBuffer.h"
 
-@interface app : NSObject
+@protocol HyperloopModule
++(JSValue*)load:(JSContext*)context;
+@end
+
+@interface hl$app : NSObject<HyperloopModule>
 @end
 
 
-@implementation app
+@implementation hl$app
 
-+(void)load:(JSContext*)context 
++(JSValue*)load:(JSContext*)context 
 {
 	JSGlobalContextRef globalContextRef = [context JSGlobalContextRef];
 	JSValueRef globalValueref = [[context globalObject] JSValueRef];
@@ -42,6 +46,7 @@
     }
 
     NSLog(@"[DEBUG] EXIT");
+    return nil;
 }
 
 @end
