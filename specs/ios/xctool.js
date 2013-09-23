@@ -44,20 +44,20 @@ describe("ios xctool", function(){
 				typegenerator.generateOutput(metadata,function(err,buf){
 					if (err) return done(err);
 
-					var testsrc = path.join(__dirname,"testsuite","testsuite","compile.m");
+					var testsrc = path.join(__dirname,"testsuite","testsuite","compile.m"),
+						testlibdir = path.join(__dirname,"testsuite","testsuite");
 
 					fs.writeFileSync(testsrc,buf);
 
 					var headerPath = path.join(__dirname,"../../lib/ios/jsc/templates/source"),
 						options = {
 							minVersion : "7.0",
-							libname: "libxctool_test.a",
-							srcfiles: [path.join(headerPath,"JSBuffer.c"),path.join(headerPath,"hyperloop.m"),testsrc],
+							libname: "libhyperloop.a",
+							srcfiles: [path.join(headerPath,"JSBuffer.c"),path.join(headerPath,"hyperloop.m")],
 							outdir: dirPath,
 							cflags: ["-I"+headerPath],
 							linkflags: ['-framework JavaScriptCore'],
-							name: 'xctool_test',
-							appid: 'org.appcelerator.xctool_test',
+							name: 'hyperloop',
 							dest: dirPath,
 							debug: true,
 							launch: true,
@@ -68,9 +68,8 @@ describe("ios xctool", function(){
 					buildlib.compileAndMakeStaticLib(options, function(err,results){
 						if (err) return done(err);
 
-						args.push('LIBRARY_SEARCH_PATHS='+path.dirname(results.libfile));
-						args.push('HEADER_SEARCH_PATHS='+headerPath);
-						args.push('OTHER_LDFLAGS=-lxctool_test');
+						// copy libfile into path so that we can still run inside xcode as well
+						fs.writeFileSync(path.join(testlibdir,options.libname),fs.readFileSync(results.libfile));
 
 						var timer = function() {
 							if (!completed) {

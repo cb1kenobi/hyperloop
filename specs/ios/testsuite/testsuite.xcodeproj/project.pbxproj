@@ -178,7 +178,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 24D7A8D917EDFB5B006710EB /* Build configuration list for PBXNativeTarget "testsuite" */;
 			buildPhases = (
-				24D7A8F017EF8E27006710EB /* ShellScript */,
 				24D7A8A017EDFB5B006710EB /* Sources */,
 				24D7A8A117EDFB5B006710EB /* Frameworks */,
 				24D7A8A217EDFB5B006710EB /* Resources */,
@@ -264,22 +263,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		24D7A8F017EF8E27006710EB /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = echo;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		24D7A8A017EDFB5B006710EB /* Sources */ = {
@@ -435,8 +418,13 @@
 					"$(SOURCE_ROOT)/../../../lib/ios/jsc/templates/source/",
 				);
 				INFOPLIST_FILE = "testsuite/testsuite-Info.plist";
+				OTHER_LDFLAGS = (
+					"-L$(SRCROOT)/testsuite",
+					"-lhyperloop",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "";
+				VALID_ARCHS = "arm64 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -454,8 +442,13 @@
 					"$(SOURCE_ROOT)/../../../lib/ios/jsc/templates/source/",
 				);
 				INFOPLIST_FILE = "testsuite/testsuite-Info.plist";
+				OTHER_LDFLAGS = (
+					"-L$(SRCROOT)/testsuite",
+					"-lhyperloop",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "";
+				VALID_ARCHS = "arm64 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -482,9 +475,17 @@
 					"$(SRCROOT)/../../../lib/ios/jsc/templates/source/",
 				);
 				INFOPLIST_FILE = "testsuiteTests/testsuiteTests-Info.plist";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					XCTest,
+					"-L$(SRCROOT)/testsuite",
+					"-lhyperloop",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../../lib/ios/jsc/templates/source/";
+				VALID_ARCHS = "arm64 armv7s";
 				WRAPPER_EXTENSION = xctest;
 			};
 			name = Debug;
@@ -507,9 +508,17 @@
 					"$(SRCROOT)/../../../lib/ios/jsc/templates/source/",
 				);
 				INFOPLIST_FILE = "testsuiteTests/testsuiteTests-Info.plist";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					XCTest,
+					"-L$(SRCROOT)/testsuite",
+					"-lhyperloop",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../../lib/ios/jsc/templates/source/";
+				VALID_ARCHS = "arm64 armv7s";
 				WRAPPER_EXTENSION = xctest;
 			};
 			name = Release;

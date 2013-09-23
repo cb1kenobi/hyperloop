@@ -51,7 +51,14 @@ char * HyperloopJSValueRefTochar__ (JSContextRef ctx, JSValueRef object, JSValue
 		if (HyperloopPrivateObjectIsType(object$o,JSPrivateObjectTypeJSBuffer))
 		{
 			JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object$o);
-			result = (char *)buffer->buffer;
+			if (*cleanup) 
+			{
+				memcpy(result, buffer->buffer, sizeof(char) * 1);
+			}
+			else
+			{
+				result = (char *)buffer->buffer;
+			}
 			set = true;
 		}
 	}
@@ -167,7 +174,14 @@ char* HyperloopJSValueRefTochar__32_ (JSContextRef ctx, JSValueRef object, JSVal
 		if (HyperloopPrivateObjectIsType(object$o,JSPrivateObjectTypeJSBuffer))
 		{
 			JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object$o);
-			result = (char*)buffer->buffer;
+			if (*cleanup) 
+			{
+				memcpy(result, buffer->buffer, sizeof(char) * 32);
+			}
+			else
+			{
+				result = (char*)buffer->buffer;
+			}
 			set = true;
 		}
 	}
@@ -232,7 +246,14 @@ char* HyperloopJSValueRefTochar__37_ (JSContextRef ctx, JSValueRef object, JSVal
 		if (HyperloopPrivateObjectIsType(object$o,JSPrivateObjectTypeJSBuffer))
 		{
 			JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object$o);
-			result = (char*)buffer->buffer;
+			if (*cleanup) 
+			{
+				memcpy(result, buffer->buffer, sizeof(char) * 37);
+			}
+			else
+			{
+				result = (char*)buffer->buffer;
+			}
 			set = true;
 		}
 	}
@@ -297,7 +318,14 @@ char* HyperloopJSValueRefTochar__4096_ (JSContextRef ctx, JSValueRef object, JSV
 		if (HyperloopPrivateObjectIsType(object$o,JSPrivateObjectTypeJSBuffer))
 		{
 			JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object$o);
-			result = (char*)buffer->buffer;
+			if (*cleanup) 
+			{
+				memcpy(result, buffer->buffer, sizeof(char) * 4096);
+			}
+			else
+			{
+				result = (char*)buffer->buffer;
+			}
 			set = true;
 		}
 	}
@@ -362,7 +390,14 @@ char* HyperloopJSValueRefTochar__512_ (JSContextRef ctx, JSValueRef object, JSVa
 		if (HyperloopPrivateObjectIsType(object$o,JSPrivateObjectTypeJSBuffer))
 		{
 			JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object$o);
-			result = (char*)buffer->buffer;
+			if (*cleanup) 
+			{
+				memcpy(result, buffer->buffer, sizeof(char) * 512);
+			}
+			else
+			{
+				result = (char*)buffer->buffer;
+			}
 			set = true;
 		}
 	}
@@ -507,7 +542,14 @@ int * HyperloopJSValueRefToint__ (JSContextRef ctx, JSValueRef object, JSValueRe
 		if (HyperloopPrivateObjectIsType(object$o,JSPrivateObjectTypeJSBuffer))
 		{
 			JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object$o);
-			result = (int *)buffer->buffer;
+			if (*cleanup)
+			{
+				memcpy(result, buffer->buffer, sizeof(int) * 1);
+			}
+			else 
+			{
+				result = (int *)buffer->buffer;
+			}
 			set = true;
 		}
 	}
@@ -607,7 +649,14 @@ int* HyperloopJSValueRefToint___ (JSContextRef ctx, JSValueRef object, JSValueRe
 		if (HyperloopPrivateObjectIsType(object$o,JSPrivateObjectTypeJSBuffer))
 		{
 			JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object$o);
-			result = (int*)buffer->buffer;
+			if (*cleanup)
+			{
+				memcpy(result, buffer->buffer, sizeof(int) * 1);
+			}
+			else 
+			{
+				result = (int*)buffer->buffer;
+			}
 			set = true;
 		}
 	}
@@ -663,7 +712,14 @@ int* HyperloopJSValueRefToint__1024_ (JSContextRef ctx, JSValueRef object, JSVal
 		if (HyperloopPrivateObjectIsType(object$o,JSPrivateObjectTypeJSBuffer))
 		{
 			JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object$o);
-			result = (int*)buffer->buffer;
+			if (*cleanup)
+			{
+				memcpy(result, buffer->buffer, sizeof(int) * 1024);
+			}
+			else 
+			{
+				result = (int*)buffer->buffer;
+			}
 			set = true;
 		}
 	}
@@ -719,7 +775,14 @@ int* HyperloopJSValueRefToint__18_ (JSContextRef ctx, JSValueRef object, JSValue
 		if (HyperloopPrivateObjectIsType(object$o,JSPrivateObjectTypeJSBuffer))
 		{
 			JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object$o);
-			result = (int*)buffer->buffer;
+			if (*cleanup)
+			{
+				memcpy(result, buffer->buffer, sizeof(int) * 18);
+			}
+			else 
+			{
+				result = (int*)buffer->buffer;
+			}
 			set = true;
 		}
 	}
@@ -775,7 +838,14 @@ int* HyperloopJSValueRefToint__19_ (JSContextRef ctx, JSValueRef object, JSValue
 		if (HyperloopPrivateObjectIsType(object$o,JSPrivateObjectTypeJSBuffer))
 		{
 			JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object$o);
-			result = (int*)buffer->buffer;
+			if (*cleanup)
+			{
+				memcpy(result, buffer->buffer, sizeof(int) * 19);
+			}
+			else 
+			{
+				result = (int*)buffer->buffer;
+			}
 			set = true;
 		}
 	}
@@ -832,7 +902,14 @@ integer_t * HyperloopJSValueRefTointeger_t__ (JSContextRef ctx, JSValueRef objec
 		if (HyperloopPrivateObjectIsType(object$o,JSPrivateObjectTypeJSBuffer))
 		{
 			JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object$o);
-			result = (integer_t *)buffer->buffer;
+			if (*cleanup)
+			{
+				memcpy(result, buffer->buffer, sizeof(integer_t) * 1);
+			}
+			else 
+			{
+				result = (integer_t *)buffer->buffer;
+			}
 			set = true;
 		}
 	}
@@ -888,7 +965,14 @@ integer_t* HyperloopJSValueRefTointeger_t__1024_ (JSContextRef ctx, JSValueRef o
 		if (HyperloopPrivateObjectIsType(object$o,JSPrivateObjectTypeJSBuffer))
 		{
 			JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object$o);
-			result = (integer_t*)buffer->buffer;
+			if (*cleanup)
+			{
+				memcpy(result, buffer->buffer, sizeof(integer_t) * 1024);
+			}
+			else 
+			{
+				result = (integer_t*)buffer->buffer;
+			}
 			set = true;
 		}
 	}
@@ -1077,7 +1161,14 @@ ShortFixed * HyperloopJSValueRefToShortFixed__ (JSContextRef ctx, JSValueRef obj
 		if (HyperloopPrivateObjectIsType(object$o,JSPrivateObjectTypeJSBuffer))
 		{
 			JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object$o);
-			result = (ShortFixed *)buffer->buffer;
+			if (*cleanup)
+			{
+				memcpy(result, buffer->buffer, sizeof(ShortFixed) * 1);
+			}
+			else 
+			{
+				result = (ShortFixed *)buffer->buffer;
+			}
 			set = true;
 		}
 	}
@@ -1189,7 +1280,14 @@ UniChar * HyperloopJSValueRefToUniChar__ (JSContextRef ctx, JSValueRef object, J
 		if (HyperloopPrivateObjectIsType(object$o,JSPrivateObjectTypeJSBuffer))
 		{
 			JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object$o);
-			result = (UniChar *)buffer->buffer;
+			if (*cleanup) 
+			{
+				memcpy(result, buffer->buffer, sizeof(UniChar) * 1);
+			}
+			else
+			{
+				result = (UniChar *)buffer->buffer;
+			}
 			set = true;
 		}
 	}
@@ -1250,7 +1348,14 @@ UniCharCount * HyperloopJSValueRefToUniCharCount__ (JSContextRef ctx, JSValueRef
 		if (HyperloopPrivateObjectIsType(object$o,JSPrivateObjectTypeJSBuffer))
 		{
 			JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object$o);
-			result = (UniCharCount *)buffer->buffer;
+			if (*cleanup) 
+			{
+				memcpy(result, buffer->buffer, sizeof(UniCharCount) * 1);
+			}
+			else
+			{
+				result = (UniCharCount *)buffer->buffer;
+			}
 			set = true;
 		}
 	}
@@ -1363,7 +1468,14 @@ unsigned char * HyperloopJSValueRefTounsigned_char__ (JSContextRef ctx, JSValueR
 		if (HyperloopPrivateObjectIsType(object$o,JSPrivateObjectTypeJSBuffer))
 		{
 			JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object$o);
-			result = (unsigned char *)buffer->buffer;
+			if (*cleanup) 
+			{
+				memcpy(result, buffer->buffer, sizeof(unsigned char) * 1);
+			}
+			else
+			{
+				result = (unsigned char *)buffer->buffer;
+			}
 			set = true;
 		}
 	}
@@ -1428,7 +1540,14 @@ unsigned char* HyperloopJSValueRefTounsigned_char__16_ (JSContextRef ctx, JSValu
 		if (HyperloopPrivateObjectIsType(object$o,JSPrivateObjectTypeJSBuffer))
 		{
 			JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object$o);
-			result = (unsigned char*)buffer->buffer;
+			if (*cleanup) 
+			{
+				memcpy(result, buffer->buffer, sizeof(unsigned char) * 16);
+			}
+			else
+			{
+				result = (unsigned char*)buffer->buffer;
+			}
 			set = true;
 		}
 	}
@@ -1493,7 +1612,14 @@ unsigned char* HyperloopJSValueRefTounsigned_char__256_ (JSContextRef ctx, JSVal
 		if (HyperloopPrivateObjectIsType(object$o,JSPrivateObjectTypeJSBuffer))
 		{
 			JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object$o);
-			result = (unsigned char*)buffer->buffer;
+			if (*cleanup) 
+			{
+				memcpy(result, buffer->buffer, sizeof(unsigned char) * 256);
+			}
+			else
+			{
+				result = (unsigned char*)buffer->buffer;
+			}
 			set = true;
 		}
 	}
@@ -1558,7 +1684,14 @@ unsigned char* HyperloopJSValueRefTounsigned_char__28_ (JSContextRef ctx, JSValu
 		if (HyperloopPrivateObjectIsType(object$o,JSPrivateObjectTypeJSBuffer))
 		{
 			JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object$o);
-			result = (unsigned char*)buffer->buffer;
+			if (*cleanup) 
+			{
+				memcpy(result, buffer->buffer, sizeof(unsigned char) * 28);
+			}
+			else
+			{
+				result = (unsigned char*)buffer->buffer;
+			}
 			set = true;
 		}
 	}
@@ -1623,7 +1756,14 @@ unsigned char* HyperloopJSValueRefTounsigned_char__32_ (JSContextRef ctx, JSValu
 		if (HyperloopPrivateObjectIsType(object$o,JSPrivateObjectTypeJSBuffer))
 		{
 			JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object$o);
-			result = (unsigned char*)buffer->buffer;
+			if (*cleanup) 
+			{
+				memcpy(result, buffer->buffer, sizeof(unsigned char) * 32);
+			}
+			else
+			{
+				result = (unsigned char*)buffer->buffer;
+			}
 			set = true;
 		}
 	}
@@ -1688,7 +1828,14 @@ unsigned char* HyperloopJSValueRefTounsigned_char__33_ (JSContextRef ctx, JSValu
 		if (HyperloopPrivateObjectIsType(object$o,JSPrivateObjectTypeJSBuffer))
 		{
 			JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object$o);
-			result = (unsigned char*)buffer->buffer;
+			if (*cleanup) 
+			{
+				memcpy(result, buffer->buffer, sizeof(unsigned char) * 33);
+			}
+			else
+			{
+				result = (unsigned char*)buffer->buffer;
+			}
 			set = true;
 		}
 	}
@@ -1753,7 +1900,14 @@ unsigned char* HyperloopJSValueRefTounsigned_char__34_ (JSContextRef ctx, JSValu
 		if (HyperloopPrivateObjectIsType(object$o,JSPrivateObjectTypeJSBuffer))
 		{
 			JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object$o);
-			result = (unsigned char*)buffer->buffer;
+			if (*cleanup) 
+			{
+				memcpy(result, buffer->buffer, sizeof(unsigned char) * 34);
+			}
+			else
+			{
+				result = (unsigned char*)buffer->buffer;
+			}
 			set = true;
 		}
 	}
@@ -1818,7 +1972,14 @@ unsigned char* HyperloopJSValueRefTounsigned_char__64_ (JSContextRef ctx, JSValu
 		if (HyperloopPrivateObjectIsType(object$o,JSPrivateObjectTypeJSBuffer))
 		{
 			JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object$o);
-			result = (unsigned char*)buffer->buffer;
+			if (*cleanup) 
+			{
+				memcpy(result, buffer->buffer, sizeof(unsigned char) * 64);
+			}
+			else
+			{
+				result = (unsigned char*)buffer->buffer;
+			}
 			set = true;
 		}
 	}

@@ -345,8 +345,8 @@ extern int* HyperloopJSValueRefToint___ (JSContextRef ctx, JSValueRef object, JS
     XCTAssertTrue(cleanup==true, @"cleanup should have been true");
     XCTAssertTrue(result!=NULL, @"result should not have been NULL");
     XCTAssertTrue(result[0]==123, @"result should have been '123', was: %d",result[0]);
-    free(result);
     HyperloopDestroyPrivateObject(value);
+    free(result);
 }
 
 extern JSValueRef Hyperloopint__1024_ToJSValueRef (JSContextRef ctx, int* object);
@@ -385,6 +385,7 @@ extern int* HyperloopJSValueRefToint__1024_ (JSContextRef ctx, JSValueRef object
     XCTAssertTrue(result[0]==123, @"result should have been '123', was: %d",result[0]);
     XCTAssertTrue(buffer->length==sizeof(i), @"result should have been '%d', was: %d",(int)sizeof(i),buffer->length);
     HyperloopDestroyPrivateObject(value);
+    free(result);
 }
 
 extern JSValueRef Hyperloopint__18_ToJSValueRef (JSContextRef ctx, int* object);
@@ -423,6 +424,7 @@ extern int* HyperloopJSValueRefToint__18_ (JSContextRef ctx, JSValueRef object, 
     XCTAssertTrue(result[0]==123, @"result should have been '123', was: %d",result[0]);
     XCTAssertTrue(buffer->length==sizeof(i), @"result should have been '%d', was: %d",(int)sizeof(i),buffer->length);
     HyperloopDestroyPrivateObject(value);
+    free(result);
 }
 
 extern JSValueRef Hyperloopint__19_ToJSValueRef (JSContextRef ctx, int* object);
@@ -461,6 +463,7 @@ extern int* HyperloopJSValueRefToint__19_ (JSContextRef ctx, JSValueRef object, 
     XCTAssertTrue(result[0]==123, @"result should have been '123', was: %d",result[0]);
     XCTAssertTrue(buffer->length==sizeof(i), @"result should have been '%d', was: %d",(int)sizeof(i),buffer->length);
     HyperloopDestroyPrivateObject(value);
+    free(result);
 }
 
 extern JSValueRef Hyperloopinteger_t__ToJSValueRef (JSContextRef ctx, integer_t * object);
@@ -537,6 +540,7 @@ extern integer_t* HyperloopJSValueRefTointeger_t__1024_ (JSContextRef ctx, JSVal
     XCTAssertTrue(result[0]==123, @"result should have been '123', was: %d",result[0]);
     XCTAssertTrue(buffer->length==sizeof(i), @"result should have been '%d', was: %d",(int)sizeof(i),buffer->length);
     HyperloopDestroyPrivateObject(value);
+    free(result);
 }
 
 extern JSValueRef Hyperlooplong_longToJSValueRef (JSContextRef ctx, long long object);
@@ -844,6 +848,7 @@ extern unsigned char* HyperloopJSValueRefTounsigned_char__16_ (JSContextRef ctx,
     XCTAssertTrue(result[0]=='a', @"result should have been 'a', was: %c",result[0]);
     XCTAssertTrue(buffer->length==sizeof(i), @"result should have been '%d', was: %d",(int)sizeof(i),buffer->length);
     HyperloopDestroyPrivateObject(value);
+    free(result);
 }
 
 extern JSValueRef Hyperloopunsigned_char__256_ToJSValueRef (JSContextRef ctx, unsigned char* object);
@@ -879,6 +884,7 @@ extern unsigned char* HyperloopJSValueRefTounsigned_char__256_ (JSContextRef ctx
     XCTAssertTrue(result[0]=='a', @"result should have been 'a', was: %c",result[0]);
     XCTAssertTrue(buffer->length==sizeof(i), @"result should have been '%d', was: %d",(int)sizeof(i),buffer->length);
     HyperloopDestroyPrivateObject(value);
+    free(result);
 }
 
 extern JSValueRef Hyperloopunsigned_char__28_ToJSValueRef (JSContextRef ctx, unsigned char* object);
@@ -914,6 +920,7 @@ extern unsigned char* HyperloopJSValueRefTounsigned_char__28_ (JSContextRef ctx,
     XCTAssertTrue(result[0]=='a', @"result should have been 'a', was: %c",result[0]);
     XCTAssertTrue(buffer->length==sizeof(i), @"result should have been '%d', was: %d",(int)sizeof(i),buffer->length);
     HyperloopDestroyPrivateObject(value);
+    free(result);
 }
 
 extern JSValueRef Hyperloopunsigned_char__32_ToJSValueRef (JSContextRef ctx, unsigned char* object);
@@ -949,6 +956,7 @@ extern unsigned char* HyperloopJSValueRefTounsigned_char__32_ (JSContextRef ctx,
     XCTAssertTrue(result[0]=='a', @"result should have been 'a', was: %c",result[0]);
     XCTAssertTrue(buffer->length==sizeof(i), @"result should have been '%d', was: %d",(int)sizeof(i),buffer->length);
     HyperloopDestroyPrivateObject(value);
+    free(result);
 }
 
 extern JSValueRef Hyperloopunsigned_char__33_ToJSValueRef (JSContextRef ctx, unsigned char* object);
@@ -984,6 +992,7 @@ extern unsigned char* HyperloopJSValueRefTounsigned_char__33_ (JSContextRef ctx,
     XCTAssertTrue(result[0]=='a', @"result should have been 'a', was: %c",result[0]);
     XCTAssertTrue(buffer->length==sizeof(i), @"result should have been '%d', was: %d",(int)sizeof(i),buffer->length);
     HyperloopDestroyPrivateObject(value);
+    free(result);
 }
 
 extern JSValueRef Hyperloopunsigned_char__34_ToJSValueRef (JSContextRef ctx, unsigned char* object);
@@ -1019,6 +1028,7 @@ extern unsigned char* HyperloopJSValueRefTounsigned_char__34_ (JSContextRef ctx,
     XCTAssertTrue(result[0]=='a', @"result should have been 'a', was: %c",result[0]);
     XCTAssertTrue(buffer->length==sizeof(i), @"result should have been '%d', was: %d",(int)sizeof(i),buffer->length);
     HyperloopDestroyPrivateObject(value);
+    free(result);
 }
 
 extern JSValueRef Hyperloopunsigned_char__64_ToJSValueRef (JSContextRef ctx, unsigned char* object);
@@ -1054,6 +1064,7 @@ extern unsigned char* HyperloopJSValueRefTounsigned_char__64_ (JSContextRef ctx,
     XCTAssertTrue(result[0]=='a', @"result should have been 'a', was: %c",result[0]);
     XCTAssertTrue(buffer->length==sizeof(i), @"result should have been '%d', was: %d",(int)sizeof(i),buffer->length);
     HyperloopDestroyPrivateObject(value);
+    free(result);
 }
 
 extern JSValueRef Hyperloopunsigned_intToJSValueRef (JSContextRef ctx, unsigned int object);
