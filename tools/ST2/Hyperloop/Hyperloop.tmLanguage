@@ -722,7 +722,7 @@
 		</dict>
 	</array>
 	<key>scopeName</key>
-	<string>hyperloop.js</string>
+	<string>source.hyperloop</string>
 	<key>uuid</key>
 	<string>3733B485-C2D7-4E7C-8F36-801ACEEFA56A</string>
 </dict>
