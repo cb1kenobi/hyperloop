@@ -34,7 +34,7 @@
     "temp": "~0.5.1",
     "commander": "~2.0.0",
     "underscore": "~1.5.1",
-    "uglify-js": "~2.3.6",
+    "uglify-js": "https://github.com/tonylukasavage/UglifyJS2/tarball/hyperloop",
     "ejs": "~0.8.4",
     "byline": "~3.1.2",
     "stream-buffers": "~0.2.5",
