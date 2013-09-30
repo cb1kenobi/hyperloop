@@ -7,6 +7,7 @@
 //
 
 #import "MDLAppDelegate.h"
+#import "MDLGameOfLifeViewController.h"
 
 @implementation MDLAppDelegate
 
@@ -15,6 +16,10 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
+
+    MDLGameOfLifeViewController *viewController = [[MDLGameOfLifeViewController alloc] initWithNumberOfRows:20 numberOfColumns:20 timerBased:NO];
+    self.window.rootViewController = viewController;
+
     [self.window makeKeyAndVisible];
     return YES;
 }

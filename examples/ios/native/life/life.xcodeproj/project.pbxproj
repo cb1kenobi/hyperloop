@@ -7,18 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C9761E8D17F8CEE0007C9AE0 /* MDLUniverseView.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9761E8C17F8CEE0007C9AE0 /* MDLUniverseView.mm */; };
 		C9B5CCF817F20F5E00FA0749 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9B5CCF717F20F5E00FA0749 /* Foundation.framework */; };
 		C9B5CCFA17F20F5E00FA0749 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9B5CCF917F20F5E00FA0749 /* CoreGraphics.framework */; };
 		C9B5CCFC17F20F5E00FA0749 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9B5CCFB17F20F5E00FA0749 /* UIKit.framework */; };
 		C9B5CD0217F20F5E00FA0749 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C9B5CD0017F20F5E00FA0749 /* InfoPlist.strings */; };
 		C9B5CD0417F20F5E00FA0749 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B5CD0317F20F5E00FA0749 /* main.m */; };
-		C9B5CD0817F20F5E00FA0749 /* MDLAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B5CD0717F20F5E00FA0749 /* MDLAppDelegate.m */; };
+		C9B5CD0817F20F5E00FA0749 /* MDLAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9B5CD0717F20F5E00FA0749 /* MDLAppDelegate.mm */; };
 		C9B5CD0A17F20F5E00FA0749 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9B5CD0917F20F5E00FA0749 /* Images.xcassets */; };
 		C9B5CD1117F20F5E00FA0749 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9B5CD1017F20F5E00FA0749 /* XCTest.framework */; };
 		C9B5CD1217F20F5E00FA0749 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9B5CCF717F20F5E00FA0749 /* Foundation.framework */; };
 		C9B5CD1317F20F5E00FA0749 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9B5CCFB17F20F5E00FA0749 /* UIKit.framework */; };
 		C9B5CD1B17F20F5E00FA0749 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C9B5CD1917F20F5E00FA0749 /* InfoPlist.strings */; };
 		C9B5CD1D17F20F5E00FA0749 /* lifeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B5CD1C17F20F5E00FA0749 /* lifeTests.m */; };
+		C9B5CD2817F26AD700FA0749 /* MDLGameOfLifeViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9B5CD2717F26AD700FA0749 /* MDLGameOfLifeViewController.mm */; };
+		C9B5CD2917F26AD700FA0749 /* MDLGameOfLifeViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9B5CD2717F26AD700FA0749 /* MDLGameOfLifeViewController.mm */; };
+		C9B5CD2C17F36C5100FA0749 /* MDLCellView.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9B5CD2B17F36C5100FA0749 /* MDLCellView.mm */; };
+		C9B5CD2D17F36C5100FA0749 /* MDLCellView.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9B5CD2B17F36C5100FA0749 /* MDLCellView.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,6 +37,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C9761E8B17F8CEE0007C9AE0 /* MDLUniverseView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MDLUniverseView.h; sourceTree = "<group>"; };
+		C9761E8C17F8CEE0007C9AE0 /* MDLUniverseView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MDLUniverseView.mm; sourceTree = "<group>"; };
 		C9B5CCF417F20F5E00FA0749 /* life.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = life.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9B5CCF717F20F5E00FA0749 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		C9B5CCF917F20F5E00FA0749 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -41,13 +48,17 @@
 		C9B5CD0317F20F5E00FA0749 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		C9B5CD0517F20F5E00FA0749 /* life-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "life-Prefix.pch"; sourceTree = "<group>"; };
 		C9B5CD0617F20F5E00FA0749 /* MDLAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MDLAppDelegate.h; sourceTree = "<group>"; };
-		C9B5CD0717F20F5E00FA0749 /* MDLAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MDLAppDelegate.m; sourceTree = "<group>"; };
+		C9B5CD0717F20F5E00FA0749 /* MDLAppDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = MDLAppDelegate.mm; sourceTree = "<group>"; };
 		C9B5CD0917F20F5E00FA0749 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		C9B5CD0F17F20F5E00FA0749 /* lifeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = lifeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9B5CD1017F20F5E00FA0749 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		C9B5CD1817F20F5E00FA0749 /* lifeTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "lifeTests-Info.plist"; sourceTree = "<group>"; };
 		C9B5CD1A17F20F5E00FA0749 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		C9B5CD1C17F20F5E00FA0749 /* lifeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = lifeTests.m; sourceTree = "<group>"; };
+		C9B5CD2617F26AD700FA0749 /* MDLGameOfLifeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MDLGameOfLifeViewController.h; sourceTree = "<group>"; };
+		C9B5CD2717F26AD700FA0749 /* MDLGameOfLifeViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MDLGameOfLifeViewController.mm; sourceTree = "<group>"; };
+		C9B5CD2A17F36C5100FA0749 /* MDLCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MDLCellView.h; sourceTree = "<group>"; };
+		C9B5CD2B17F36C5100FA0749 /* MDLCellView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MDLCellView.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,7 +119,13 @@
 			isa = PBXGroup;
 			children = (
 				C9B5CD0617F20F5E00FA0749 /* MDLAppDelegate.h */,
-				C9B5CD0717F20F5E00FA0749 /* MDLAppDelegate.m */,
+				C9B5CD0717F20F5E00FA0749 /* MDLAppDelegate.mm */,
+				C9B5CD2617F26AD700FA0749 /* MDLGameOfLifeViewController.h */,
+				C9B5CD2717F26AD700FA0749 /* MDLGameOfLifeViewController.mm */,
+				C9761E8B17F8CEE0007C9AE0 /* MDLUniverseView.h */,
+				C9761E8C17F8CEE0007C9AE0 /* MDLUniverseView.mm */,
+				C9B5CD2A17F36C5100FA0749 /* MDLCellView.h */,
+				C9B5CD2B17F36C5100FA0749 /* MDLCellView.mm */,
 				C9B5CD0917F20F5E00FA0749 /* Images.xcassets */,
 				C9B5CCFE17F20F5E00FA0749 /* Supporting Files */,
 			);
@@ -240,8 +257,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C9B5CD0817F20F5E00FA0749 /* MDLAppDelegate.m in Sources */,
+				C9761E8D17F8CEE0007C9AE0 /* MDLUniverseView.mm in Sources */,
+				C9B5CD0817F20F5E00FA0749 /* MDLAppDelegate.mm in Sources */,
+				C9B5CD2C17F36C5100FA0749 /* MDLCellView.mm in Sources */,
 				C9B5CD0417F20F5E00FA0749 /* main.m in Sources */,
+				C9B5CD2817F26AD700FA0749 /* MDLGameOfLifeViewController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -250,6 +270,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9B5CD1D17F20F5E00FA0749 /* lifeTests.m in Sources */,
+				C9B5CD2917F26AD700FA0749 /* MDLGameOfLifeViewController.mm in Sources */,
+				C9B5CD2D17F36C5100FA0749 /* MDLCellView.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -444,6 +466,7 @@
 				C9B5CD2217F20F5E00FA0749 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C9B5CD2317F20F5E00FA0749 /* Build configuration list for PBXNativeTarget "lifeTests" */ = {
 			isa = XCConfigurationList;
@@ -452,6 +475,7 @@
 				C9B5CD2517F20F5E00FA0749 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
