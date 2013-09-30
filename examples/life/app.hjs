@@ -38,6 +38,9 @@ var console = {
 	debug: function(s) { DEBUG && console.log(s); }
 };
 
+// output raw dimensions
+console.log(width + ' x ' + height);
+
 // TODO: move these definitions to their own modules
 // set the FPS and rendering functions based on CLI args
 var getFPS, render, lastTime;
