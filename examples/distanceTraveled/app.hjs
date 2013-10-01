@@ -10,10 +10,11 @@
 @import('UIKit/UIColor');
 @import('UIKit/UIFont');
 @import('UIKit/NSAttributedString');
+@import('UIKit/NSMutableAttributedString');
 @import('CoreText/kCTForegroundColorAttributeName');
 @import('UIKit/UILabel');
-@import('UIKit/UILineBreakModeWordWrap');
 @import('UIKit/NSTextAlignmentCenter');
+@import('UIKit/NSLineBreakByTruncatingTail');
 
 @import("CoreLocation/CLLocationManager");
 @import("CoreLocation/CLLocation");
@@ -24,18 +25,24 @@
 var TARGET_FPS = 60;
 
 /*
+ Utility.
+ */
+String.prototype.toUTF8 = function() {
+	return NSString.stringWithUTF8String('' + this);
+};
+
+/*
  Create our simple UI.
  */
 var win = UIApplication.sharedApplication().keyWindow,
 	label = new UILabel();
-//initWithRed:green:blue:alpha
-label.textColor = UIColor.darkTextColor;
+label.textColor = UIColor.darkTextColor();
 label.frame = CGRectMake(20, 20, 280, 280);
 label.font = UIFont.systemFontOfSize(72);
 label.textAlignment = NSTextAlignmentCenter;
-label.text = NSString.stringWithUTF8String('Loading...');
-label.numberOfLines = 2;
-label.lineBreakMode = UILineBreakModeWordWrap;
+label.text = 'Loading...'.toUTF8();
+label.lineBreakMode = NSLineBreakByTruncatingTail;
+label.numberOfLinesMode = 2;
 win.addSubview(label);
 
 /*
@@ -43,6 +50,7 @@ win.addSubview(label);
  */
 var calculateManually = false,
 	lastLocation,
+	lastSpeed = 0,
 	totalTraveled = 0,
 	totalDisplayed = 0;
 
@@ -50,8 +58,7 @@ function handleNewPosition(params) {
 	var locations = params.didUpdateLocations;
 	for (var i = 0, iL = locations.count(); i < iL; i++) {
 		var location = locations.objectAtIndex(i),
-			coordinate = location.coordinate,
-			speed = location.speed;
+			coordinate = location.coordinate;
 		if (lastLocation) {
 			if (calculateManually) {
 				var lat1 = lastLocation.latitude, lon1 = lastLocation.longitude,
@@ -67,6 +74,7 @@ function handleNewPosition(params) {
 				totalTraveled += location.distanceFromLocation(lastLocation) * 3.28084;
 			}
 		}
+		lastSpeed = location.speed;
 		lastLocation = location;
 	}
 }
@@ -85,16 +93,17 @@ function handleNewPosition(params) {
 function update() {
 	if (totalTraveled && Math.abs(totalTraveled - totalDisplayed) > 0.1) {
 		totalDisplayed += Math.max((totalTraveled - totalDisplayed) / TARGET_FPS, 0.1);
-		label.text = NSString.stringWithUTF8String((totalDisplayed | 0) + 'ft!');
-		//var string = new NSAttributedString({
-		//	initWithString: NSString.stringWithUTF8String('Hello, world!')
-		//});
-		//console.log(Object.keys(string));
-		//string.addAttribute(kCTForegroundColorAttributeName, UIColor.redColor(), NSMakeRange(0,5))
-		//[string addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:NSMakeRange(0,5)];
-		//[string addAttribute:NSForegroundColorAttributeName value:[UIColor greenColor] range:NSMakeRange(5,6)];
-		//[string addAttribute:NSForegroundColorAttributeName value:[UIColor blueColor] range:NSMakeRange(11,5)];
-		//label.attributedText = string;
+		var mas = new NSMutableAttributedString(),
+			distance = (totalDisplayed | 0) + 'ft\n',
+			distanceRange = NSMakeRange(0, distance.length),
+			speed = (lastSpeed | 0) + 'mph',
+			speedRange = NSMakeRange(distance.length, speed.length),
+			iws = mas.initWithString((distance + speed).toUTF8());
+		
+		iws.addAttribute(kCTForegroundColorAttributeName, UIColor.redColor(), distanceRange);
+		iws.addAttribute(kCTForegroundColorAttributeName, UIColor.blueColor(), speedRange);
+		
+		label.attributedText = iws;
 	}
 }
 
@@ -103,7 +112,7 @@ function update() {
  Location manager hooks.
  */
 var manager = new CLLocationManager();
-manager.purpose = NSString.stringWithUTF8String('To track how far you have traveled, of course!');
+manager.purpose = 'To track how far you have traveled, of course!'.toUTF8();
 manager.distanceFilter = kCLDistanceFilterNone;
 manager.desiredAccuracy = kCLLocationAccuracyBest;
 @class('LocDelegate', NSObject, [ 'CLLocationManagerDelegate' ], [
@@ -126,9 +135,9 @@ manager.delegate = locationDelegate;
  */
 manager.startUpdatingLocation();
 if (CLLocationManager.locationServicesEnabled()) {
-	label.text = NSString.stringWithUTF8String('RUN!');
+	label.text = 'RUN!'.toUTF8();
 	NSTimer.scheduledTimerWithTimeInterval(1 / TARGET_FPS, new TimerCallback(), 'update:', null, true);
 }
 else {
-	label.text = NSString.stringWithUTF8String('Please enable GPS for this app!');
+	label.text = 'Please enable GPS for this app!'.toUTF8();
 }
