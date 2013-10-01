@@ -38,11 +38,26 @@ describe("ios xctool", function(){
 			if (err) return done(err);
 			metadata = m;
 
+			var types = ['UIView',
+						'char [32]',
+						'char [37]',
+						'char [4096]',
+						'char [512]',
+						'int *', 
+						'int []', 
+						'int [1024]', 
+						'int [8]', 
+						'int [18]',
+						'int [19]',
+						'integer_t *',
+						'integer_t[1024]'
+			];
+
 			temp.mkdir('hltest', function(err, dirPath) {
 				if (err) return done(err);
 				var config = {
 					version: '7.0',
-					types: ['UIView'],
+					types: types,
 					builddir: dirPath,
 					outdir: dirPath,
 					libname: 'libhyperloop.a'

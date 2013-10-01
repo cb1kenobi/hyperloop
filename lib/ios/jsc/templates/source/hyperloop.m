@@ -244,7 +244,15 @@ JSValueRef HyperloopMakeException(JSContextRef ctx, const char *error, JSValueRe
  */
 JSValueRef HyperloopToString(JSContextRef ctx, id object)
 {
-    NSString *description = [object description];
+    NSString *description;
+    if ([object isKindOfClass:[NSString class]]) 
+    {
+        description = (NSString*)object;
+    }
+    else 
+    {
+        description = [object description];
+    }
     JSStringRef descriptionStr = JSStringCreateWithUTF8CString([description UTF8String]);
     JSValueRef result = JSValueMakeString(ctx, descriptionStr);
     JSStringRelease(descriptionStr);
@@ -399,7 +407,12 @@ NSString* HyperloopToNSString(JSContextRef ctx, JSValueRef value)
     else if (JSValueIsObject(ctx,value)) 
     {
     	JSObjectRef objectRef = JSValueToObject(ctx, value, 0);
-    	if (HyperloopPrivateObjectIsType(objectRef,JSPrivateObjectTypeID))
+        if (JSObjectIsFunction(ctx,objectRef)) 
+        {
+            //TODO: return body of function?
+            return @"[native function]";
+        }
+    	else if (HyperloopPrivateObjectIsType(objectRef,JSPrivateObjectTypeID))
     	{
     		id value = HyperloopGetPrivateObjectAsID(objectRef);
     		return [value description];
@@ -413,6 +426,11 @@ NSString* HyperloopToNSString(JSContextRef ctx, JSValueRef value)
     	{
     		return @"JSBuffer";
     	}
+        else if (HyperloopPrivateObjectIsType(objectRef,JSPrivateObjectTypePointer))
+        {
+            void *pointer = HyperloopGetPrivateObjectAsPointer(objectRef);
+            return [NSString stringWithFormat:@"%p",pointer];
+        }
     }
     JSStringRef stringRef = JSValueCreateJSONString(ctx, value, 0, 0);
     size_t buflen = JSStringGetMaximumUTF8CStringSize(stringRef);
