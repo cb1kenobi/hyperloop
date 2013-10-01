@@ -232,10 +232,13 @@ bool HyperloopPrivateObjectIsType(JSObjectRef object, JSPrivateObjectType type)
  */
 JSValueRef HyperloopMakeException(JSContextRef ctx, const char *error, JSValueRef *exception)
 {
-	JSStringRef string = JSStringCreateWithUTF8CString(error);
-	JSValueRef message = JSValueMakeString(ctx, string);
-	JSStringRelease(string);
-	*exception = JSObjectMakeError(ctx, 1, &message, 0);
+    if (*exception!=NULL)
+    {
+        JSStringRef string = JSStringCreateWithUTF8CString(error);
+        JSValueRef message = JSValueMakeString(ctx, string);
+        JSStringRelease(string);
+        *exception = JSObjectMakeError(ctx, 1, &message, 0);
+    }
 	return JSValueMakeUndefined(ctx);
 }
 

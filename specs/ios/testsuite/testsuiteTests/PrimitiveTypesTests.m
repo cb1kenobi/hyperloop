@@ -11,10 +11,10 @@
 extern JSObjectRef MakeObjectForJSBuffer (JSContextRef ctx, JSBuffer *instance);
 
 
-@interface PrimativeTypesTests : JSBaseTestCase
+@interface PrimitiveTypesTests : JSBaseTestCase
 @end
 
-@implementation PrimativeTypesTests
+@implementation PrimitiveTypesTests
 
 extern JSValueRef HyperloopcharToJSValueRef (JSContextRef ctx, char object);
 - (void)testcharToJSValue
