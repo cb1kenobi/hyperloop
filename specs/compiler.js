@@ -120,6 +120,17 @@ describe("compiler", function() {
 		sourcefile.dirname.should.be.eql('/');
 	});
 
+	it("should transform simple @owner", function() {
+		var source = "var obj1,obj2;@owner(obj1,obj2);",
+			sourcefile = new MockSourceFile(),
+			ast = compiler.compile(source, 'test', sourcefile),
+			code = compiler.compress(ast,{},'test');
+		code.should.eql('var obj1,obj2;HL$TrackOwner(obj1,obj2);');
+		sourcefile.name.should.be.eql('test');
+		sourcefile.filename.should.be.eql('/test');
+		sourcefile.dirname.should.be.eql('/');
+	});
+
 	it.skip("should transform simple @class", function() {
 		var source = "@import('UIKit/UIButton'); var Class = @class(UIButton,[Foo],{callback:function(){}})",
 			sourcefile = new MockSourceFile(),
