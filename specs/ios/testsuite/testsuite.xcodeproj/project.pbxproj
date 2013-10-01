@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		24B04F4317F3A79200701509 /* StructureTypesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 24B04F4217F3A79200701509 /* StructureTypesTests.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		24B04F4517F3A82100701509 /* JSBaseTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 24B04F4417F3A82100701509 /* JSBaseTestCase.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		24D7A8A817EDFB5B006710EB /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24D7A8A717EDFB5B006710EB /* Foundation.framework */; };
 		24D7A8AA17EDFB5B006710EB /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24D7A8A917EDFB5B006710EB /* CoreGraphics.framework */; };
 		24D7A8AC17EDFB5B006710EB /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24D7A8AB17EDFB5B006710EB /* UIKit.framework */; };
@@ -41,6 +43,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		24B04F4217F3A79200701509 /* StructureTypesTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StructureTypesTests.m; sourceTree = "<group>"; };
+		24B04F4417F3A82100701509 /* JSBaseTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSBaseTestCase.m; sourceTree = "<group>"; };
+		24B04F4617F3A87400701509 /* JSBaseTestCase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSBaseTestCase.h; sourceTree = "<group>"; };
 		24D7A8A417EDFB5B006710EB /* testsuite.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = testsuite.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		24D7A8A717EDFB5B006710EB /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		24D7A8A917EDFB5B006710EB /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -136,6 +141,8 @@
 				24D7A8BC17EDFB5B006710EB /* Main_iPad.storyboard */,
 				24D7A8BF17EDFB5B006710EB /* ViewController.h */,
 				24D7A8C017EDFB5B006710EB /* ViewController.m */,
+				24B04F4417F3A82100701509 /* JSBaseTestCase.m */,
+				24B04F4617F3A87400701509 /* JSBaseTestCase.h */,
 				24D7A8C217EDFB5B006710EB /* Images.xcassets */,
 				24D7A8AE17EDFB5B006710EB /* Supporting Files */,
 			);
@@ -157,6 +164,7 @@
 			isa = PBXGroup;
 			children = (
 				24D7A8D517EDFB5B006710EB /* PrimativeTypesTests.m */,
+				24B04F4217F3A79200701509 /* StructureTypesTests.m */,
 				24D7A8D017EDFB5B006710EB /* Supporting Files */,
 			);
 			path = testsuiteTests;
@@ -281,7 +289,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				24D7A8E917EF8480006710EB /* compile.m in Sources */,
+				24B04F4317F3A79200701509 /* StructureTypesTests.m in Sources */,
 				24D7A8D617EDFB5B006710EB /* PrimativeTypesTests.m in Sources */,
+				24B04F4517F3A82100701509 /* JSBaseTestCase.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -484,7 +494,7 @@
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
-				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../../lib/ios/jsc/templates/source/";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../../lib/ios/jsc/templates/source/ $(SRCROOT)/testsuite";
 				VALID_ARCHS = "arm64 armv7s";
 				WRAPPER_EXTENSION = xctest;
 			};
@@ -517,7 +527,7 @@
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
-				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../../lib/ios/jsc/templates/source/";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../../lib/ios/jsc/templates/source/ $(SRCROOT)/testsuite";
 				VALID_ARCHS = "arm64 armv7s";
 				WRAPPER_EXTENSION = xctest;
 			};
@@ -542,6 +552,7 @@
 				24D7A8DB17EDFB5B006710EB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		24D7A8DC17EDFB5B006710EB /* Build configuration list for PBXNativeTarget "testsuiteTests" */ = {
 			isa = XCConfigurationList;
@@ -550,6 +561,7 @@
 				24D7A8DE17EDFB5B006710EB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

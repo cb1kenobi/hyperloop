@@ -7,8 +7,9 @@
  * or patents pending by Appcelerator, Inc.
  */
 
-#include "JSBuffer.h"
-#include <hyperloop.h>
+#import "JSBuffer.h"
+#import <hyperloop.h>
+#import <malloc/malloc.h>
 
 static JSClassDefinition ClassDefinitionForJSBufferConstructor;
 static JSClassDefinition ClassDefinitionForJSBuffer;
@@ -181,8 +182,17 @@ JSValueRef duplicateForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjec
     newbuf->length = buffer->length;
     if (buffer->length)
     {
-        newbuf->buffer = malloc(newbuf->length);
-        memcpy(newbuf->buffer, buffer->buffer, buffer->length);
+        if (buffer->type == JSBufferTypePointer) 
+        {
+            newbuf->buffer = malloc(newbuf->length);
+            memcpy(newbuf->buffer, buffer->buffer, buffer->length);
+        }
+        else 
+        {
+            // JSValueRef is a copy
+            newbuf->buffer = buffer->buffer;            
+        }
+        newbuf->type = buffer->type;
     }
     return MakeObjectForJSBuffer (ctx, newbuf);
 }
@@ -566,7 +576,20 @@ JSValueRef toCharArrayForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObj
 }
 
 /**
- * toCharArray
+ * toObject
+ */
+JSValueRef toObjectForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef object, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
+{
+    BUFFER(buffer);
+    if (buffer->type == JSBufferTypeJSValueRef)
+    {
+        return (JSValueRef)buffer->buffer;
+    }
+    return JSValueMakeUndefined(ctx);
+}
+
+/**
+ * isNan
  */
 JSValueRef isNaNForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef object, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
 {
@@ -600,6 +623,14 @@ JSValueRef sliceForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef
         *exception = JSObjectMakeError(ctx, 1, &message, 0);
         return JSValueMakeUndefined(ctx);
     }
+    if (buffer->type!=JSBufferTypePointer)
+    {
+        JSStringRef string = JSStringCreateWithUTF8CString("cannot slice a non-pointer buffer");
+        JSValueRef message = JSValueMakeString(ctx, string);
+        JSStringRelease(string);
+        *exception = JSObjectMakeError(ctx, 1, &message, 0);
+        return JSValueMakeUndefined(ctx);
+    }
     
     void *memory = malloc(length);
     void *start = &(buffer->buffer[(int)index]);
@@ -607,6 +638,7 @@ JSValueRef sliceForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef
     JSBuffer *newbuffer = malloc(sizeof(JSBuffer));
     newbuffer->buffer = memory;
     newbuffer->length = length;
+    newbuffer->type = JSBufferTypePointer;
     
     return MakeObjectForJSBuffer(ctx,newbuffer);
 }
@@ -619,9 +651,13 @@ JSValueRef resetForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef
     BUFFER(buffer);
     if (buffer->length) 
     {
-        free(buffer->buffer);
+        if (buffer->type == JSBufferTypePointer)
+        {
+            free(buffer->buffer);
+        }
         buffer->length = 1;
         buffer->buffer = malloc(1);
+        buffer->type = JSBufferTypePointer;
     }
     return object;
 }
@@ -646,6 +682,7 @@ JSObjectRef MakeInstance (JSContextRef ctx, size_t argumentCount, const JSValueR
     JSBuffer *buffer = malloc(sizeof(JSBuffer));
     buffer->buffer = malloc(length);
     buffer->length = length;
+    buffer->type = JSBufferTypePointer;
     memset(buffer->buffer, 0, length);
     // by default, let's set the value to NAN
     float *p = (float*)buffer->buffer;
@@ -691,6 +728,7 @@ static JSStaticFunction StaticFunctionArrayForJSBuffer [] = {
     { "toLongLong", toLongLongForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
     { "toBool", toBoolForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
     { "toChar", toCharForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
+    { "toObject", toObjectForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
 
     { "toIntArray", toIntArrayForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
     { "toFloatArray", toFloatArrayForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
@@ -848,4 +886,65 @@ void RegisterJSBuffer (JSContextRef ctx, JSObjectRef global)
         JSStringRelease(property);
         init = true;
     }
+}
+
+/**
+ * cleanup an allocted JSBuffer *
+ */
+void DestroyJSBuffer(JSBuffer *buffer)
+{
+    switch (buffer->type)
+    {
+        case JSBufferTypePointer: 
+        {
+            free(buffer->buffer);
+            break;
+        }
+        case JSBufferTypeJSValueRef:
+        {
+            // don't free, it's assigned
+            break;
+        }
+    }    
+    buffer->buffer = NULL;
+    free(buffer);
+    buffer=NULL;
+}
+
+/**
+ * create a JSBuffer* and set it as the private object for objectRef using JSValueRef as its value
+ */
+void SetJSBufferValue(JSContextRef ctx, JSObjectRef objectRef, JSValueRef sourceRef)
+{
+    JSBuffer *buffer = (JSBuffer*)HyperloopGetPrivateObjectAsJSBuffer(objectRef);
+    if (buffer!=NULL) 
+    {
+        DestroyJSBuffer(buffer);
+    }
+    buffer = malloc(sizeof(JSBuffer));
+    buffer->type = JSBufferTypeJSValueRef;
+    buffer->length = malloc_size(sourceRef);
+    buffer->buffer = (void*)sourceRef;
+
+   JSPrivateObject *privateObject = HyperloopMakePrivateObjectForJSBuffer(buffer);
+   JSObjectSetPrivate(objectRef,privateObject);
+}
+
+/**
+ * create a JSBuffer* and set it as the private object for objectRef using a void* as the JSBuffer pointer
+ */
+void SetJSBufferPointer(JSContextRef ctx, JSObjectRef objectRef, void* pointer)
+{
+    JSBuffer *buffer = (JSBuffer*)HyperloopGetPrivateObjectAsJSBuffer(objectRef);
+    if (buffer!=NULL) 
+    {
+        DestroyJSBuffer(buffer);
+    }
+    buffer = malloc(sizeof(JSBuffer));
+    buffer->type = JSBufferTypePointer;
+    buffer->length = malloc_size(pointer);
+    memcpy(buffer->buffer,pointer,buffer->length);
+
+    JSPrivateObject *privateObject = HyperloopMakePrivateObjectForJSBuffer(buffer);
+    JSObjectSetPrivate(objectRef,privateObject);
 }

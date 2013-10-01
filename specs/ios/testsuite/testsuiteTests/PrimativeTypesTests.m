@@ -6,33 +6,15 @@
  * This generated code and related technologies are covered by patents
  * or patents pending by Appcelerator, Inc.
  */
-#import <XCTest/XCTest.h>
-#import <hyperloop.h>
+#import "JSBaseTestCase.h"
 
 extern JSObjectRef MakeObjectForJSBuffer (JSContextRef ctx, JSBuffer *instance);
 
 
-@interface PrimativeTypesTests : XCTestCase
-{
-    JSGlobalContextRef globalContext;
-}
-
+@interface PrimativeTypesTests : JSBaseTestCase
 @end
 
 @implementation PrimativeTypesTests
-
-- (void)setUp
-{
-    [super setUp];
-    globalContext = JSGlobalContextCreate(NULL);
-}
-
-- (void)tearDown
-{
-    JSGlobalContextRelease(globalContext);
-    [super tearDown];
-}
-
 
 extern JSValueRef HyperloopcharToJSValueRef (JSContextRef ctx, char object);
 - (void)testcharToJSValue

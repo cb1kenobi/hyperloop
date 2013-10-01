@@ -46,6 +46,12 @@ describe("ios xctool", function(){
 					testsrc = path.join(__dirname,"testsuite","testsuite","compile.m"),
 					testlibdir = path.join(__dirname,"testsuite","testsuite");
 
+
+				var typeObject = metadata.types['NSRange'];
+				var struct = typegenerator.convertStructToNativeValue(state,typeObject,true);
+				buf+='\n' + struct.header;
+				buf+='\n' + struct.implementation;
+
 				fs.writeFileSync(testsrc,buf);
 
 				var headerPath = path.join(__dirname,"../../lib/ios/jsc/templates/source"),

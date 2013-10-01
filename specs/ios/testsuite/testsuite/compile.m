@@ -12,6 +12,8 @@
 @import JavaScriptCore;
 #import "JSBuffer.h"
 
+
+
 /**
  * convert char * to JSValueRef
  */
@@ -2172,3 +2174,270 @@ unsigned short HyperloopJSValueRefTounsigned_short (JSContextRef ctx, JSValueRef
 	return result;
 }
 
+
+/**
+ * Copyright (c) 2013 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Apache Public License
+ * Please see the LICENSE included with this distribution for details.
+ *
+ * This generated code and related technologies are covered by patents
+ * or patents pending by Appcelerator, Inc.
+ */
+
+// WARNING: this file is generated and will be overwritten
+// Generated on Wed Sep 25 2013 16:40:51 GMT-0700 (PDT)
+
+// if you're checking out this file, you should check us out too.
+// http://jobs.appcelerator.com
+
+@import JavaScriptCore;
+
+/**
+ * JSC implementation for NSRange
+ */
+
+extern JSValueRef Hyperloopunsigned_intToJSValueRef(JSContextRef, unsigned int);
+extern unsigned int HyperloopJSValueRefTounsigned_int(JSContextRef,JSValueRef,JSValueRef*,bool*);
+
+JSObjectRef MakeObjectForNSRange (JSContextRef ctx, NSRange *instance);
+
+
+/**
+ * Copyright (c) 2013 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Apache Public License
+ * Please see the LICENSE included with this distribution for details.
+ *
+ * This generated code and related technologies are covered by patents
+ * or patents pending by Appcelerator, Inc.
+ */
+
+// WARNING: this file is generated and will be overwritten
+// Generated on Wed Sep 25 2013 16:40:51 GMT-0700 (PDT)
+
+#define UNUSED(x) (void)(x)
+
+@import JavaScriptCore;
+#import <hyperloop.h>
+
+/**
+ * JSC implementation for struct NSRange
+ */
+
+JSClassDefinition ClassDefinitionForNSRange;
+JSClassDefinition ClassDefinitionForNSRangeConstructor;
+JSClassRef NSRangeClassDef;
+JSClassRef NSRangeClassDefForConstructor;
+
+
+
+/**
+ * [NSRange location]
+ */
+JSValueRef GetLocationForNSRange (JSContextRef ctx, JSObjectRef object, JSStringRef propertyName, JSValueRef* exception)
+{
+    struct _NSRange *pointer = (struct _NSRange *)HyperloopGetPrivateObjectAsPointer(object);
+    JSValueRef location = Hyperloopunsigned_intToJSValueRef(ctx,pointer->location);
+    return location;
+}
+
+/**
+ * [NSRange location:value]
+ */
+bool SetLocationForNSRange (JSContextRef ctx, JSObjectRef object, JSStringRef propertyName, JSValueRef value, JSValueRef* exception)
+{
+    struct _NSRange *pointer = (struct _NSRange *)HyperloopGetPrivateObjectAsPointer(object);
+    
+    bool location$cleanup = false;
+    unsigned int location = HyperloopJSValueRefTounsigned_int(ctx,value,exception,&location$cleanup);
+    if (*exception!=NULL)
+    {
+    	return JSValueMakeUndefined(ctx);
+    }
+    
+    pointer->location = location;
+    
+    return true;
+}
+/**
+ * [NSRange length]
+ */
+JSValueRef GetLengthForNSRange (JSContextRef ctx, JSObjectRef object, JSStringRef propertyName, JSValueRef* exception)
+{
+    struct _NSRange *pointer = (struct _NSRange *)HyperloopGetPrivateObjectAsPointer(object);
+    JSValueRef length = Hyperloopunsigned_intToJSValueRef(ctx,pointer->length);
+    return length;
+}
+
+/**
+ * [NSRange length:value]
+ */
+bool SetLengthForNSRange (JSContextRef ctx, JSObjectRef object, JSStringRef propertyName, JSValueRef value, JSValueRef* exception)
+{
+    struct _NSRange *pointer = (struct _NSRange *)HyperloopGetPrivateObjectAsPointer(object);
+    
+    bool length$cleanup = false;
+    unsigned int length = HyperloopJSValueRefTounsigned_int(ctx,value,exception,&length$cleanup);
+    if (*exception!=NULL)
+    {
+    	return JSValueMakeUndefined(ctx);
+    }
+    
+    pointer->length = length;
+    
+    return true;
+}
+
+/**
+ * generic conversion from native object representation to JS string
+ */
+JSValueRef toStringForNSRange (JSContextRef ctx, JSObjectRef function, JSObjectRef object, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
+{
+    return HyperloopToString(ctx, @"NSRange");
+}
+
+static JSStaticValue StaticValueArrayForNSRange [] = {
+    { "location", GetLocationForNSRange, SetLocationForNSRange, kJSPropertyAttributeNone },
+    { "length", GetLengthForNSRange, SetLengthForNSRange, kJSPropertyAttributeNone },
+    { 0, 0, 0, 0 }
+};
+
+static JSStaticFunction StaticFunctionArrayForNSRange [] = {
+    { "toString", toStringForNSRange, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum | kJSPropertyAttributeDontDelete },
+    { 0, 0, 0 }
+};
+
+
+/**
+ * called when a new JS object is created for this class
+ */
+void InitializerForNSRange (JSContextRef ctx, JSObjectRef object)
+{
+}
+
+/**
+ * called when the JS object is ready to be garbage collected
+ */
+void FinalizerForNSRange (JSObjectRef object)
+{
+    HyperloopDestroyPrivateObject(object);
+}
+
+/**
+ * type conversion from native type to JS type
+ */
+JSValueRef JSTypeConvertorForNSRange(JSContextRef ctx, JSObjectRef object, JSType type, JSValueRef* exception)
+{
+    return NULL;
+}
+
+/**
+ * called to determine if an object is of a subclass
+ */
+bool IsInstanceForNSRange (JSContextRef ctx, JSObjectRef constructor, JSValueRef possibleInstance, JSValueRef* exception)
+{
+    return false;
+}
+
+static JSStaticFunction StaticFunctionArrayForNSRangeConstructor [] = {
+    { 0, 0, 0 }
+};
+
+/**
+ * called to get the JSClassRef for NSRange constructor class
+ */
+JSClassRef CreateClassForNSRangeConstructor ()
+{
+    static bool init;
+    if (!init)
+    {
+        init = true;
+
+        ClassDefinitionForNSRangeConstructor = kJSClassDefinitionEmpty;
+        ClassDefinitionForNSRangeConstructor.className = "NSRangeConstructor";
+        ClassDefinitionForNSRangeConstructor.staticFunctions = StaticFunctionArrayForNSRangeConstructor;
+
+        NSRangeClassDefForConstructor = JSClassCreate(&ClassDefinitionForNSRangeConstructor);
+
+        JSClassRetain(NSRangeClassDefForConstructor);
+    }
+    return NSRangeClassDefForConstructor;
+}
+
+/**
+ * called to get the JSClassRef for NSRange class
+ */
+JSClassRef CreateClassForNSRange ()
+{
+    static bool init;
+    if (!init)
+    {
+        init = true;
+        
+        ClassDefinitionForNSRange = kJSClassDefinitionEmpty;
+        ClassDefinitionForNSRange.staticValues = StaticValueArrayForNSRange;
+        ClassDefinitionForNSRange.staticFunctions = StaticFunctionArrayForNSRange;
+        ClassDefinitionForNSRange.initialize = InitializerForNSRange;
+        ClassDefinitionForNSRange.finalize = FinalizerForNSRange;
+        ClassDefinitionForNSRange.convertToType = JSTypeConvertorForNSRange;
+        ClassDefinitionForNSRange.className = "NSRange";
+        ClassDefinitionForNSRange.hasInstance = IsInstanceForNSRange;
+
+        NSRangeClassDef = JSClassCreate(&ClassDefinitionForNSRange);
+
+        JSClassRetain(NSRangeClassDef);
+    }
+    return NSRangeClassDef;
+}
+
+/**
+ * called to make a native object for NSRange. this method must be called instead of
+ * normal JSObjectMake in JavaScriptCore so that the correct prototype chain and
+ * constructor will be setup.
+ */
+JSObjectRef MakeObjectForNSRange (JSContextRef ctx, NSRange *instance)
+{
+    JSObjectRef object = JSObjectMake(ctx, CreateClassForNSRange(), (void*)HyperloopMakePrivateObjectForPointer(instance));
+    JSObjectRef value = JSObjectMake(ctx, CreateClassForNSRangeConstructor(), 0);
+
+    JSStringRef cproperty = JSStringCreateWithUTF8CString("constructor");
+    JSObjectSetProperty(ctx, object, cproperty, value, kJSPropertyAttributeDontEnum, 0);
+    JSStringRelease(cproperty);
+
+    JSStringRef nameProperty = JSStringCreateWithUTF8CString("name");
+    JSStringRef valueProperty = JSStringCreateWithUTF8CString("NSRange");
+    JSValueRef valueRef = JSValueMakeString(ctx, valueProperty);
+    JSObjectSetProperty(ctx, value, nameProperty, valueRef, kJSPropertyAttributeDontEnum, 0);
+    JSStringRelease(nameProperty);
+    JSStringRelease(valueProperty);
+
+    return object;
+}
+
+/**
+ * called to make a native object for NSRange. this method must be called instead of
+ * normal JSObjectMake in JavaScriptCore so that the correct prototype chain and
+ * constructor will be setup.
+ */
+JSObjectRef MakeObjectForNSRangeConstructor (JSContextRef ctx)
+{
+    JSClassRef classRef = CreateClassForNSRangeConstructor();
+    JSObjectRef object = JSObjectMake(ctx, classRef, 0);
+
+    JSStringRef nameProperty = JSStringCreateWithUTF8CString("name");
+    JSStringRef valueProperty = JSStringCreateWithUTF8CString("NSRange");
+    JSValueRef valueRef = JSValueMakeString(ctx, valueProperty);
+    JSObjectSetProperty(ctx, object, nameProperty, valueRef, kJSPropertyAttributeDontEnum, 0);
+    JSStringRelease(nameProperty);
+    JSStringRelease(valueProperty);
+
+    JSObjectRef plainObject = JSObjectMake(ctx,0,0);
+    JSStringRef prototypeProperty = JSStringCreateWithUTF8CString("prototype");
+    JSObjectSetProperty(ctx, object, prototypeProperty, plainObject, kJSPropertyAttributeDontEnum, 0);
+    JSStringRelease(prototypeProperty);
+
+    JSStringRef cproperty = JSStringCreateWithUTF8CString("constructor");
+    JSObjectSetProperty(ctx, plainObject, cproperty, object, kJSPropertyAttributeDontEnum, 0);
+    JSStringRelease(cproperty);
+
+    return object;
+}

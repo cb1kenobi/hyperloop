@@ -12,14 +12,19 @@
 #import "JSBuffer.h"
 #import "JSOwner.h"
 
+#define UNUSED(x) (void)(x)
+
 typedef enum JSPrivateObjectType {
 	JSPrivateObjectTypeID = 0,
 	JSPrivateObjectTypeClass = 1,
-	JSPrivateObjectTypeJSBuffer = 2
+	JSPrivateObjectTypeJSBuffer = 2,
+	JSPrivateObjectTypePointer = 3,
+	JSPrivateObjectTypeNumber = 4
 } JSPrivateObjectType;
 
 typedef struct JSPrivateObject {
     void *object;
+    double value; // this would be good to turn into a union at some point
    	JSPrivateObjectType type;
    	NSMapTable *map;
    	JSContextRef context;
@@ -36,7 +41,7 @@ typedef struct JSPrivateObject {
 /**
  * create a JSPrivateObject for storage in a JSObjectRef where the object is an id
  */
-JSPrivateObject* HyperloopMakePrivateObjectForID(JSContextRef ctx,id object);
+JSPrivateObject* HyperloopMakePrivateObjectForID(JSContextRef ctx, id object);
 
 /**
  * create a JSPrivateObject for storage in a JSObjectRef where the object is a Class
@@ -47,6 +52,16 @@ JSPrivateObject* HyperloopMakePrivateObjectForClass(Class cls);
  * create a JSPrivateObject for storage in a JSObjectRef where the object is a JSBuffer *
  */
 JSPrivateObject* HyperloopMakePrivateObjectForJSBuffer(JSBuffer *buffer);
+
+/**
+ * create a JSPrivateObject for storage in a JSObjectRef where the object is a void *
+ */
+JSPrivateObject* HyperloopMakePrivateObjectForPointer(void *pointer);
+
+/**
+ * create a JSPrivateObject for storage in a JSObjectRef where the object is a double
+ */
+JSPrivateObject* HyperloopMakePrivateObjectForNumber(double value);
 
 /**
  * return a JSPrivateObject as an ID (or nil if not of type JSPrivateObjectTypeID)
@@ -62,6 +77,16 @@ Class HyperloopGetPrivateObjectAsClass(JSObjectRef objectRef);
  * return a JSPrivateObject as a JSBuffer (or NULL if not of type JSPrivateObjectTypeJSBuffer)
  */
 JSBuffer* HyperloopGetPrivateObjectAsJSBuffer(JSObjectRef objectRef);
+
+/**
+ * return a JSPrivateObject as a void * (or NULL if not of type JSPrivateObjectTypePointer)
+ */
+void* HyperloopGetPrivateObjectAsPointer(JSObjectRef objectRef);
+
+/**
+ * return a JSPrivateObject as a double (or NaN if not of type JSPrivateObjectTypeNumber)
+ */
+double HyperloopGetPrivateObjectAsNumber(JSObjectRef objectRef);
 
 /**
  * return true if JSPrivateObject contained in JSObjectRef is of type
@@ -102,3 +127,8 @@ NSString* HyperloopToNSString(JSContextRef ctx, JSValueRef value);
  * create a hyperloop VM
  */
 JSContext* HyperloopCreateVM (NSString *name);
+
+/**
+ * invoke a dynamic argument
+ */
+id HyperloopDynamicInvoke (JSContextRef ctx, const JSValueRef *arguments, size_t argumentCount, id target, SEL selector);
