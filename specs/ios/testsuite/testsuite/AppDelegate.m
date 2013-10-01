@@ -9,22 +9,11 @@
 #import "AppDelegate.h"
 #import <objc/runtime.h>
 
-@interface Foo : NSObject<UIViewControllerRestoration>
-@end
-
-@implementation Foo
-+ (UIViewController *) viewControllerWithRestorationIdentifierPath:(NSArray *)identifierComponents coder:(NSCoder *)coder {
-    return nil;
-}
-@end
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    NSString *s = @"";
-    [s completePathIntoString:<#(NSString *__autoreleasing *)#> caseSensitive:<#(BOOL)#> matchesIntoArray:<#(NSArray *__autoreleasing *)#> filterTypes:<#(NSArray *)#>
-    
     // Override point for customization after application launch.
     return YES;
 }

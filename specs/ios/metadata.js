@@ -1,7 +1,6 @@
 var should = require('should'),
     path = require('path'),
     fs = require('fs'),
-    binding = require(path.join(__dirname,'..','..','lib','ios','jsc_oo','codegen.js')),
     buildlib = require(path.join(__dirname,'..','..','lib','ios','buildlib.js')),
     clangparser = require(path.join(__dirname,'..','..','lib','ios','clangparser.js')),
     metadata;
@@ -12,13 +11,14 @@ exports.getMetadata = function(done) {
 		headerfile = path.join(__dirname,'src','header.h'),
 		minversion = '7.0',
 		nativeargs = null,
-		cached = path.join(TMPDIR,'clangout.txt'),
-		cachedAST = path.join(TMPDIR,'clangout.ast');
+		arc = false,
+		cached = path.join(TMPDIR,'clangout_'+arc+'.txt'),
+		cachedAST = path.join(TMPDIR,'clangout_'+arc+'.ast');
 
 	console.log('executing clang, this will take a minute. if you get a timeout error, re-run with --timeout 60s');
 	console.log('writing ast out to ',cached);
 
-	buildlib.clang(headerfile,minversion,nativeargs,true,function(err,result){
+	buildlib.clang(headerfile,minversion,nativeargs,arc,function(err,result){
 		if (err) return done(err);
 		should.not.exist(err);
 		should.exist(result);

@@ -17,14 +17,14 @@ describe("ios xctool", function(){
 		exec('git submodule init && git submodule update',done);
 	});
 
-	it("should run xctool", function(done){
+	it.skip("should run xctool", function(done){
 		var dir = path.join(__dirname,'testsuite'),
 			cmd = 'xcodebuild',
 			env = {cwd:dir};
 		exec(cmd,env,done);
 	});
 
-	it("should run xctool tests", function(done){
+	it.only("should run xctool tests", function(done){
 		var dir = path.join(__dirname,'testsuite'),
 			genfile = path.join(dir, 'testsuite','compile.m'),
 			xctool = path.join(__dirname,'../../tools/xctool/xctool.sh'),
@@ -40,8 +40,58 @@ describe("ios xctool", function(){
 
 			temp.mkdir('hltest', function(err, dirPath) {
 				if (err) return done(err);
+				var config = {
+					version: '7.0',
+					types: ['UIView'],
+					builddir: dirPath,
+					outdir: dirPath,
+					libname: 'libhyperloop.a'
+				};
+				typegenerator.compile(metadata, config, function(err,results){
+					if (err) return done(err);
 
-				var state = typegenerator.createState(metadata,'7.0'),
+					var testlibdir = path.join(__dirname,"testsuite","testsuite");
+					
+					// copy libfile into path so that we can still run inside xcode as well
+					fs.writeFileSync(path.join(testlibdir,config.libname),fs.readFileSync(results.libfile));
+
+					var timer = function() {
+						if (!completed) {
+							completed=true;
+							done(failure?new Error('testsuite test(s) failed') : null);
+						}
+					}
+					var process = spawn(xctool,args,{env:env});
+					process.stdout.on('data',function(buf){
+						buf = buf.toString();
+						console.log(buf);
+						// seems like sometimes xctool will hang and this will attempt to auto-exit
+						if (buf.indexOf('** TEST SUCCEEDED')>=0) {
+							failure = false;
+							setTimeout(timer,500);
+						}
+						if (buf.indexOf('** TEST FAILED')>=0) {
+							failure = true;
+							setTimeout(timer,500);
+						}
+					});
+					process.stderr.on('data',function(buf){
+						console.log(buf.toString());
+					});
+					process.on('close',function(exitCode){
+						console.log('exitCode',exitCode);
+						completed = true;
+						done(exitCode!=0 ? new Error('testsuite test(s) failed') : null);
+					});
+
+				});
+
+
+/*
+
+				var state = typegenerator.createState(metadata,'7.0');
+
+
 					buf = typegenerator.generateTypesCode(state),
 					testsrc = path.join(__dirname,"testsuite","testsuite","compile.m"),
 					testlibdir = path.join(__dirname,"testsuite","testsuite");
@@ -106,6 +156,7 @@ describe("ios xctool", function(){
 					});
 
 				});	
+	*/			
 			});
 		});
 	});
