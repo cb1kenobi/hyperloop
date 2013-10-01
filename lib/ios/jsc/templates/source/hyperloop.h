@@ -132,3 +132,4 @@ JSContext* HyperloopCreateVM (NSString *name);
  * invoke a dynamic argument
  */
 id HyperloopDynamicInvoke (JSContextRef ctx, const JSValueRef *arguments, size_t argumentCount, id target, SEL selector);
+
