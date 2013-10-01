@@ -664,8 +664,7 @@ extern signed char HyperloopJSValueRefTosigned_char (JSContextRef ctx, JSValueRe
     XCTAssertTrue(buffer->length==sizeof(i), @"result should have been '%d', was: %d",(int)sizeof(i),buffer->length);
     HyperloopDestroyPrivateObject(value);
 }
-//FIXME
-/*
+
 extern JSValueRef Hyperloopunichar_PToJSValueRef (JSContextRef ctx, UniChar * object);
 - (void)testHyperloopunichar_PToJSValueRef
 {
@@ -703,7 +702,7 @@ extern UniChar * HyperloopJSValueRefTounichar_P (JSContextRef ctx, JSValueRef ob
     XCTAssertTrue(result[0]==0x263A, @"result should have been '☺', was: %d",result[0]);
     XCTAssertTrue(buffer->length==sizeof(i), @"result should have been '%d', was: %d",(int)sizeof(i),buffer->length);
     HyperloopDestroyPrivateObject(value);
-}*/
+}
 
 /*
 extern JSValueRef HyperloopUniCharCount__ToJSValueRef (JSContextRef ctx, UniCharCount * object);
