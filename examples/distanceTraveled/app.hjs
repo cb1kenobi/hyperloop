@@ -1,12 +1,16 @@
 @import('Foundation/NSObject');
 @import('Foundation/NSString');
+@import('Foundation/NSTimer');
 @import('Foundation/NSLog');
+@import('Foundation/NSMakeRange');
 @import('CoreGraphics/CGRectMake');
 
 @import('UIKit/UIApplication');
 @import('UIKit/UIWindow');
 @import('UIKit/UIColor');
 @import('UIKit/UIFont');
+@import('UIKit/NSAttributedString');
+@import('CoreText/kCTForegroundColorAttributeName');
 @import('UIKit/UILabel');
 @import('UIKit/UILineBreakModeWordWrap');
 @import('UIKit/NSTextAlignmentCenter');
@@ -17,6 +21,7 @@
 @import("CoreLocation/kCLDistanceFilterNone");
 @import("CoreLocation/kCLLocationAccuracyBest");
 
+var TARGET_FPS = 60;
 
 /*
  Create our simple UI.
@@ -36,29 +41,63 @@ win.addSubview(label);
 /*
  Distance calculation.
  */
-var lastLocation,
-	totalFeetTraveled = 0;
+var calculateManually = false,
+	lastLocation,
+	totalTraveled = 0,
+	totalDisplayed = 0;
 
 function handleNewPosition(params) {
 	var locations = params.didUpdateLocations;
 	for (var i = 0, iL = locations.count(); i < iL; i++) {
 		var location = locations.objectAtIndex(i),
-			coordinate = location.coordinate;
-		console.log(location);
+			coordinate = location.coordinate,
+			speed = location.speed;
 		if (lastLocation) {
-			var lat1 = lastLocation.latitude, lon1 = lastLocation.longitude;
-			var lat2 = coordinate.latitude, lon2 = coordinate.longitude;
-			var kmTraveled = 3963.0 * Math.acos(
-				Math.sin(lat1 / 57.2958) * Math.sin(lat2 / 57.2958)
-					+ Math.cos(lat1 / 57.2958) * Math.cos(lat2 / 57.2958)
-					* Math.cos(lon2 / 57.2958 - lon1 / 57.2958)
-			);
-			totalFeetTraveled += kmTraveled * 3280.8399;
-			label.text = NSString.stringWithUTF8String('Traveled ' + totalFeetTraveled + 'ft!');
+			if (calculateManually) {
+				var lat1 = lastLocation.latitude, lon1 = lastLocation.longitude,
+					lat2 = coordinate.latitude, lon2 = coordinate.longitude,
+					kmTraveled = 3963.0 * Math.acos(
+						Math.sin(lat1 / 57.2958) * Math.sin(lat2 / 57.2958)
+							+ Math.cos(lat1 / 57.2958) * Math.cos(lat2 / 57.2958)
+							* Math.cos(lon2 / 57.2958 - lon1 / 57.2958)
+					);
+				totalTraveled += kmTraveled * 3280.8399;
+			}
+			else {
+				totalTraveled += location.distanceFromLocation(lastLocation) * 3.28084;
+			}
 		}
-		lastLocation = location.coordinate;
+		lastLocation = location;
 	}
 }
+
+/*
+ Update the displayed amount.
+ */
+@class('TimerCallback', NSObject, [], [
+	{
+		name: 'update',
+		returnType: 'void',
+		arguments: [ { type: 'id', name: 'sender' } ],
+		action: update
+	}
+]);
+function update() {
+	if (totalTraveled && Math.abs(totalTraveled - totalDisplayed) > 0.1) {
+		totalDisplayed += Math.max((totalTraveled - totalDisplayed) / TARGET_FPS, 0.1);
+		label.text = NSString.stringWithUTF8String((totalDisplayed | 0) + 'ft!');
+		//var string = new NSAttributedString({
+		//	initWithString: NSString.stringWithUTF8String('Hello, world!')
+		//});
+		//console.log(Object.keys(string));
+		//string.addAttribute(kCTForegroundColorAttributeName, UIColor.redColor(), NSMakeRange(0,5))
+		//[string addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:NSMakeRange(0,5)];
+		//[string addAttribute:NSForegroundColorAttributeName value:[UIColor greenColor] range:NSMakeRange(5,6)];
+		//[string addAttribute:NSForegroundColorAttributeName value:[UIColor blueColor] range:NSMakeRange(11,5)];
+		//label.attributedText = string;
+	}
+}
+
 
 /*
  Location manager hooks.
@@ -72,8 +111,8 @@ manager.desiredAccuracy = kCLLocationAccuracyBest;
 		name: 'locationManager',
 		returnType: 'void',
 		arguments: [
-			{type: 'CLLocationManager', name: 'locationManager'},
-			{type: 'NSArray', name: 'didUpdateLocations'}
+			{ type: 'CLLocationManager', name: 'locationManager' },
+			{ type: 'NSArray', name: 'didUpdateLocations' }
 		],
 		action: handleNewPosition
 	}
@@ -88,6 +127,7 @@ manager.delegate = locationDelegate;
 manager.startUpdatingLocation();
 if (CLLocationManager.locationServicesEnabled()) {
 	label.text = NSString.stringWithUTF8String('RUN!');
+	NSTimer.scheduledTimerWithTimeInterval(1 / TARGET_FPS, new TimerCallback(), 'update:', null, true);
 }
 else {
 	label.text = NSString.stringWithUTF8String('Please enable GPS for this app!');
