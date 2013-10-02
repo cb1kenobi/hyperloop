@@ -3,7 +3,8 @@
  */
 var should = require('should'),
     path = require('path'),
-    compiler = require(path.join(__dirname,'..','lib','compiler.js')),
+    compiler = require('../lib/compiler'),
+    //compiler = require(path.join(__dirname,'..','lib','compiler.js')),
     sf = path.join(__dirname,'..','lib','sourcefile.js'),
     Uglify = require('uglify-js'),
     SourceFile = require(sf).SourceFile;
@@ -109,7 +110,7 @@ describe("compiler", function() {
 		sourcefile.symbols[0].source.should.be.eql('@compiler'+toJS(obj));
 	});
 
-	it("should transform simple @memory", function() {
+	it("should transform @memory with number", function() {
 		var source = "var mem=@memory(1024);",
 			sourcefile = new MockSourceFile(),
 			ast = compiler.compile(source, 'test', sourcefile),
@@ -118,6 +119,25 @@ describe("compiler", function() {
 		sourcefile.name.should.be.eql('test');
 		sourcefile.filename.should.be.eql('/test');
 		sourcefile.dirname.should.be.eql('/');
+	});
+
+	it("should transform @memory with no params", function() {
+		var source = "var mem=@memory();",
+			sourcefile = new MockSourceFile(),
+			ast = compiler.compile(source, 'test', sourcefile),
+			code = compiler.compress(ast,{},'test');
+		code.should.eql('var mem=new JSBuffer;');
+		sourcefile.name.should.be.eql('test');
+		sourcefile.filename.should.be.eql('/test');
+		sourcefile.dirname.should.be.eql('/');
+	});
+
+	it("should throw when @memory gets bad params", function() {
+		(function() {
+			var source = "var mem=@memory('badvalue');",
+				sourcefile = new MockSourceFile(),
+				ast = compiler.compile(source, 'test', sourcefile);
+		}).should.throw(/Invalid/);
 	});
 
 	it("should transform simple @owner", function() {
