@@ -37,16 +37,17 @@ extern char HyperloopJSValueRefTochar (JSContextRef ctx, JSValueRef object, JSVa
     XCTAssertTrue(result=='a', @"result should have been a, was: %c",result);
 }
 
-extern JSValueRef Hyperloopchar_PToJSValueRef (JSContextRef ctx, char * object);
+extern JSValueRef Hyperloopchar_PToJSValueRef (JSContextRef ctx, char * object, size_t len);
 - (void)testHyperloopchar__ToJSValueRef
 {
-    JSValueRef value = Hyperloopchar_PToJSValueRef(globalContext, "abc");
+    char *abc = "abc";
+    JSValueRef value = Hyperloopchar_PToJSValueRef(globalContext, abc, malloc_size(abc));
     XCTAssertTrue(value!=NULL, @"JSValueRef was NULL");
     JSObjectRef object = JSValueToObject(globalContext, value, NULL);
     XCTAssertTrue(HyperloopPrivateObjectIsType(object, JSPrivateObjectTypeJSBuffer),@"object should have been JSBuffer");
     JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object);
     XCTAssertTrue(buffer!=NULL, @"buffer should have not been NULL");
-    size_t len = sizeof("abc") / sizeof(char);
+    size_t len = malloc_size(abc);
     XCTAssertTrue(buffer->length == len, @"buffer length should have been %d, was: %d", (int)len, (int)buffer->length);
 }
 
@@ -240,18 +241,18 @@ extern float HyperloopJSValueRefTofloat (JSContextRef ctx, JSValueRef object, JS
     XCTAssertTrue(result==123, @"result should not have been 123, was: %f",result);
 }
 
-extern JSValueRef Hyperloopint_PToJSValueRef (JSContextRef ctx, int * object);
+extern JSValueRef Hyperloopint_PToJSValueRef (JSContextRef ctx, int * object, size_t length);
 - (void)testHyperloopint_PToJSValueRef
 {
     int *i = malloc(sizeof(int)*1);
     i[0]=123;
-    JSValueRef value = Hyperloopint_PToJSValueRef(globalContext,i);
+    JSValueRef value = Hyperloopint_PToJSValueRef(globalContext,i,malloc_size(i));
     XCTAssertTrue(value!=NULL, @"JSValueRef was NULL");
     JSObjectRef object = JSValueToObject(globalContext, value, NULL);
     XCTAssertTrue(HyperloopPrivateObjectIsType(object, JSPrivateObjectTypeJSBuffer),@"object should have been JSBuffer");
     JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object);
     XCTAssertTrue(buffer!=NULL, @"buffer should have not been NULL");
-    size_t len = sizeof(i);
+    size_t len = malloc_size(i);
     XCTAssertTrue(buffer->length == len, @"buffer length should have been %d, was: %d", (int)len,(int)buffer->length);
     XCTAssertTrue((int)((int*)buffer->buffer)[0]==123, @"result should not have been 123, was: %d",(int)((int*)buffer->buffer)[0]);
 }
@@ -449,18 +450,18 @@ extern int* HyperloopJSValueRefToint__19_ (JSContextRef ctx, JSValueRef object, 
     free(result);
 }
 
-extern JSValueRef Hyperloopinteger_t_PToJSValueRef (JSContextRef ctx, integer_t * object);
+extern JSValueRef Hyperloopinteger_t_PToJSValueRef (JSContextRef ctx, integer_t * object, size_t length);
 - (void)testHyperloopinteger_t_PToJSValueRef
 {
     integer_t *i = malloc(sizeof(integer_t)*1);
     i[0] = 123;
-    JSValueRef value = Hyperloopinteger_t_PToJSValueRef(globalContext,i);
+    JSValueRef value = Hyperloopinteger_t_PToJSValueRef(globalContext,i, malloc_size(i));
     XCTAssertTrue(value!=NULL, @"JSValueRef was NULL");
     JSObjectRef object = JSValueToObject(globalContext, value, NULL);
     XCTAssertTrue(HyperloopPrivateObjectIsType(object, JSPrivateObjectTypeJSBuffer),@"object should have been JSBuffer");
     JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object);
     XCTAssertTrue(buffer!=NULL, @"buffer should have not been NULL");
-    size_t len = sizeof(i);
+    size_t len = malloc_size(i);
     XCTAssertTrue(buffer->length == len, @"buffer length should have been %d, was: %d", (int)len,(int)buffer->length);
     XCTAssertTrue((integer_t)((integer_t*)buffer->buffer)[0]==123, @"result should not have been 123, was: %d",(integer_t)((integer_t*)buffer->buffer)[0]);
     free(i);
@@ -660,18 +661,18 @@ extern signed char HyperloopJSValueRefTosigned_char (JSContextRef ctx, JSValueRe
     HyperloopDestroyPrivateObject(value);
 }
 
-extern JSValueRef Hyperloopunichar_PToJSValueRef (JSContextRef ctx, UniChar * object);
+extern JSValueRef Hyperloopunichar_PToJSValueRef (JSContextRef ctx, UniChar * object, size_t len);
 - (void)testHyperloopunichar_PToJSValueRef
 {
     UniChar *i = malloc(sizeof(UniChar)*1);
     i[0] = 0x263A; //☺
-    JSValueRef value = Hyperloopunichar_PToJSValueRef(globalContext,i);
+    JSValueRef value = Hyperloopunichar_PToJSValueRef(globalContext,i,malloc_size(i));
     XCTAssertTrue(value!=NULL, @"JSValueRef was NULL");
     JSObjectRef object = JSValueToObject(globalContext, value, NULL);
     XCTAssertTrue(HyperloopPrivateObjectIsType(object, JSPrivateObjectTypeJSBuffer),@"object should have been JSBuffer");
     JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object);
     XCTAssertTrue(buffer!=NULL, @"buffer should have not been NULL");
-    size_t len = sizeof(i);
+    size_t len = malloc_size(i);
     XCTAssertTrue(buffer->length == len, @"buffer length should have been %d, was: %d", (int)len,(int)buffer->length);
     XCTAssertTrue((UniChar)((UniChar*)buffer->buffer)[0]==0x263A, @"result should not have been 0x263A, was: 0x%X",(UniChar)((UniChar*)buffer->buffer)[0]);
     free(i);
@@ -768,16 +769,17 @@ extern unsigned char HyperloopJSValueRefTounsigned_char (JSContextRef ctx, JSVal
     HyperloopDestroyPrivateObject(value);
 }
 
-extern JSValueRef Hyperloopunsigned_char_PToJSValueRef (JSContextRef ctx, unsigned char * object);
+extern JSValueRef Hyperloopunsigned_char_PToJSValueRef (JSContextRef ctx, unsigned char * object, size_t length);
 - (void)testHyperloopunsigned_char_PToJSValueRef
 {
-    JSValueRef value = Hyperloopunsigned_char_PToJSValueRef(globalContext, (unsigned char*)"abc");
+    char *abc = "abc";
+    JSValueRef value = Hyperloopunsigned_char_PToJSValueRef(globalContext, (unsigned char*)abc, malloc_size(abc));
     XCTAssertTrue(value!=NULL, @"JSValueRef was NULL");
     JSObjectRef object = JSValueToObject(globalContext, value, NULL);
     XCTAssertTrue(HyperloopPrivateObjectIsType(object, JSPrivateObjectTypeJSBuffer),@"object should have been JSBuffer");
     JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(object);
     XCTAssertTrue(buffer!=NULL, @"buffer should have not been NULL");
-    size_t len = sizeof("abc") / sizeof(unsigned char);
+    size_t len = malloc_size(abc);
     XCTAssertTrue(buffer->length == len, @"buffer length should have been %d, was: %d", (int)len, (int)buffer->length);
 }
 

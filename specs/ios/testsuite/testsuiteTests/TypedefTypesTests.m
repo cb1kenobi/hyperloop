@@ -14,7 +14,7 @@
 extern JSValueRef HyperloopCGFloatToJSValueRef (JSContextRef ctx, CGFloat object);
 extern CGFloat HyperloopJSValueRefToCGFloat (JSContextRef ctx, JSValueRef object, JSValueRef *exception, bool *cleanup);
 
-extern JSValueRef HyperloopCGFloat_PToJSValueRef (JSContextRef ctx, CGFloat * object);
+extern JSValueRef HyperloopCGFloat_PToJSValueRef (JSContextRef ctx, CGFloat * object, size_t len);
 extern CGFloat * HyperloopJSValueRefToCGFloat_P (JSContextRef ctx, JSValueRef object, JSValueRef *exception, bool *cleanup);
 
 
@@ -33,10 +33,10 @@ extern CGFloat * HyperloopJSValueRefToCGFloat_P (JSContextRef ctx, JSValueRef ob
     XCTAssertTrue(f==f2, @"f2 wasn't expected, was: %f",f2);
 }
 
-- (void)testCGFloatPointer
+- (void)testCGFloatPointerAsArray
 {
     CGFloat f[] = {123.0f,456.0f};
-    JSValueRef value = HyperloopCGFloat_PToJSValueRef(globalContext,f);
+    JSValueRef value = HyperloopCGFloat_PToJSValueRef(globalContext,f,sizeof(f));
     XCTAssertTrue(JSValueIsObject(globalContext, value), @"value was not an object");
     JSValueRef exception = NULL;
     bool cleanup = false;
@@ -45,6 +45,25 @@ extern CGFloat * HyperloopJSValueRefToCGFloat_P (JSContextRef ctx, JSValueRef ob
     XCTAssertTrue(cleanup==false, @"cleanup was true, should have been false");
     XCTAssertTrue(result!=NULL, @"result was NULL");
     XCTAssertTrue(f[0]==result[0], @"result[0] was not 123.0, was: %f",result[0]);
+    XCTAssertTrue(f[1]==result[1], @"result[1] was not 456.0, was: %f",result[1]);
+}
+
+- (void)testCGFloatPointer
+{
+    CGFloat *f = malloc(sizeof(CGFloat)*2);
+    f[0]=123.0f;
+    f[1]=456.0f;
+    JSValueRef value = HyperloopCGFloat_PToJSValueRef(globalContext,f,malloc_size(f));
+    XCTAssertTrue(JSValueIsObject(globalContext, value), @"value was not an object");
+    JSValueRef exception = NULL;
+    bool cleanup = false;
+    CGFloat *result = HyperloopJSValueRefToCGFloat_P(globalContext,value,&exception,&cleanup);
+    XCTAssertTrue(exception==NULL, @"exception was not NULL");
+    XCTAssertTrue(cleanup==false, @"cleanup was true, should have been false");
+    XCTAssertTrue(result!=NULL, @"result was NULL");
+    XCTAssertTrue(f[0]==result[0], @"result[0] was not 123.0, was: %f",result[0]);
+    XCTAssertTrue(f[1]==result[1], @"result[1] was not 456.0, was: %f",result[1]);
+    free(f);
 }
 
 @end

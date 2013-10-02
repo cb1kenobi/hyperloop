@@ -8,6 +8,7 @@
  */
 @import JavaScriptCore;
 #import <objc/runtime.h>
+#import <malloc/malloc.h>
 #import <zlib.h>
 #import "JSBuffer.h"
 #import "JSOwner.h"
