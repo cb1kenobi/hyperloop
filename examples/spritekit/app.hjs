@@ -10,6 +10,7 @@
 @import('Foundation/NSObject');
 @import('Foundation/NSString');
 @import('Foundation/NSSet');
+@import('Foundation/NSMutableArray');
 @import('SpriteKit/SKView');
 @import('SpriteKit/SKScene');
 @import('SpriteKit/SKEffectNode');
@@ -17,6 +18,7 @@
 @import('SpriteKit/SKLabelNode');
 @import('SpriteKit/SKSpriteNode');
 @import('SpriteKit/SKAction');
+@import('SpriteKit/SKTexture');
 @import('CoreFoundation/SKSceneScaleModeAspectFill');
 
 var __ = NSString.stringWithUTF8String;
@@ -27,9 +29,9 @@ var log = function(obj){
 	console.log(Object.keys(obj).join('\n'));
 }
 
+// get the main window
 var keyWindow = UIApplication.sharedApplication().keyWindow;
 var rootView = keyWindow.rootViewController.view;
-keyWindow.backgroundColor = UIColor.blackColor();
 
 // init the SKView
 var skView = new SKView();
@@ -43,27 +45,43 @@ keyWindow.addSubview(skView);
 // create a scene based on the view
 var scene = SKScene.sceneWithSize(skView.bounds.size);
 scene.scaleMode = SKSceneScaleModeAspectFill;
-scene.backgroundColor = UIColor.colorWithRed(0.15, 0.15, 0.3, 1.0);
+scene.backgroundColor = UIColor.colorWithRed(0.9, 0.9, 0.9, 1.0);
 
-// add a hello world label to the scene
-var myLabel = SKLabelNode.labelNodeWithFontNamed(__("Chalkduster"));
-myLabel.text = __("Hello, World!");
-myLabel.fontSize = 30;
-myLabel.position = CGPointMake(CGRectGetMidX(scene.frame), CGRectGetMidY(scene.frame));
-scene.addChild(myLabel);
+// add background image
+var bg = SKSpriteNode.spriteNodeWithImageNamed(__('background'));
+bg.position = CGPointMake(320/2, 480/2);
+scene.addChild(bg);
 
-function addShip() {
-	// create the spaceship
-	var sprite = SKSpriteNode.spriteNodeWithImageNamed(__("Spaceship"));
-	sprite.position = CGPointMake(320 * Math.random(), 480 * Math.random());
-	sprite.size = CGSizeMake(50, 50);
-	scene.addChild(sprite);
+// create the sprite
+var sprite = SKSpriteNode.spriteNodeWithImageNamed(__("dragon/Slice-1"));
+sprite.position = CGPointMake(320/2, 480/2-25);
+sprite.size = CGSizeMake(48*3, 107*3);
+scene.addChild(sprite);
 
-	// spin it
-	var action = SKAction.rotateByAngle(3.14*2, Math.ceil(3 * Math.random()));
-	sprite.runAction(SKAction.repeatActionForever(action));
-}
-for (var i = 0; i < 50; i++) { addShip(); }
+// Create an array of sprite textures
+var textures = NSMutableArray.array();
+textures.addObject(SKTexture.textureWithImageNamed(__('dragon/Slice-1')));
+textures.addObject(SKTexture.textureWithImageNamed(__('dragon/Slice-2')));
+textures.addObject(SKTexture.textureWithImageNamed(__('dragon/Slice-3')));
+textures.addObject(SKTexture.textureWithImageNamed(__('dragon/Slice-4')));
+textures.addObject(SKTexture.textureWithImageNamed(__('dragon/Slice-5')));
+textures.addObject(SKTexture.textureWithImageNamed(__('dragon/Slice-6')));
+textures.addObject(SKTexture.textureWithImageNamed(__('dragon/Slice-7')));
+
+// animate through sprite images
+var frameDuration = 0.15;
+var action1 = SKAction.animateWithTextures(textures, frameDuration);
+sprite.runAction(SKAction.repeatActionForever(action1));
+
+// animate "jumping" sequence
+var action2 = SKAction.moveByX(0, 100, 4 * frameDuration / 2);
+var action3 = action2.reversedAction();
+var actions = NSMutableArray.array();
+actions.addObject(SKAction.waitForDuration(frameDuration * 2));
+actions.addObject(action2);
+actions.addObject(action3);
+actions.addObject(SKAction.waitForDuration(frameDuration));
+sprite.runAction(SKAction.repeatActionForever(SKAction.sequence(actions)));
 
 // present scene
 skView.presentScene(scene);
