@@ -1,0 +1,69 @@
+@import('UIKit/UIApplication');
+@import('UIKit/UIColor');
+@import('UIKit/UIEvent');
+@import('UIKit/UIResponder');
+@import('CoreGraphics/CGRectMake');
+@import('CoreGraphics/CGSizeMake');
+@import('QuartzCore/CGRectGetMidX');
+@import('QuartzCore/CGRectGetMidY');
+@import('QuartzCore/CGPointMake');
+@import('Foundation/NSObject');
+@import('Foundation/NSString');
+@import('Foundation/NSSet');
+@import('SpriteKit/SKView');
+@import('SpriteKit/SKScene');
+@import('SpriteKit/SKEffectNode');
+@import('SpriteKit/SKNode');
+@import('SpriteKit/SKLabelNode');
+@import('SpriteKit/SKSpriteNode');
+@import('SpriteKit/SKAction');
+@import('CoreFoundation/SKSceneScaleModeAspectFill');
+
+var __ = NSString.stringWithUTF8String;
+var log = function(obj){
+	if (obj) {
+		console.log(Object.keys(obj.__proto__).join('\n'));
+	}
+	console.log(Object.keys(obj).join('\n'));
+}
+
+var keyWindow = UIApplication.sharedApplication().keyWindow;
+var rootView = keyWindow.rootViewController.view;
+keyWindow.backgroundColor = UIColor.blackColor();
+
+// init the SKView
+var skView = new SKView();
+skView.frame = CGRectMake(0, 0, 320, 480);
+skView.setShowsFPS(true);
+skView.setShowsNodeCount(true);
+
+// add SKView to the main window
+keyWindow.addSubview(skView);
+
+// create a scene based on the view
+var scene = SKScene.sceneWithSize(skView.bounds.size);
+scene.scaleMode = SKSceneScaleModeAspectFill;
+scene.backgroundColor = UIColor.colorWithRed(0.15, 0.15, 0.3, 1.0);
+
+// add a hello world label to the scene
+var myLabel = SKLabelNode.labelNodeWithFontNamed(__("Chalkduster"));
+myLabel.text = __("Hello, World!");
+myLabel.fontSize = 30;
+myLabel.position = CGPointMake(CGRectGetMidX(scene.frame), CGRectGetMidY(scene.frame));
+scene.addChild(myLabel);
+
+function addShip() {
+	// create the spaceship
+	var sprite = SKSpriteNode.spriteNodeWithImageNamed(__("Spaceship"));
+	sprite.position = CGPointMake(320 * Math.random(), 480 * Math.random());
+	sprite.size = CGSizeMake(50, 50);
+	scene.addChild(sprite);
+
+	// spin it
+	var action = SKAction.rotateByAngle(3.14*2, Math.ceil(3 * Math.random()));
+	sprite.runAction(SKAction.repeatActionForever(action));
+}
+for (var i = 0; i < 50; i++) { addShip(); }
+
+// present scene
+skView.presentScene(scene);
