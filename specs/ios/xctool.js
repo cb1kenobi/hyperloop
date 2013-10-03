@@ -26,7 +26,6 @@ describe("ios xctool", function(){
 
 	it.only("should run xctool tests", function(done){
 		var dir = path.join(__dirname,'testsuite'),
-			genfile = path.join(dir, 'testsuite','compile.m'),
 			xctool = path.join(__dirname,'../../tools/xctool/xctool.sh'),
 			project = path.join(dir, 'testsuite.xcodeproj'),
 			args = ['-project',project,'-scheme', 'testsuite', '-sdk', 'iphonesimulator', '-reporter', 'pretty', 'clean', 'test'],

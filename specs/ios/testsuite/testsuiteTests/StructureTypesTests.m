@@ -8,9 +8,9 @@
  */
 #import "JSBaseTestCase.h"
 
-JSObjectRef MakeObjectForNSRange (JSContextRef ctx, NSRange *instance);
-JSObjectRef MakeObjectForCGRect (JSContextRef ctx, CGRect *rect);
-JSObjectRef MakeObjectForSEL (JSContextRef ctx, SEL selector);
+JSValueRef HyperloopNSRangeToJSValueRef (JSContextRef ctx, NSRange * instance);
+JSValueRef HyperloopCGRectToJSValueRef (JSContextRef ctx, CGRect * instance);
+JSValueRef HyperloopSELToJSValueRef (JSContextRef ctx, SEL instance);
 
 
 @interface StructureTypesTests : JSBaseTestCase
@@ -24,7 +24,8 @@ JSObjectRef MakeObjectForSEL (JSContextRef ctx, SEL selector);
     range.length = 1;
     range.location = 2;
     
-    JSObjectRef object = MakeObjectForNSRange(globalContext, &range);
+    JSValueRef value = HyperloopNSRangeToJSValueRef(globalContext, &range);
+    JSObjectRef object = JSValueToObject(globalContext, value, NULL);
     [self assertNumberProperty:object property:@"length" value:1];
     [self assertNumberProperty:object property:@"location" value:2];
 }
@@ -35,7 +36,8 @@ JSObjectRef MakeObjectForSEL (JSContextRef ctx, SEL selector);
     rect.origin = CGPointMake(1, 2);
     rect.size = CGSizeMake(3, 4);
     
-    JSObjectRef object = MakeObjectForCGRect(globalContext, &rect);
+    JSValueRef value = HyperloopCGRectToJSValueRef(globalContext, &rect);
+    JSObjectRef object = JSValueToObject(globalContext, value, NULL);
     
     JSValueRef exception = NULL;
     JSStringRef originProp = JSStringCreateWithUTF8CString("origin");
@@ -56,7 +58,8 @@ JSObjectRef MakeObjectForSEL (JSContextRef ctx, SEL selector);
 - (void)testSEL
 {
     SEL selector = @selector(testSEL);
-    JSObjectRef object = MakeObjectForSEL(globalContext, selector);
+    JSValueRef value = HyperloopSELToJSValueRef(globalContext, selector);
+    JSObjectRef object = JSValueToObject(globalContext, value, NULL);
     JSValueRef exception = NULL;
     JSStringRef toStringProp = JSStringCreateWithUTF8CString("toString");
     JSValueRef toString = JSObjectGetProperty(globalContext, object, toStringProp, &exception);

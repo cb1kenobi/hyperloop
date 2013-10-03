@@ -298,11 +298,11 @@ extern int HyperloopJSValueRefToint (JSContextRef ctx, JSValueRef object, JSValu
     XCTAssertTrue(result==123, @"result should have been '123', was: %d",result);
 }
 
-extern JSValueRef Hyperloopint___ToJSValueRef (JSContextRef ctx, int* object);
+extern JSValueRef Hyperloopint___ToJSValueRef (JSContextRef ctx, int* object, size_t length);
 - (void)testHyperloopint___ToJSValueRef
 {
     int i[] = {123};
-    JSValueRef value = Hyperloopint___ToJSValueRef(globalContext,i);
+    JSValueRef value = Hyperloopint___ToJSValueRef(globalContext,i,sizeof(i));
     XCTAssertTrue(value!=NULL, @"JSValueRef was NULL");
     JSObjectRef object = JSValueToObject(globalContext, value, NULL);
     XCTAssertTrue(HyperloopPrivateObjectIsType(object, JSPrivateObjectTypeJSBuffer),@"object should have been JSBuffer");
@@ -488,12 +488,12 @@ extern integer_t * HyperloopJSValueRefTointeger_t_P (JSContextRef ctx, JSValueRe
     HyperloopDestroyPrivateObject(value);
 }
 
-extern JSValueRef Hyperloopinteger_t__1024_ToJSValueRef (JSContextRef ctx, integer_t* object);
-- (void)testHyperloopinteger_t__1024_ToJSValueRef
+extern JSValueRef Hyperloopinteger_t_1024_ToJSValueRef (JSContextRef ctx, integer_t* object);
+- (void)testHyperloopinteger_t_1024_ToJSValueRef
 {
     integer_t *i = malloc(sizeof(integer_t)*1024);
     i[0] = 123;
-    JSValueRef value = Hyperloopinteger_t__1024_ToJSValueRef(globalContext,i);
+    JSValueRef value = Hyperloopinteger_t_1024_ToJSValueRef(globalContext,i);
     XCTAssertTrue(value!=NULL, @"JSValueRef was NULL");
     JSObjectRef object = JSValueToObject(globalContext, value, NULL);
     XCTAssertTrue(HyperloopPrivateObjectIsType(object, JSPrivateObjectTypeJSBuffer),@"object should have been JSBuffer");
@@ -505,8 +505,8 @@ extern JSValueRef Hyperloopinteger_t__1024_ToJSValueRef (JSContextRef ctx, integ
     free(i);
 }
 
-extern integer_t* HyperloopJSValueRefTointeger_t__1024_ (JSContextRef ctx, JSValueRef object, JSValueRef *exception, bool *cleanup);
-- (void)testHyperloopJSValueRefTointeger_t__1024_
+extern integer_t* HyperloopJSValueRefTointeger_t_1024_ (JSContextRef ctx, JSValueRef object, JSValueRef *exception, bool *cleanup);
+- (void)testHyperloopJSValueRefTointeger_t_1024_
 {
     JSBuffer *buffer = malloc(sizeof(JSBuffer));
     integer_t i[1];
@@ -517,7 +517,7 @@ extern integer_t* HyperloopJSValueRefTointeger_t__1024_ (JSContextRef ctx, JSVal
     JSObjectRef value = MakeObjectForJSBuffer(globalContext,buffer);
     JSValueRef exception = NULL;
     bool cleanup = false;
-    integer_t *result = HyperloopJSValueRefTointeger_t__1024_(globalContext, value, &exception, &cleanup);
+    integer_t *result = HyperloopJSValueRefTointeger_t_1024_(globalContext, value, &exception, &cleanup);
     XCTAssertTrue(exception==NULL, @"exception should have been NULL");
     XCTAssertTrue(cleanup==true, @"cleanup should have been true");
     XCTAssertTrue(result!=NULL, @"result should not have been NULL");

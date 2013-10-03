@@ -15,11 +15,9 @@
  */
 JSPrivateObject* HyperloopMakePrivateObjectForID(JSContextRef ctx, id object)
 {
-#ifdef LOG_ALLOC_DEALLOC
-	NSLog(@"HyperloopMakePrivateObjectForID %p, %@",ctx,object);
-#endif
 	JSPrivateObject *p = (JSPrivateObject*)malloc(sizeof(JSPrivateObject));
 	p->object = (void *)object;
+    p->value = NAN;
 	p->type = JSPrivateObjectTypeID;
 	p->map = nil;
 	p->context = ctx;
@@ -34,6 +32,7 @@ JSPrivateObject* HyperloopMakePrivateObjectForJSBuffer(JSBuffer *buffer)
 {
 	JSPrivateObject *p = (JSPrivateObject*)malloc(sizeof(JSPrivateObject));
 	p->object = (void *)buffer;
+    p->value = NAN;
 	p->type = JSPrivateObjectTypeJSBuffer;
 	p->map = nil;
 	p->context = NULL;
@@ -47,6 +46,7 @@ JSPrivateObject* HyperloopMakePrivateObjectForClass(Class cls)
 {
 	JSPrivateObject *p = (JSPrivateObject*)malloc(sizeof(JSPrivateObject));
 	p->object = (void *)cls;
+    p->value = NAN;
 	p->type = JSPrivateObjectTypeClass;
 	p->map = nil;
 	p->context = NULL;
@@ -60,6 +60,7 @@ JSPrivateObject* HyperloopMakePrivateObjectForPointer(void *pointer)
 {
     JSPrivateObject *p = (JSPrivateObject*)malloc(sizeof(JSPrivateObject));
     p->object = pointer;
+    p->value = NAN;
     p->type = JSPrivateObjectTypePointer;
     p->map = nil;
     p->context = NULL;
