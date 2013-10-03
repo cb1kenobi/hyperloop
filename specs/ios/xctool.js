@@ -50,7 +50,9 @@ describe("ios xctool", function(){
 						'int [19]',
 						'integer_t *',
 						'integer_t[1024]',
-						'CGFloat'
+						'CGFloat',
+						'EAGLGetVersion',
+						'CGPathCreateMutable'
 			];
 
 			temp.mkdir('hltest', function(err, dirPath) {
