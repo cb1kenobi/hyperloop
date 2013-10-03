@@ -575,3 +575,17 @@ id HyperloopDynamicInvoke (JSContextRef ctx, const JSValueRef *arguments, size_t
 
     return [returnValue autorelease];
 }
+
+/**
+ * attempt to convert a JSString to a NSString
+ */
+NSString* HyperloopToNSStringFromString(JSContextRef ctx, JSStringRef stringRef)
+{
+    size_t buflen = JSStringGetMaximumUTF8CStringSize(stringRef);
+    char buf[buflen];
+    buflen = JSStringGetUTF8CString(stringRef, buf, buflen);
+    buf[buflen] = '\0';
+    NSString *result = [NSString stringWithUTF8String:buf];
+    JSStringRelease(stringRef);
+    return result;
+}

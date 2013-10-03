@@ -130,6 +130,11 @@ NSString* HyperloopToNSString(JSContextRef ctx, JSValueRef value);
 JSContextRef HyperloopCreateVM (NSString *name);
 
 /**
+ * attempt to convert a JSString to a NSString
+ */
+NSString* HyperloopToNSStringFromString(JSContextRef ctx, JSStringRef value);
+
+/**
  * invoke a dynamic argument
  */
 id HyperloopDynamicInvoke (JSContextRef ctx, const JSValueRef *arguments, size_t argumentCount, id target, SEL selector);
