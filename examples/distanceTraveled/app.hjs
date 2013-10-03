@@ -1,15 +1,20 @@
 @import('Foundation/NSObject');
 @import('Foundation/NSString');
+@import('Foundation/NSTimer');
 @import('Foundation/NSLog');
+@import('Foundation/NSMakeRange');
 @import('CoreGraphics/CGRectMake');
 
 @import('UIKit/UIApplication');
 @import('UIKit/UIWindow');
 @import('UIKit/UIColor');
 @import('UIKit/UIFont');
+@import('UIKit/NSAttributedString');
+@import('UIKit/NSMutableAttributedString');
+@import('CoreText/kCTForegroundColorAttributeName');
 @import('UIKit/UILabel');
-@import('UIKit/UILineBreakModeWordWrap');
 @import('UIKit/NSTextAlignmentCenter');
+@import('UIKit/NSLineBreakByTruncatingTail');
 
 @import("CoreLocation/CLLocationManager");
 @import("CoreLocation/CLLocation");
@@ -17,54 +22,97 @@
 @import("CoreLocation/kCLDistanceFilterNone");
 @import("CoreLocation/kCLLocationAccuracyBest");
 
+var TARGET_FPS = 60;
+
+/*
+ Utility.
+ */
+String.prototype.toUTF8 = function() {
+	return NSString.stringWithUTF8String('' + this);
+};
 
 /*
  Create our simple UI.
  */
 var win = UIApplication.sharedApplication().keyWindow,
 	label = new UILabel();
-//initWithRed:green:blue:alpha
-label.textColor = UIColor.darkTextColor;
+label.textColor = UIColor.darkTextColor();
 label.frame = CGRectMake(20, 20, 280, 280);
 label.font = UIFont.systemFontOfSize(72);
 label.textAlignment = NSTextAlignmentCenter;
-label.text = NSString.stringWithUTF8String('Loading...');
-label.numberOfLines = 2;
-label.lineBreakMode = UILineBreakModeWordWrap;
+label.text = 'Loading...'.toUTF8();
+label.lineBreakMode = NSLineBreakByTruncatingTail;
+label.numberOfLinesMode = 2;
 win.addSubview(label);
 
 /*
  Distance calculation.
  */
-var lastLocation,
-	totalFeetTraveled = 0;
+var calculateManually = false,
+	lastLocation,
+	lastSpeed = 0,
+	totalTraveled = 0,
+	totalDisplayed = 0;
 
 function handleNewPosition(params) {
 	var locations = params.didUpdateLocations;
 	for (var i = 0, iL = locations.count(); i < iL; i++) {
 		var location = locations.objectAtIndex(i),
 			coordinate = location.coordinate;
-		console.log(location);
 		if (lastLocation) {
-			var lat1 = lastLocation.latitude, lon1 = lastLocation.longitude;
-			var lat2 = coordinate.latitude, lon2 = coordinate.longitude;
-			var kmTraveled = 3963.0 * Math.acos(
-				Math.sin(lat1 / 57.2958) * Math.sin(lat2 / 57.2958)
-					+ Math.cos(lat1 / 57.2958) * Math.cos(lat2 / 57.2958)
-					* Math.cos(lon2 / 57.2958 - lon1 / 57.2958)
-			);
-			totalFeetTraveled += kmTraveled * 3280.8399;
-			label.text = NSString.stringWithUTF8String('Traveled ' + totalFeetTraveled + 'ft!');
+			if (calculateManually) {
+				var lat1 = lastLocation.latitude, lon1 = lastLocation.longitude,
+					lat2 = coordinate.latitude, lon2 = coordinate.longitude,
+					kmTraveled = 3963.0 * Math.acos(
+						Math.sin(lat1 / 57.2958) * Math.sin(lat2 / 57.2958)
+							+ Math.cos(lat1 / 57.2958) * Math.cos(lat2 / 57.2958)
+							* Math.cos(lon2 / 57.2958 - lon1 / 57.2958)
+					);
+				totalTraveled += kmTraveled * 3280.8399;
+			}
+			else {
+				totalTraveled += location.distanceFromLocation(lastLocation) * 3.28084;
+			}
 		}
-		lastLocation = location.coordinate;
+		lastSpeed = location.speed;
+		lastLocation = location;
 	}
 }
+
+/*
+ Update the displayed amount.
+ */
+@class('TimerCallback', NSObject, [], [
+	{
+		name: 'update',
+		returnType: 'void',
+		arguments: [ { type: 'id', name: 'sender' } ],
+		action: update
+	}
+]);
+function update() {
+	if (totalTraveled && Math.abs(totalTraveled - totalDisplayed) > 0.1) {
+		totalDisplayed += Math.max((totalTraveled - totalDisplayed) / TARGET_FPS, 0.1);
+		var mas = new NSMutableAttributedString(),
+			distance = (totalDisplayed | 0) + 'ft\n',
+			distanceRange = NSMakeRange(0, distance.length),
+			speed = (lastSpeed | 0) + 'mph',
+			speedRange = NSMakeRange(distance.length, speed.length),
+			iws = mas.initWithString((distance + speed).toUTF8());
+		
+		iws.addAttribute(kCTForegroundColorAttributeName, UIColor.redColor(), distanceRange);
+		iws.addAttribute(kCTForegroundColorAttributeName, UIColor.blueColor(), speedRange);
+		
+		label.attributedText = iws;
+	}
+}
+
 
 /*
  Location manager hooks.
  */
 var manager = new CLLocationManager();
-manager.purpose = NSString.stringWithUTF8String('To track how far you have traveled, of course!');
+manager.purpose = 'To track how far you have traveled, of course!'.toUTF8();
 manager.distanceFilter = kCLDistanceFilterNone;
 manager.desiredAccuracy = kCLLocationAccuracyBest;
 @class('LocDelegate', NSObject, [ 'CLLocationManagerDelegate' ], [
@@ -72,8 +120,8 @@ manager.desiredAccuracy = kCLLocationAccuracyBest;
 		name: 'locationManager',
 		returnType: 'void',
 		arguments: [
-			{type: 'CLLocationManager', name: 'locationManager'},
-			{type: 'NSArray', name: 'didUpdateLocations'}
+			{ type: 'CLLocationManager', name: 'locationManager' },
+			{ type: 'NSArray', name: 'didUpdateLocations' }
 		],
 		action: handleNewPosition
 	}
@@ -87,8 +135,9 @@ manager.delegate = locationDelegate;
  */
 manager.startUpdatingLocation();
 if (CLLocationManager.locationServicesEnabled()) {
-	label.text = NSString.stringWithUTF8String('RUN!');
+	label.text = 'RUN!'.toUTF8();
+	NSTimer.scheduledTimerWithTimeInterval(1 / TARGET_FPS, new TimerCallback(), 'update:', null, true);
 }
 else {
-	label.text = NSString.stringWithUTF8String('Please enable GPS for this app!');
+	label.text = 'Please enable GPS for this app!'.toUTF8();
 }

@@ -3,7 +3,8 @@
  */
 var should = require('should'),
     path = require('path'),
-    compiler = require(path.join(__dirname,'..','lib','compiler.js')),
+    compiler = require('../lib/compiler'),
+    //compiler = require(path.join(__dirname,'..','lib','compiler.js')),
     sf = path.join(__dirname,'..','lib','sourcefile.js'),
     Uglify = require('uglify-js'),
     SourceFile = require(sf).SourceFile;
@@ -28,7 +29,7 @@ MockSourceFile.prototype.parseImport = function(node, value) {
 	}
 };
 
-function toJS(obj){ 
+function toJS(obj){
 	var source = '('+JSON.stringify(obj)+')',
     	ast = Uglify.parse(source,{
         	filename:'<source>'
@@ -65,7 +66,7 @@ describe("compiler", function() {
 		sourcefile.symbols[1].should.have.property('node');
 		sourcefile.symbols[0].should.have.property('source');
 		sourcefile.symbols[1].should.have.property('source');
-		sourcefile.symbols[1].source.should.be.eql('hyperloop_import("UIKit/UIButton")');
+		sourcefile.symbols[1].source.should.be.eql('@import("UIKit/UIButton")');
 		sourcefile.symbols[0].type.should.be.eql('package');
 		sourcefile.symbols[1].type.should.be.eql('symbol');
 		sourcefile.symbols[0].value.should.be.eql('UIKit');
@@ -74,7 +75,7 @@ describe("compiler", function() {
 		sourcefile.symbols[1].framework.should.be.eql('UIKit');
 	});
 
-	it("should transform simple @native", function() {
+	it("should transform simple @compiler", function() {
 		var source = "@compiler({})",
 			sourcefile = new MockSourceFile(),
 			ast = compiler.compile(source, 'test', sourcefile),
@@ -89,10 +90,10 @@ describe("compiler", function() {
 		sourcefile.symbols[0].should.have.property('value');
 		sourcefile.symbols[0].type.should.be.eql('compiler');
 		sourcefile.symbols[0].value.should.be.eql({});
-		sourcefile.symbols[0].source.should.be.eql('hyperloop_compiler({})');
+		sourcefile.symbols[0].source.should.be.eql('@compiler({})');
 	});
 
-	it("should transform complex @native", function() {
+	it("should transform complex @compiler", function() {
 		var obj = {cflags:{'-DDEBUG':1}},
 			source = "@compiler(" + JSON.stringify(obj) + ")",
 			sourcefile = new MockSourceFile(),
@@ -106,7 +107,48 @@ describe("compiler", function() {
 		sourcefile.symbols[0].should.have.property('type');
 		sourcefile.symbols[0].should.have.property('value');
 		sourcefile.symbols[0].type.should.be.eql('compiler');
-		sourcefile.symbols[0].source.should.be.eql('hyperloop_compiler'+toJS(obj));
+		sourcefile.symbols[0].source.should.be.eql('@compiler'+toJS(obj));
+	});
+
+	it("should transform @memory with number", function() {
+		var source = "var mem=@memory(1024);",
+			sourcefile = new MockSourceFile(),
+			ast = compiler.compile(source, 'test', sourcefile),
+			code = compiler.compress(ast,{},'test');
+		code.should.eql('var mem=new JSBuffer(1024);');
+		sourcefile.name.should.be.eql('test');
+		sourcefile.filename.should.be.eql('/test');
+		sourcefile.dirname.should.be.eql('/');
+	});
+
+	it("should transform @memory with no params", function() {
+		var source = "var mem=@memory();",
+			sourcefile = new MockSourceFile(),
+			ast = compiler.compile(source, 'test', sourcefile),
+			code = compiler.compress(ast,{},'test');
+		code.should.eql('var mem=new JSBuffer;');
+		sourcefile.name.should.be.eql('test');
+		sourcefile.filename.should.be.eql('/test');
+		sourcefile.dirname.should.be.eql('/');
+	});
+
+	it("should throw when @memory gets bad params", function() {
+		(function() {
+			var source = "var mem=@memory('badvalue');",
+				sourcefile = new MockSourceFile(),
+				ast = compiler.compile(source, 'test', sourcefile);
+		}).should.throw(/Invalid/);
+	});
+
+	it("should transform simple @owner", function() {
+		var source = "var obj1,obj2;@owner(obj1,obj2);",
+			sourcefile = new MockSourceFile(),
+			ast = compiler.compile(source, 'test', sourcefile),
+			code = compiler.compress(ast,{},'test');
+		code.should.eql('var obj1,obj2;HL$TrackOwner(obj1,obj2);');
+		sourcefile.name.should.be.eql('test');
+		sourcefile.filename.should.be.eql('/test');
+		sourcefile.dirname.should.be.eql('/');
 	});
 
 	it.skip("should transform simple @class", function() {
