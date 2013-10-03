@@ -539,7 +539,7 @@
 			<key>comment</key>
 			<string>hyperloop instructions</string>
 			<key>match</key>
-			<string>\@(class|compiler|import|memory)</string>
+			<string>\@(class|compiler|import|memory|owner)</string>
 			<key>name</key>
 			<string>support.function.js.hyperloop</string>
 		</dict>
