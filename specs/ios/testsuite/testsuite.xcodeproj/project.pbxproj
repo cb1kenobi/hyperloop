@@ -11,6 +11,7 @@
 		24B04F4517F3A82100701509 /* JSBaseTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 24B04F4417F3A82100701509 /* JSBaseTestCase.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		24B04F4817FB18D500701509 /* TypedefTypesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 24B04F4717FB18D500701509 /* TypedefTypesTests.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		24B04F8E17FBCA5B00701509 /* UIViewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 24B04F8D17FBCA5B00701509 /* UIViewTests.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		24B04F9017FD0B2E00701509 /* EnumTypesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 24B04F8F17FD0B2E00701509 /* EnumTypesTests.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		24D7A8A817EDFB5B006710EB /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24D7A8A717EDFB5B006710EB /* Foundation.framework */; };
 		24D7A8AA17EDFB5B006710EB /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24D7A8A917EDFB5B006710EB /* CoreGraphics.framework */; };
 		24D7A8AC17EDFB5B006710EB /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24D7A8AB17EDFB5B006710EB /* UIKit.framework */; };
@@ -48,6 +49,7 @@
 		24B04F4617F3A87400701509 /* JSBaseTestCase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSBaseTestCase.h; sourceTree = "<group>"; };
 		24B04F4717FB18D500701509 /* TypedefTypesTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TypedefTypesTests.m; sourceTree = "<group>"; };
 		24B04F8D17FBCA5B00701509 /* UIViewTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIViewTests.m; sourceTree = "<group>"; };
+		24B04F8F17FD0B2E00701509 /* EnumTypesTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EnumTypesTests.m; sourceTree = "<group>"; };
 		24D7A8A417EDFB5B006710EB /* testsuite.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = testsuite.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		24D7A8A717EDFB5B006710EB /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		24D7A8A917EDFB5B006710EB /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -166,6 +168,7 @@
 				24D7A8D517EDFB5B006710EB /* PrimitiveTypesTests.m */,
 				24B04F4717FB18D500701509 /* TypedefTypesTests.m */,
 				24B04F8D17FBCA5B00701509 /* UIViewTests.m */,
+				24B04F8F17FD0B2E00701509 /* EnumTypesTests.m */,
 				24B04F4217F3A79200701509 /* StructureTypesTests.m */,
 				24D7A8D017EDFB5B006710EB /* Supporting Files */,
 			);
@@ -289,6 +292,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				24B04F9017FD0B2E00701509 /* EnumTypesTests.m in Sources */,
 				24B04F4317F3A79200701509 /* StructureTypesTests.m in Sources */,
 				24B04F8E17FBCA5B00701509 /* UIViewTests.m in Sources */,
 				24B04F4817FB18D500701509 /* TypedefTypesTests.m in Sources */,
