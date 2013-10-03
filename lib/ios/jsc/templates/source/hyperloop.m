@@ -466,7 +466,7 @@ JSValueRef HyperloopLogger (JSContextRef ctx, JSObjectRef function, JSObjectRef 
 /**
  * create a hyperloop VM
  */
-JSContext* HyperloopCreateVM (NSString *name)
+JSContextRef HyperloopCreateVM (NSString *name)
 {
 	Class<HyperloopModule> cls = NSClassFromString(name);
 	if (cls==nil) 
@@ -474,11 +474,7 @@ JSContext* HyperloopCreateVM (NSString *name)
 		return nil;
 	}
 
-    JSVirtualMachine *vm = [[JSVirtualMachine alloc] init];
-    JSContext *context = [[JSContext alloc] initWithVirtualMachine:vm];
-
-    // get the global context
-    JSGlobalContextRef globalContextRef = [context JSGlobalContextRef];
+    JSGlobalContextRef globalContextRef = JSGlobalContextCreate(NULL);
     JSObjectRef globalObjectref = JSContextGetGlobalObject(globalContextRef);
 
     // inject a simple console logger
@@ -492,9 +488,9 @@ JSContext* HyperloopCreateVM (NSString *name)
     JSStringRelease(consoleProperty);
 
     // load the app into the context
-    [cls load:context];
+    [cls load:globalContextRef];
 
-    return context;
+    return globalContextRef;
 }
 
 /**

@@ -36,7 +36,7 @@ typedef struct JSPrivateObject {
 @end
 
 @protocol HyperloopModule
-+(JSValue*)load:(JSContext*)context;
++(JSValueRef)load:(JSContextRef)context;
 @end
 
 /**
@@ -127,7 +127,7 @@ NSString* HyperloopToNSString(JSContextRef ctx, JSValueRef value);
 /**
  * create a hyperloop VM
  */
-JSContext* HyperloopCreateVM (NSString *name);
+JSContextRef HyperloopCreateVM (NSString *name);
 
 /**
  * invoke a dynamic argument
