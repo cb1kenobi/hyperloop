@@ -59,4 +59,17 @@ extern JSObjectRef MakeObjectForUIView (JSContextRef ctx, UIView * instance);
     [view release];
 }
 
+- (void)testViewWithTag
+{
+    UIView *view = [[UIView alloc] init];
+    view.tag = 12345;
+    JSObjectRef object = MakeObjectForUIView(globalContext, view);
+    JSStringRef property = JSStringCreateWithUTF8CString("tag");
+    JSValueRef exception = NULL;
+    JSValueRef tagValue = JSObjectGetProperty(globalContext, object, property, &exception);
+    JSStringRelease(property);
+    [view release];
+    XCTAssertTrue(JSValueToNumber(globalContext, tagValue, &exception)==12345, @"tag is not 12345");
+}
+
 @end
