@@ -487,10 +487,56 @@ JSContextRef HyperloopCreateVM (NSString *name)
     JSStringRelease(logProperty);
     JSStringRelease(consoleProperty);
 
+    // create a hook into our global context
+    JSClassDefinition def = kJSClassDefinitionEmpty;
+    JSClassRef classDef = JSClassCreate(&def);
+    JSObjectRef wrapper = JSObjectMake(globalContextRef, classDef, globalContextRef);
+    JSStringRef prop = JSStringCreateWithUTF8CString("hyperloop$global");
+    JSObjectSetProperty(globalContextRef, globalObjectref, prop, wrapper, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum | kJSPropertyAttributeDontDelete, 0);
+    JSStringRelease(prop);
+
+    // retain it
+    JSGlobalContextRetain(globalContextRef);
+
     // load the app into the context
     [cls load:globalContextRef];
 
     return globalContextRef;
+}
+
+/**
+ * given a context, get the global context
+ */
+JSGlobalContextRef HyperloopGetGlobalContext (JSContextRef ctx) 
+{
+    JSObjectRef global = JSContextGetGlobalObject(ctx);
+    JSStringRef prop = JSStringCreateWithUTF8CString("hyperloop$global");
+    JSValueRef value = JSObjectGetProperty(ctx, global, prop, NULL);
+    JSStringRelease(prop);
+    if (JSValueIsObject(ctx,value))
+    {
+        JSObjectRef obj = JSValueToObject(ctx,value,0);
+        return (JSGlobalContextRef)JSObjectGetPrivate(obj);
+    }
+    return NULL;
+}
+
+/**
+ * destroy a hyperloop VM
+ */
+void HyperloopDestroyVM (JSContextRef ctx) 
+{
+    JSGlobalContextRef globalCtx = HyperloopGetGlobalContext(ctx);
+    if (globalCtx!=NULL)
+    {
+        JSObjectRef global = JSContextGetGlobalObject(ctx);
+        JSStringRef prop = JSStringCreateWithUTF8CString("hyperloop$global");
+        JSValueRef value = JSObjectGetProperty(ctx, global, prop, NULL);
+        JSObjectRef obj = JSValueToObject(ctx,value,0);
+        JSStringRelease(prop);
+        JSObjectSetPrivate(obj,NULL);
+        JSGlobalContextRelease(globalCtx);
+    }
 }
 
 /**
@@ -589,3 +635,4 @@ NSString* HyperloopToNSStringFromString(JSContextRef ctx, JSStringRef stringRef)
     JSStringRelease(stringRef);
     return result;
 }
+

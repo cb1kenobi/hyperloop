@@ -130,6 +130,16 @@ NSString* HyperloopToNSString(JSContextRef ctx, JSValueRef value);
 JSContextRef HyperloopCreateVM (NSString *name);
 
 /**
+ * given a context, get the global context
+ */
+JSGlobalContextRef HyperloopGetGlobalContext(JSContextRef ctx);
+
+/**
+ * destroy a hyperloop VM
+ */
+void HyperloopDestroyVM(JSContextRef ctx);
+
+/**
  * attempt to convert a JSString to a NSString
  */
 NSString* HyperloopToNSStringFromString(JSContextRef ctx, JSStringRef value);

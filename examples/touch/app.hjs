@@ -124,6 +124,7 @@ function adjustAnchorPointForGestureRecognizer(gview, gestureRecognizer)
 ]);
 
 function TouchableView(colorName) {
+	
 	var imageBaseName = NSString.stringWithUTF8String(colorName+'Square'),
 		image = UIImage.imageNamed(imageBaseName),
 		imageViewAlloc = UIImageView.alloc(),
@@ -131,16 +132,14 @@ function TouchableView(colorName) {
 		frame = imageView.frame,
 		viewAlloc = UIView.alloc(),
 		view = viewAlloc.initWithFrame(frame),
-		gestureRecognizerDelegate = new GestureRecognizer(),
+		gestureRecognizerDelegate = new GestureRecognizer(),		
 		panobj = UIPanGestureRecognizer.alloc(),
 		pinchobj = UIPinchGestureRecognizer.alloc(),
 		rotationobj = UIRotationGestureRecognizer.alloc(),
-		panGestureRecognizer = panobj.initWithTarget(gestureRecognizerDelegate,'panView:'),
-		pinchGestureRecognizer = pinchobj.initWithTarget(gestureRecognizerDelegate,'scaleView:'),
-		rotationGestureRecognizer = rotationobj.initWithTarget(gestureRecognizerDelegate,'rotateView:');
-
-	view.alpha = 0.9;
-
+		panGestureRecognizer = panobj.initWithTarget(gestureRecognizerDelegate,NSSelectorFromString('panView:')),
+		pinchGestureRecognizer = pinchobj.initWithTarget(gestureRecognizerDelegate,NSSelectorFromString('scaleView:')),
+		rotationGestureRecognizer = rotationobj.initWithTarget(gestureRecognizerDelegate,NSSelectorFromString('rotateView:'));
+	
 	view.addGestureRecognizer(panGestureRecognizer);
 	view.addGestureRecognizer(pinchGestureRecognizer);
 	view.addGestureRecognizer(rotationGestureRecognizer);
@@ -198,6 +197,7 @@ try {
 	resetViews();
 }
 catch(E) {
-	console.log(E);
+	console.log(E.message+' at '+E.line);
+	console.log(E.stack);
 }
 
