@@ -1,0 +1,129 @@
+@import('UIKit/UIApplication');
+@import('UIKit/UIScreen');
+@import('UIKit/UIColor');
+@import('CoreGraphics/CGRectMake');
+@import('CoreGraphics/CGSizeMake');
+@import('QuartzCore/CGRectGetMidX');
+@import('QuartzCore/CGRectGetMidY');
+@import('QuartzCore/CGPointMake');
+@import('Foundation/NSString');
+@import('Foundation/NSMutableArray');
+@import('Foundation/NSArray');
+@import('Foundation/NSFileManager');
+@import('Foundation/NSBundle');
+@import('SpriteKit/SKView');
+@import('SpriteKit/SKScene');
+@import('SpriteKit/SKSpriteNode');
+@import('SpriteKit/SKAction');
+@import('SpriteKit/SKTexture');
+@import('CoreFoundation/SKSceneScaleModeAspectFill');
+
+var FRAME_DURATION = 0.15,
+	screenSize = UIScreen.mainScreen().bounds.size,
+	HEIGHT = screenSize.height,
+	WIDTH = screenSize.width,
+	SPRITE_WIDTH = 48,
+	SPRITE_HEIGHT = 107;
+
+// NSString shorthand wrapper
+var __ = NSString.stringWithUTF8String;
+
+// object inspection
+function log(obj){
+	if (obj) {
+		console.log(Object.keys(obj.__proto__).join('\n'));
+	}
+	console.log(Object.keys(obj).join('\n'));
+}
+
+// given a slices folder, create an NSArray of textures for an SKAction
+function textureArrayFromSlices(slices) {
+
+	// get the default file manager
+	var manager = NSFileManager.defaultManager();
+
+	// get the path to the given slices folder
+	var path = NSBundle.mainBundle().resourcePath().stringByAppendingString(__('/' + slices));
+
+	// get the list of slice images
+	var files = manager.contentsOfDirectoryAtPath(path, null);
+
+	// Create an array of the images as textures
+	var textures = NSMutableArray.array();
+	for (var i = 0; i < files.count(); i++) {
+
+		// make sure we have an actual image
+		if (/^Slice\-\d+\.png$/.test(files.objectAtIndex(i))) {
+
+			// get the slice name based on index
+			var sliceName = slices + '/Slice-' + (i+1);
+
+			// create the texture and add it to the array
+			textures.addObject(SKTexture.textureWithImageNamed(__(sliceName)));
+		}
+	}
+
+	return textures;
+}
+
+// NSArray.arrayWithObjects variadic is not working, so here's a shim
+NSArray.arrayWithObjects = function(objects) {
+	var array = NSMutableArray.array();
+	objects.forEach(function(o) {
+		array.addObject(o);
+	});
+	return array;
+};
+
+// get the main window
+var keyWindow = UIApplication.sharedApplication().keyWindow;
+
+// init the SKView
+var skView = new SKView();
+skView.frame = CGRectMake(0, 0, WIDTH, HEIGHT);
+skView.setShowsFPS(true);
+skView.setShowsNodeCount(true);
+
+// add SKView to the main window
+keyWindow.addSubview(skView);
+
+// create a scene based on the view
+var scene = SKScene.sceneWithSize(skView.bounds.size);
+scene.scaleMode = SKSceneScaleModeAspectFill;
+scene.backgroundColor = UIColor.colorWithRed(0.9, 0.9, 0.9, 1.0);
+
+// add background image
+var bg = SKSpriteNode.spriteNodeWithImageNamed(__('background'));
+bg.position = CGPointMake(WIDTH/2, HEIGHT/2);
+scene.addChild(bg);
+
+// create the sprite
+var sprite = SKSpriteNode.spriteNodeWithImageNamed(__("dragon/Slice-1"));
+sprite.position = CGPointMake(WIDTH/2, HEIGHT/2-25);
+sprite.size = CGSizeMake(SPRITE_WIDTH*3, SPRITE_HEIGHT*3);
+scene.addChild(sprite);
+
+// create an action for cycling through the sprite textures
+var textureAction = SKAction.animateWithTextures(
+	textureArrayFromSlices('dragon'), FRAME_DURATION);
+
+// create an action sequence for "jumping"
+var jumpAction = SKAction.moveByX(0, 100, 4 * FRAME_DURATION / 2);
+var motionSequence = SKAction.sequence(NSArray.arrayWithObjects([
+	SKAction.waitForDuration(FRAME_DURATION * 2),
+	jumpAction,
+	jumpAction.reversedAction(),
+	SKAction.waitForDuration(FRAME_DURATION)
+]));
+
+// now group the actions to run in parallel
+var fullAction = SKAction.group(NSArray.arrayWithObjects([
+	textureAction,
+	motionSequence
+]));
+
+// run the composite action
+sprite.runAction(SKAction.repeatActionForever(fullAction));
+
+// present scene
+skView.presentScene(scene);
