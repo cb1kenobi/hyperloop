@@ -3,6 +3,7 @@
 @import('Foundation/NSTimer');
 @import('Foundation/NSLog');
 @import('Foundation/NSMakeRange');
+@import('Foundation/NSSelectorFromString');
 @import('CoreGraphics/CGRectMake');
 
 @import('UIKit/UIApplication');
@@ -128,7 +129,6 @@ manager.desiredAccuracy = kCLLocationAccuracyBest;
 ]);
 var locationDelegate = new LocDelegate();
 manager.delegate = locationDelegate;
-@owner(manager,locationDelegate);
 
 /*
  We're all set. Go for it!
@@ -136,7 +136,7 @@ manager.delegate = locationDelegate;
 manager.startUpdatingLocation();
 if (CLLocationManager.locationServicesEnabled()) {
 	label.text = 'RUN!'.toUTF8();
-	NSTimer.scheduledTimerWithTimeInterval(1 / TARGET_FPS, new TimerCallback(), 'update:', null, true);
+	NSTimer.scheduledTimerWithTimeInterval(1 / TARGET_FPS, new TimerCallback(), NSSelectorFromString('update:'), null, true);
 }
 else {
 	label.text = 'Please enable GPS for this app!'.toUTF8();
