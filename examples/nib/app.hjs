@@ -1,0 +1,18 @@
+@import('Foundation/NSString');
+@import('Foundation/NSBundle');
+@import('UIKit/UIScreen');
+@import('UIKit/UIApplication');
+
+var keyWindow = UIApplication.sharedApplication().keyWindow;
+var _String = NSString.stringWithUTF8String;
+var xbundle = NSBundle.mainBundle();
+
+function nibToView(name) {
+  var xib = xbundle.loadNibNamed(_String(name), null, null);
+  var xview = xib.lastObject();
+  xview.frame = UIScreen.mainScreen().applicationFrame;
+  return xview;
+}
+
+keyWindow.addSubview(nibToView('View'));
+

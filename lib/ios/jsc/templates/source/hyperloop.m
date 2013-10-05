@@ -15,11 +15,9 @@
  */
 JSPrivateObject* HyperloopMakePrivateObjectForID(JSContextRef ctx, id object)
 {
-#ifdef LOG_ALLOC_DEALLOC
-	NSLog(@"HyperloopMakePrivateObjectForID %p, %@",ctx,object);
-#endif
 	JSPrivateObject *p = (JSPrivateObject*)malloc(sizeof(JSPrivateObject));
 	p->object = (void *)object;
+    p->value = NAN;
 	p->type = JSPrivateObjectTypeID;
 	p->map = nil;
 	p->context = ctx;
@@ -34,6 +32,7 @@ JSPrivateObject* HyperloopMakePrivateObjectForJSBuffer(JSBuffer *buffer)
 {
 	JSPrivateObject *p = (JSPrivateObject*)malloc(sizeof(JSPrivateObject));
 	p->object = (void *)buffer;
+    p->value = NAN;
 	p->type = JSPrivateObjectTypeJSBuffer;
 	p->map = nil;
 	p->context = NULL;
@@ -47,11 +46,41 @@ JSPrivateObject* HyperloopMakePrivateObjectForClass(Class cls)
 {
 	JSPrivateObject *p = (JSPrivateObject*)malloc(sizeof(JSPrivateObject));
 	p->object = (void *)cls;
+    p->value = NAN;
 	p->type = JSPrivateObjectTypeClass;
 	p->map = nil;
 	p->context = NULL;
 	return p;
 }
+
+/**
+ * create a JSPrivateObject for storage in a JSObjectRef where the object is a void *
+ */
+JSPrivateObject* HyperloopMakePrivateObjectForPointer(void *pointer)
+{
+    JSPrivateObject *p = (JSPrivateObject*)malloc(sizeof(JSPrivateObject));
+    p->object = pointer;
+    p->value = NAN;
+    p->type = JSPrivateObjectTypePointer;
+    p->map = nil;
+    p->context = NULL;
+    return p;
+}
+
+/**
+ * create a JSPrivateObject for storage in a JSObjectRef where the object is a double
+ */
+JSPrivateObject* HyperloopMakePrivateObjectForNumber(double value)
+{
+    JSPrivateObject *p = (JSPrivateObject*)malloc(sizeof(JSPrivateObject));
+    p->value = value;
+    p->object = NULL;
+    p->type = JSPrivateObjectTypeNumber;
+    p->map = nil;
+    p->context = NULL;
+    return p;
+}
+
 
 /**
  * destroy a JSPrivateObject stored in a JSObjectRef
@@ -72,8 +101,7 @@ void HyperloopDestroyPrivateObject(JSObjectRef object)
 		else if (p->type == JSPrivateObjectTypeJSBuffer)
 		{
 			JSBuffer *buffer = (JSBuffer*)p->object;
-			free(buffer->buffer);
-			free(buffer);
+			DestroyJSBuffer(buffer);
 			buffer = NULL;
 		}
 		else if (p->type == JSPrivateObjectTypeClass)
@@ -81,6 +109,14 @@ void HyperloopDestroyPrivateObject(JSObjectRef object)
 			Class cls = (Class)p->object;
 			[cls release];
 		}
+        else if (p->type == JSPrivateObjectTypePointer) 
+        {
+            p->object = NULL;
+        }
+        else if (p->type == JSPrivateObjectTypeNumber) 
+        {
+            p->value = NAN;
+        }
 		if (p->map)
 		{
 			[p->map removeAllObjects];
@@ -147,6 +183,39 @@ JSBuffer* HyperloopGetPrivateObjectAsJSBuffer(JSObjectRef object)
 }
 
 /**
+ * return a JSPrivateObject as a void * (or NULL if not of type JSPrivateObjectTypePointer)
+ */
+void* HyperloopGetPrivateObjectAsPointer(JSObjectRef object)
+{
+    JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
+    if (p!=NULL)
+    {
+        if (p->type == JSPrivateObjectTypePointer)
+        {
+            return p->object;
+        }
+    }
+    return NULL;
+}
+
+/**
+ * return a JSPrivateObject as a double (or NaN if not of type JSPrivateObjectTypeNumber)
+ */
+double HyperloopGetPrivateObjectAsNumber(JSObjectRef object)
+{
+    JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
+    if (p!=NULL)
+    {
+        if (p->type == JSPrivateObjectTypeNumber)
+        {
+            return p->value;
+        }
+    }
+    return NAN;
+}
+
+
+/**
  * return true if JSPrivateObject is of type
  */
 bool HyperloopPrivateObjectIsType(JSObjectRef object, JSPrivateObjectType type)
@@ -164,10 +233,13 @@ bool HyperloopPrivateObjectIsType(JSObjectRef object, JSPrivateObjectType type)
  */
 JSValueRef HyperloopMakeException(JSContextRef ctx, const char *error, JSValueRef *exception)
 {
-	JSStringRef string = JSStringCreateWithUTF8CString(error);
-	JSValueRef message = JSValueMakeString(ctx, string);
-	JSStringRelease(string);
-	*exception = JSObjectMakeError(ctx, 1, &message, 0);
+    if (*exception!=NULL)
+    {
+        JSStringRef string = JSStringCreateWithUTF8CString(error);
+        JSValueRef message = JSValueMakeString(ctx, string);
+        JSStringRelease(string);
+        *exception = JSObjectMakeError(ctx, 1, &message, 0);
+    }
 	return JSValueMakeUndefined(ctx);
 }
 
@@ -176,7 +248,15 @@ JSValueRef HyperloopMakeException(JSContextRef ctx, const char *error, JSValueRe
  */
 JSValueRef HyperloopToString(JSContextRef ctx, id object)
 {
-    NSString *description = [object description];
+    NSString *description;
+    if ([object isKindOfClass:[NSString class]]) 
+    {
+        description = (NSString*)object;
+    }
+    else 
+    {
+        description = [object description];
+    }
     JSStringRef descriptionStr = JSStringCreateWithUTF8CString([description UTF8String]);
     JSValueRef result = JSValueMakeString(ctx, descriptionStr);
     JSStringRelease(descriptionStr);
@@ -331,7 +411,12 @@ NSString* HyperloopToNSString(JSContextRef ctx, JSValueRef value)
     else if (JSValueIsObject(ctx,value)) 
     {
     	JSObjectRef objectRef = JSValueToObject(ctx, value, 0);
-    	if (HyperloopPrivateObjectIsType(objectRef,JSPrivateObjectTypeID))
+        if (JSObjectIsFunction(ctx,objectRef)) 
+        {
+            //TODO: return body of function?
+            return @"[native function]";
+        }
+    	else if (HyperloopPrivateObjectIsType(objectRef,JSPrivateObjectTypeID))
     	{
     		id value = HyperloopGetPrivateObjectAsID(objectRef);
     		return [value description];
@@ -345,6 +430,11 @@ NSString* HyperloopToNSString(JSContextRef ctx, JSValueRef value)
     	{
     		return @"JSBuffer";
     	}
+        else if (HyperloopPrivateObjectIsType(objectRef,JSPrivateObjectTypePointer))
+        {
+            void *pointer = HyperloopGetPrivateObjectAsPointer(objectRef);
+            return [NSString stringWithFormat:@"%p",pointer];
+        }
     }
     JSStringRef stringRef = JSValueCreateJSONString(ctx, value, 0, 0);
     size_t buflen = JSStringGetMaximumUTF8CStringSize(stringRef);
@@ -376,7 +466,7 @@ JSValueRef HyperloopLogger (JSContextRef ctx, JSObjectRef function, JSObjectRef 
 /**
  * create a hyperloop VM
  */
-JSContext* HyperloopCreateVM (NSString *name)
+JSContextRef HyperloopCreateVM (NSString *name)
 {
 	Class<HyperloopModule> cls = NSClassFromString(name);
 	if (cls==nil) 
@@ -384,11 +474,7 @@ JSContext* HyperloopCreateVM (NSString *name)
 		return nil;
 	}
 
-    JSVirtualMachine *vm = [[JSVirtualMachine alloc] init];
-    JSContext *context = [[JSContext alloc] initWithVirtualMachine:vm];
-
-    // get the global context
-    JSGlobalContextRef globalContextRef = [context JSGlobalContextRef];
+    JSGlobalContextRef globalContextRef = JSGlobalContextCreate(NULL);
     JSObjectRef globalObjectref = JSContextGetGlobalObject(globalContextRef);
 
     // inject a simple console logger
@@ -401,8 +487,152 @@ JSContext* HyperloopCreateVM (NSString *name)
     JSStringRelease(logProperty);
     JSStringRelease(consoleProperty);
 
-    // load the app into the context
-    [cls load:context];
+    // create a hook into our global context
+    JSClassDefinition def = kJSClassDefinitionEmpty;
+    JSClassRef classDef = JSClassCreate(&def);
+    JSObjectRef wrapper = JSObjectMake(globalContextRef, classDef, globalContextRef);
+    JSStringRef prop = JSStringCreateWithUTF8CString("hyperloop$global");
+    JSObjectSetProperty(globalContextRef, globalObjectref, prop, wrapper, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum | kJSPropertyAttributeDontDelete, 0);
+    JSStringRelease(prop);
 
-    return context;
+    // retain it
+    JSGlobalContextRetain(globalContextRef);
+
+    // load the app into the context
+    [cls load:globalContextRef];
+
+    return globalContextRef;
 }
+
+/**
+ * given a context, get the global context
+ */
+JSGlobalContextRef HyperloopGetGlobalContext (JSContextRef ctx) 
+{
+    JSObjectRef global = JSContextGetGlobalObject(ctx);
+    JSStringRef prop = JSStringCreateWithUTF8CString("hyperloop$global");
+    JSValueRef value = JSObjectGetProperty(ctx, global, prop, NULL);
+    JSStringRelease(prop);
+    if (JSValueIsObject(ctx,value))
+    {
+        JSObjectRef obj = JSValueToObject(ctx,value,0);
+        return (JSGlobalContextRef)JSObjectGetPrivate(obj);
+    }
+    return NULL;
+}
+
+/**
+ * destroy a hyperloop VM
+ */
+void HyperloopDestroyVM (JSContextRef ctx) 
+{
+    JSGlobalContextRef globalCtx = HyperloopGetGlobalContext(ctx);
+    if (globalCtx!=NULL)
+    {
+        JSObjectRef global = JSContextGetGlobalObject(ctx);
+        JSStringRef prop = JSStringCreateWithUTF8CString("hyperloop$global");
+        JSValueRef value = JSObjectGetProperty(ctx, global, prop, NULL);
+        JSObjectRef obj = JSValueToObject(ctx,value,0);
+        JSStringRelease(prop);
+        JSObjectSetPrivate(obj,NULL);
+        JSGlobalContextRelease(globalCtx);
+    }
+}
+
+/**
+ * invoke a dynamic argument
+ */
+id HyperloopDynamicInvoke (JSContextRef ctx, const JSValueRef *arguments, size_t argumentCount, id target, SEL selector)
+{
+    NSMethodSignature *signature = [[target class] instanceMethodSignatureForSelector:selector];
+    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+
+    [invocation setSelector:selector];
+    [invocation setTarget:target];
+
+    for (size_t c=0;c<argumentCount;c++) 
+    {
+        JSValueRef value = arguments[c];
+        void *arg = NULL;
+        if (JSValueIsObject(ctx,value)) 
+        {
+            JSObjectRef objectRef = JSValueToObject(ctx, value, 0);
+            if (HyperloopPrivateObjectIsType(objectRef,JSPrivateObjectTypeID))
+            {
+                arg = (void*)HyperloopGetPrivateObjectAsID(objectRef);
+            }
+            else if (HyperloopPrivateObjectIsType(objectRef,JSPrivateObjectTypeClass))
+            {
+                arg = (void*)HyperloopGetPrivateObjectAsClass(objectRef);
+            }
+            else if (HyperloopPrivateObjectIsType(objectRef,JSPrivateObjectTypeJSBuffer))
+            {
+                JSBuffer *buffer = HyperloopGetPrivateObjectAsJSBuffer(objectRef);
+                arg = buffer->buffer;
+            }
+            else if (HyperloopPrivateObjectIsType(objectRef,JSPrivateObjectTypePointer))
+            {
+                arg = HyperloopGetPrivateObjectAsPointer(objectRef);
+            }
+        }
+        else if (JSValueIsBoolean(ctx,value)) 
+        {
+            arg = (void*)JSValueToBoolean(ctx,value);
+        }
+        else if (JSValueIsNumber(ctx,value))
+        {
+            double d = JSValueToNumber(ctx,value,0);
+            arg = &d;
+        }
+        else if (JSValueIsString(ctx,value)) 
+        {
+            JSStringRef stringRef = JSValueToStringCopy(ctx, value, 0);
+            size_t buflen = JSStringGetMaximumUTF8CStringSize(stringRef);
+            char buf[buflen];
+            buflen = JSStringGetUTF8CString(stringRef, buf, buflen);
+            buf[buflen] = '\0';
+            arg = (void*)[NSString stringWithUTF8String:buf];
+            JSStringRelease(stringRef);
+        }
+        [invocation setArgument:&arg atIndex:2+c];
+    }
+
+    [invocation invoke];
+
+    id returnValue = nil;
+
+    if ([[invocation methodSignature] methodReturnLength] > 0) 
+    {
+        if (strncmp([[invocation methodSignature] methodReturnType],@encode(id), 1)) 
+        {
+            char *buffer = malloc([[invocation methodSignature] methodReturnLength]);
+            if (buffer != NULL) {
+                [invocation getReturnValue: buffer];
+                returnValue = [NSValue valueWithBytes:buffer objCType:[signature methodReturnType]];
+                free(buffer);
+            }
+        }
+        else 
+        {
+            [invocation getReturnValue: &returnValue];
+        }
+        [returnValue retain];
+    }
+
+    return [returnValue autorelease];
+}
+
+/**
+ * attempt to convert a JSString to a NSString
+ */
+NSString* HyperloopToNSStringFromString(JSContextRef ctx, JSStringRef stringRef)
+{
+    size_t buflen = JSStringGetMaximumUTF8CStringSize(stringRef);
+    char buf[buflen];
+    buflen = JSStringGetUTF8CString(stringRef, buf, buflen);
+    buf[buflen] = '\0';
+    NSString *result = [NSString stringWithUTF8String:buf];
+    JSStringRelease(stringRef);
+    return result;
+}
+

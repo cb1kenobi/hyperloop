@@ -12,7 +12,7 @@
 
 #import "AppDelegate.h"
 
-extern JSContext* HyperloopCreateVM (NSString *name);
+extern JSContextRef HyperloopCreateVM (NSString *name);
 
 @implementation AppDelegate
 
@@ -25,8 +25,8 @@ extern JSContext* HyperloopCreateVM (NSString *name);
     [self.window makeKeyAndVisible];
 
     // create the virtual machine
-    self.context = HyperloopCreateVM(@"<%=main_js%>");
-    if (self.context==nil)
+    context = HyperloopCreateVM(@"<%=main_js%>");
+    if (context==NULL)
     {
         NSLog(@"[ERROR] Application '<%=main_js%>' not loaded. Make sure that you have the appropriately built library");
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Application Error" 

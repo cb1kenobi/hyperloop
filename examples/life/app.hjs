@@ -4,6 +4,7 @@
 @import('Foundation/NSRunLoop');
 @import('Foundation/NSDefaultRunLoopMode');
 @import('Foundation/NSDate');
+@import('Foundation/NSSelectorFromString');
 @import('UIKit/UIApplication');
 @import('UIKit/UIColor');
 @import('UIKit/UIScreen');
@@ -55,7 +56,7 @@ if (typeof HYPERLOOP_LINK !== 'undefined') {
 		console.debug('>>>>> Using CADisplayLink for render loop <<<<<');
 
 		// create a display link, using the render loop update function
-		var displayLink = CADisplayLink.displayLinkWithTarget(callback, 'update:');
+		var displayLink = CADisplayLink.displayLinkWithTarget(callback, NSSelectorFromString('update:'));
 
 		// attach the display link to the main run loop
 		displayLink.addToRunLoop(NSRunLoop.mainRunLoop(), NSDefaultRunLoopMode);
@@ -72,7 +73,7 @@ if (typeof HYPERLOOP_LINK !== 'undefined') {
 
 		// launch timer with TimerCallback as its target/selector
 		var timer = NSTimer.scheduledTimerWithTimeInterval(
-			1.0/100.0, callback, 'update:', null, true);
+			1.0/100.0, callback, NSSelectorFromString('update:'), null, true);
 	};
 }
 

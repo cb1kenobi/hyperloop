@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		242FDC0E17FFE16200812D81 /* NSMutableStringTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 242FDC0D17FFE16200812D81 /* NSMutableStringTests.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		24B04F4317F3A79200701509 /* StructureTypesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 24B04F4217F3A79200701509 /* StructureTypesTests.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		24B04F4517F3A82100701509 /* JSBaseTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 24B04F4417F3A82100701509 /* JSBaseTestCase.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		24B04F4817FB18D500701509 /* TypedefTypesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 24B04F4717FB18D500701509 /* TypedefTypesTests.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		24B04F8E17FBCA5B00701509 /* UIViewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 24B04F8D17FBCA5B00701509 /* UIViewTests.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		24B04F9017FD0B2E00701509 /* EnumTypesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 24B04F8F17FD0B2E00701509 /* EnumTypesTests.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		24B04F9217FD23DC00701509 /* FunctionTypeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 24B04F9117FD23DC00701509 /* FunctionTypeTests.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		24D7A8A817EDFB5B006710EB /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24D7A8A717EDFB5B006710EB /* Foundation.framework */; };
 		24D7A8AA17EDFB5B006710EB /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24D7A8A917EDFB5B006710EB /* CoreGraphics.framework */; };
 		24D7A8AC17EDFB5B006710EB /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24D7A8AB17EDFB5B006710EB /* UIKit.framework */; };
@@ -21,9 +28,7 @@
 		24D7A8CB17EDFB5B006710EB /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24D7A8A717EDFB5B006710EB /* Foundation.framework */; };
 		24D7A8CC17EDFB5B006710EB /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24D7A8AB17EDFB5B006710EB /* UIKit.framework */; };
 		24D7A8D417EDFB5B006710EB /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 24D7A8D217EDFB5B006710EB /* InfoPlist.strings */; };
-		24D7A8D617EDFB5B006710EB /* PrimativeTypesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 24D7A8D517EDFB5B006710EB /* PrimativeTypesTests.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		24D7A8E017EE0F3F006710EB /* compile.m in Sources */ = {isa = PBXBuildFile; fileRef = 24D7A8DF17EE0F3F006710EB /* compile.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		24D7A8E917EF8480006710EB /* compile.m in Sources */ = {isa = PBXBuildFile; fileRef = 24D7A8DF17EE0F3F006710EB /* compile.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		24D7A8D617EDFB5B006710EB /* PrimitiveTypesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 24D7A8D517EDFB5B006710EB /* PrimitiveTypesTests.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		24D7A8EB17EF8665006710EB /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24D7A8EA17EF8665006710EB /* JavaScriptCore.framework */; };
 		24D7A8ED17EF8669006710EB /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 24D7A8EC17EF8669006710EB /* libz.dylib */; };
 		24D7A8EE17EF866F006710EB /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24D7A8EA17EF8665006710EB /* JavaScriptCore.framework */; };
@@ -41,6 +46,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		242FDC0D17FFE16200812D81 /* NSMutableStringTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSMutableStringTests.m; sourceTree = "<group>"; };
+		24B04F4217F3A79200701509 /* StructureTypesTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StructureTypesTests.m; sourceTree = "<group>"; };
+		24B04F4417F3A82100701509 /* JSBaseTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSBaseTestCase.m; sourceTree = "<group>"; };
+		24B04F4617F3A87400701509 /* JSBaseTestCase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSBaseTestCase.h; sourceTree = "<group>"; };
+		24B04F4717FB18D500701509 /* TypedefTypesTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TypedefTypesTests.m; sourceTree = "<group>"; };
+		24B04F8D17FBCA5B00701509 /* UIViewTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIViewTests.m; sourceTree = "<group>"; };
+		24B04F8F17FD0B2E00701509 /* EnumTypesTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EnumTypesTests.m; sourceTree = "<group>"; };
+		24B04F9117FD23DC00701509 /* FunctionTypeTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FunctionTypeTests.m; sourceTree = "<group>"; };
 		24D7A8A417EDFB5B006710EB /* testsuite.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = testsuite.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		24D7A8A717EDFB5B006710EB /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		24D7A8A917EDFB5B006710EB /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -60,8 +73,7 @@
 		24D7A8C917EDFB5B006710EB /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		24D7A8D117EDFB5B006710EB /* testsuiteTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "testsuiteTests-Info.plist"; sourceTree = "<group>"; };
 		24D7A8D317EDFB5B006710EB /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		24D7A8D517EDFB5B006710EB /* PrimativeTypesTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PrimativeTypesTests.m; sourceTree = "<group>"; };
-		24D7A8DF17EE0F3F006710EB /* compile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = compile.m; sourceTree = "<group>"; };
+		24D7A8D517EDFB5B006710EB /* PrimitiveTypesTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PrimitiveTypesTests.m; sourceTree = "<group>"; };
 		24D7A8EA17EF8665006710EB /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		24D7A8EC17EF8669006710EB /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -129,13 +141,14 @@
 		24D7A8AD17EDFB5B006710EB /* testsuite */ = {
 			isa = PBXGroup;
 			children = (
-				24D7A8DF17EE0F3F006710EB /* compile.m */,
 				24D7A8B617EDFB5B006710EB /* AppDelegate.h */,
 				24D7A8B717EDFB5B006710EB /* AppDelegate.m */,
 				24D7A8B917EDFB5B006710EB /* Main_iPhone.storyboard */,
 				24D7A8BC17EDFB5B006710EB /* Main_iPad.storyboard */,
 				24D7A8BF17EDFB5B006710EB /* ViewController.h */,
 				24D7A8C017EDFB5B006710EB /* ViewController.m */,
+				24B04F4417F3A82100701509 /* JSBaseTestCase.m */,
+				24B04F4617F3A87400701509 /* JSBaseTestCase.h */,
 				24D7A8C217EDFB5B006710EB /* Images.xcassets */,
 				24D7A8AE17EDFB5B006710EB /* Supporting Files */,
 			);
@@ -156,7 +169,13 @@
 		24D7A8CF17EDFB5B006710EB /* testsuiteTests */ = {
 			isa = PBXGroup;
 			children = (
-				24D7A8D517EDFB5B006710EB /* PrimativeTypesTests.m */,
+				24D7A8D517EDFB5B006710EB /* PrimitiveTypesTests.m */,
+				24B04F4717FB18D500701509 /* TypedefTypesTests.m */,
+				24B04F8D17FBCA5B00701509 /* UIViewTests.m */,
+				24B04F8F17FD0B2E00701509 /* EnumTypesTests.m */,
+				24B04F9117FD23DC00701509 /* FunctionTypeTests.m */,
+				24B04F4217F3A79200701509 /* StructureTypesTests.m */,
+				242FDC0D17FFE16200812D81 /* NSMutableStringTests.m */,
 				24D7A8D017EDFB5B006710EB /* Supporting Files */,
 			);
 			path = testsuiteTests;
@@ -270,7 +289,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				24D7A8C117EDFB5B006710EB /* ViewController.m in Sources */,
-				24D7A8E017EE0F3F006710EB /* compile.m in Sources */,
 				24D7A8B817EDFB5B006710EB /* AppDelegate.m in Sources */,
 				24D7A8B417EDFB5B006710EB /* main.m in Sources */,
 			);
@@ -280,8 +298,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				24D7A8E917EF8480006710EB /* compile.m in Sources */,
-				24D7A8D617EDFB5B006710EB /* PrimativeTypesTests.m in Sources */,
+				24B04F9017FD0B2E00701509 /* EnumTypesTests.m in Sources */,
+				24B04F4317F3A79200701509 /* StructureTypesTests.m in Sources */,
+				24B04F8E17FBCA5B00701509 /* UIViewTests.m in Sources */,
+				24B04F9217FD23DC00701509 /* FunctionTypeTests.m in Sources */,
+				24B04F4817FB18D500701509 /* TypedefTypesTests.m in Sources */,
+				24D7A8D617EDFB5B006710EB /* PrimitiveTypesTests.m in Sources */,
+				242FDC0E17FFE16200812D81 /* NSMutableStringTests.m in Sources */,
+				24B04F4517F3A82100701509 /* JSBaseTestCase.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -484,7 +508,7 @@
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
-				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../../lib/ios/jsc/templates/source/";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../../lib/ios/jsc/templates/source/ $(SRCROOT)/testsuite";
 				VALID_ARCHS = "arm64 armv7s";
 				WRAPPER_EXTENSION = xctest;
 			};
@@ -517,7 +541,7 @@
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
-				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../../lib/ios/jsc/templates/source/";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../../lib/ios/jsc/templates/source/ $(SRCROOT)/testsuite";
 				VALID_ARCHS = "arm64 armv7s";
 				WRAPPER_EXTENSION = xctest;
 			};
@@ -542,6 +566,7 @@
 				24D7A8DB17EDFB5B006710EB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		24D7A8DC17EDFB5B006710EB /* Build configuration list for PBXNativeTarget "testsuiteTests" */ = {
 			isa = XCConfigurationList;
@@ -550,6 +575,7 @@
 				24D7A8DE17EDFB5B006710EB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

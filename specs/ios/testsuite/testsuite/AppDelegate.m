@@ -7,6 +7,8 @@
  * or patents pending by Appcelerator, Inc.
  */
 #import "AppDelegate.h"
+#import <objc/runtime.h>
+
 
 @implementation AppDelegate
 

@@ -5,8 +5,11 @@ var should = require('should'),
 	path = require('path'),
 	fs = require('fs'),
 	temp = require('temp'),
+	log = require('../../lib/log'),
 	buildlib = require('../../lib/ios/buildlib'),
 	settings;
+
+log.debugLevel = false;
 
 describe("jsc", function(){
 
@@ -145,7 +148,7 @@ describe("jsc", function(){
 				options = {
 					minVersion : "7.0",
 					libname: "libjsc_test.a",
-					srcfiles: [path.join(headerPath,"JSBuffer.c"),path.join(headerPath,"hyperloop.m"),path.join(srcdir,"jsc_test.m")],
+					srcfiles: [path.join(headerPath,"JSBuffer.m"),path.join(headerPath,"hyperloop.m"),path.join(srcdir,"jsc_test.m")],
 					outdir: build,
 					cflags: ["-I"+headerPath],
 					linkflags: ['-framework JavaScriptCore'],
@@ -178,7 +181,6 @@ describe("jsc", function(){
 					}
 				}
 			}
-
 			buildlib.compileAndMakeStaticLib(options, function(err,results){
 				if (err) return done(err);
 				var Packager = require(path.join(__dirname,'../../lib/ios','packager.js')).Packager;
