@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		242FDC0E17FFE16200812D81 /* NSMutableStringTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 242FDC0D17FFE16200812D81 /* NSMutableStringTests.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		242FDC1117FFEA9600812D81 /* NSStringTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 242FDC1017FFEA9600812D81 /* NSStringTests.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		24B04F4317F3A79200701509 /* StructureTypesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 24B04F4217F3A79200701509 /* StructureTypesTests.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		24B04F4517F3A82100701509 /* JSBaseTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 24B04F4417F3A82100701509 /* JSBaseTestCase.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		24B04F4817FB18D500701509 /* TypedefTypesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 24B04F4717FB18D500701509 /* TypedefTypesTests.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -47,6 +48,7 @@
 
 /* Begin PBXFileReference section */
 		242FDC0D17FFE16200812D81 /* NSMutableStringTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSMutableStringTests.m; sourceTree = "<group>"; };
+		242FDC1017FFEA9600812D81 /* NSStringTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSStringTests.m; sourceTree = "<group>"; };
 		24B04F4217F3A79200701509 /* StructureTypesTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StructureTypesTests.m; sourceTree = "<group>"; };
 		24B04F4417F3A82100701509 /* JSBaseTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSBaseTestCase.m; sourceTree = "<group>"; };
 		24B04F4617F3A87400701509 /* JSBaseTestCase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSBaseTestCase.h; sourceTree = "<group>"; };
@@ -176,6 +178,7 @@
 				24B04F9117FD23DC00701509 /* FunctionTypeTests.m */,
 				24B04F4217F3A79200701509 /* StructureTypesTests.m */,
 				242FDC0D17FFE16200812D81 /* NSMutableStringTests.m */,
+				242FDC1017FFEA9600812D81 /* NSStringTests.m */,
 				24D7A8D017EDFB5B006710EB /* Supporting Files */,
 			);
 			path = testsuiteTests;
@@ -299,6 +302,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				24B04F9017FD0B2E00701509 /* EnumTypesTests.m in Sources */,
+				242FDC1117FFEA9600812D81 /* NSStringTests.m in Sources */,
 				24B04F4317F3A79200701509 /* StructureTypesTests.m in Sources */,
 				24B04F8E17FBCA5B00701509 /* UIViewTests.m in Sources */,
 				24B04F9217FD23DC00701509 /* FunctionTypeTests.m in Sources */,
