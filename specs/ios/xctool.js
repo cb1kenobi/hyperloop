@@ -13,8 +13,19 @@ var should = require('should'),
 
 describe("ios xctool", function(){
 
-	it("should checkout submodule", function(done){
-		exec('git submodule init && git submodule update',done);
+	it("should checkout submodule", function(done) {
+		//https://github.com/ryanrhee/xctool
+		var folder = path.join(__dirname,'..','..','tools','xctool');
+		if (!fs.existsSync(folder)) {
+			console.log('cloning xctool into',folder);
+			exec('git clone https://github.com/ryanrhee/xctool',{
+				cwd: path.dirname(folder),
+				env: process.env
+			},done);
+		}
+		else {
+			done();
+		}
 	});
 
 	it("should run xctool", function(done){
@@ -29,7 +40,7 @@ describe("ios xctool", function(){
 			xctool = path.join(__dirname,'../../tools/xctool/xctool.sh'),
 			project = path.join(dir, 'testsuite.xcodeproj'),
 			args = ['-project',project,'-scheme', 'testsuite', '-sdk', 'iphonesimulator', '-reporter', 'pretty', 'clean', 'test'],
-			env = {cwd:dir},
+			env = {cwd:dir, env:process.env},
 			completed = false,
 			failure = false;
 
@@ -81,7 +92,7 @@ describe("ios xctool", function(){
 							done(failure?new Error('testsuite test(s) failed') : null);
 						}
 					}
-					var process = spawn(xctool,args,{env:env});
+					var process = spawn(xctool,args,env);
 					process.stdout.on('data',function(buf){
 						buf = buf.toString();
 						console.log(buf);
