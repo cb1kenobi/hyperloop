@@ -542,9 +542,9 @@ void HyperloopDestroyVM (JSContextRef ctx)
 /**
  * invoke a dynamic argument
  */
-id HyperloopDynamicInvoke (JSContextRef ctx, const JSValueRef *arguments, size_t argumentCount, id target, SEL selector)
+id HyperloopDynamicInvoke (JSContextRef ctx, const JSValueRef *arguments, size_t argumentCount, id target, SEL selector, bool instance)
 {
-    NSMethodSignature *signature = [[target class] instanceMethodSignatureForSelector:selector];
+    NSMethodSignature *signature = instance ? [target instanceMethodSignatureForSelector:selector] : [target methodSignatureForSelector:selector];
     NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
 
     [invocation setSelector:selector];
