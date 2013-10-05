@@ -52,7 +52,8 @@ describe("ios xctool", function(){
 						'integer_t[1024]',
 						'CGFloat',
 						'EAGLGetVersion',
-						'CGPathCreateMutable'
+						'CGPathCreateMutable',
+						'NSMutableAttributedString'
 			];
 
 			temp.mkdir('hltest', function(err, dirPath) {

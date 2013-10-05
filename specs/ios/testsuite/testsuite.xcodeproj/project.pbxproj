@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		242FDC0E17FFE16200812D81 /* NSMutableStringTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 242FDC0D17FFE16200812D81 /* NSMutableStringTests.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		24B04F4317F3A79200701509 /* StructureTypesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 24B04F4217F3A79200701509 /* StructureTypesTests.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		24B04F4517F3A82100701509 /* JSBaseTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 24B04F4417F3A82100701509 /* JSBaseTestCase.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		24B04F4817FB18D500701509 /* TypedefTypesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 24B04F4717FB18D500701509 /* TypedefTypesTests.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -45,6 +46,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		242FDC0D17FFE16200812D81 /* NSMutableStringTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSMutableStringTests.m; sourceTree = "<group>"; };
 		24B04F4217F3A79200701509 /* StructureTypesTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StructureTypesTests.m; sourceTree = "<group>"; };
 		24B04F4417F3A82100701509 /* JSBaseTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSBaseTestCase.m; sourceTree = "<group>"; };
 		24B04F4617F3A87400701509 /* JSBaseTestCase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSBaseTestCase.h; sourceTree = "<group>"; };
@@ -173,6 +175,7 @@
 				24B04F8F17FD0B2E00701509 /* EnumTypesTests.m */,
 				24B04F9117FD23DC00701509 /* FunctionTypeTests.m */,
 				24B04F4217F3A79200701509 /* StructureTypesTests.m */,
+				242FDC0D17FFE16200812D81 /* NSMutableStringTests.m */,
 				24D7A8D017EDFB5B006710EB /* Supporting Files */,
 			);
 			path = testsuiteTests;
@@ -301,6 +304,7 @@
 				24B04F9217FD23DC00701509 /* FunctionTypeTests.m in Sources */,
 				24B04F4817FB18D500701509 /* TypedefTypesTests.m in Sources */,
 				24D7A8D617EDFB5B006710EB /* PrimitiveTypesTests.m in Sources */,
+				242FDC0E17FFE16200812D81 /* NSMutableStringTests.m in Sources */,
 				24B04F4517F3A82100701509 /* JSBaseTestCase.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
