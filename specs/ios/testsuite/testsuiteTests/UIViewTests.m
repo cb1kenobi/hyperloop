@@ -91,4 +91,88 @@ extern CGRect* HyperloopJSValueRefToCGRect(JSContextRef,JSValueRef, JSValueRef*,
     XCTAssertTrue(JSValueToNumber(globalContext, tagValue, &exception)==12345, @"tag is not 12345");
 }
 
+- (void)testPropertySetter
+{
+    UIView *view = [[UIView alloc] init];
+    JSObjectRef object = MakeObjectForUIView(globalContext, view);
+    JSStringRef property = JSStringCreateWithUTF8CString("view");
+    JSValueRef exception = NULL;
+    JSObjectSetProperty(globalContext, globalObject, property, object, 0, &exception);
+    XCTAssertTrue(exception==NULL, @"exception was not null");
+    JSStringRelease(property);
+    JSStringRef script = JSStringCreateWithUTF8CString("view.hidden = true; view.hidden");
+    JSValueRef result = JSEvaluateScript(globalContext, script, globalObject, NULL, 0, &exception);
+    JSStringRelease(script);
+    XCTAssertTrue(exception==NULL, @"exception was not null");
+    XCTAssertTrue(JSValueToBoolean(globalContext, result), @"result should have been true");
+    XCTAssertTrue(view.hidden, @"view.hidden should have been true");
+    [view release];
+}
+
+- (void)testPropertyGetter
+{
+    UIView *view = [[UIView alloc] init];
+    JSObjectRef object = MakeObjectForUIView(globalContext, view);
+    JSStringRef property = JSStringCreateWithUTF8CString("view");
+    JSValueRef exception = NULL;
+    JSObjectSetProperty(globalContext, globalObject, property, object, 0, &exception);
+    XCTAssertTrue(exception==NULL, @"exception was not null");
+    JSStringRelease(property);
+    view.hidden = true;
+    JSStringRef script = JSStringCreateWithUTF8CString("view.hidden");
+    JSValueRef result = JSEvaluateScript(globalContext, script, globalObject, NULL, 0, &exception);
+    XCTAssertTrue(exception==NULL, @"exception was not null");
+    XCTAssertTrue(JSValueToBoolean(globalContext, result), @"result should have been true");
+    XCTAssertTrue(view.hidden, @"view.hidden should have been true");
+    view.hidden = false;
+    result = JSEvaluateScript(globalContext, script, globalObject, NULL, 0, &exception);
+    XCTAssertTrue(exception==NULL, @"exception was not null");
+    XCTAssertTrue(!JSValueToBoolean(globalContext, result), @"result should have been false");
+    XCTAssertTrue(!view.hidden, @"view.hidden should have been false");
+    JSStringRelease(script);
+    [view release];
+}
+
+- (void)testPropertySetterAsMethod
+{
+    UIView *view = [[UIView alloc] init];
+    JSObjectRef object = MakeObjectForUIView(globalContext, view);
+    JSStringRef property = JSStringCreateWithUTF8CString("view");
+    JSValueRef exception = NULL;
+    JSObjectSetProperty(globalContext, globalObject, property, object, 0, &exception);
+    XCTAssertTrue(exception==NULL, @"exception was not null");
+    JSStringRelease(property);
+    JSStringRef script = JSStringCreateWithUTF8CString("view.setHidden(true); view.hidden");
+    JSValueRef result = JSEvaluateScript(globalContext, script, globalObject, NULL, 0, &exception);
+    JSStringRelease(script);
+    XCTAssertTrue(exception==NULL, @"exception was not null");
+    XCTAssertTrue(JSValueToBoolean(globalContext, result), @"result should have been true");
+    XCTAssertTrue(view.hidden, @"view.hidden should have been true");
+    [view release];
+}
+
+- (void)testPropertyGetterAsMethod
+{
+    UIView *view = [[UIView alloc] init];
+    JSObjectRef object = MakeObjectForUIView(globalContext, view);
+    JSStringRef property = JSStringCreateWithUTF8CString("view");
+    JSValueRef exception = NULL;
+    JSObjectSetProperty(globalContext, globalObject, property, object, 0, &exception);
+    XCTAssertTrue(exception==NULL, @"exception was not null");
+    JSStringRelease(property);
+    view.hidden = true;
+    JSStringRef script = JSStringCreateWithUTF8CString("view.isHidden()");
+    JSValueRef result = JSEvaluateScript(globalContext, script, globalObject, NULL, 0, &exception);
+    XCTAssertTrue(exception==NULL, @"exception was not null");
+    XCTAssertTrue(JSValueToBoolean(globalContext, result), @"result should have been true");
+    XCTAssertTrue(view.hidden, @"view.hidden should have been true");
+    view.hidden = false;
+    result = JSEvaluateScript(globalContext, script, globalObject, NULL, 0, &exception);
+    XCTAssertTrue(exception==NULL, @"exception was not null");
+    XCTAssertTrue(!JSValueToBoolean(globalContext, result), @"result should have been false");
+    XCTAssertTrue(!view.hidden, @"view.hidden should have been false");
+    JSStringRelease(script);
+    [view release];
+}
+
 @end

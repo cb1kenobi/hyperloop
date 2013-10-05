@@ -16,11 +16,14 @@
 {
     [super setUp];
     globalContext = JSGlobalContextCreate(NULL);
+    globalObject = JSContextGetGlobalObject(globalContext);
 }
 
 - (void)tearDown
 {
     JSGlobalContextRelease(globalContext);
+    globalContext = NULL;
+    globalObject = NULL;
     [super tearDown];
 }
 

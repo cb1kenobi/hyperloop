@@ -13,6 +13,7 @@
 @interface JSBaseTestCase : XCTestCase
 {
     JSGlobalContextRef globalContext;
+    JSObjectRef globalObject;
 }
 
 -(void)assertStringProperty:(JSObjectRef)object property:(NSString*)name value:(NSString*)value;
