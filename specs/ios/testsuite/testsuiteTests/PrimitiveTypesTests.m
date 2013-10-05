@@ -1146,6 +1146,13 @@ extern unsigned short HyperloopJSValueRefTounsigned_short (JSContextRef ctx, JSV
     XCTAssertTrue(result==123, @"result should not have been 123, was: %hu",result);
 }
 
+extern JSValueRef HyperloopBOOLToJSValueRef(JSContextRef, BOOL animated);
+- (void)testHyperloopBOOLToJSValueRef
+{
+    JSValueRef animated = HyperloopBOOLToJSValueRef(globalContext,YES);
+    XCTAssertTrue(JSValueToBoolean(globalContext, animated), @"should have been true");
+}
+
 
 
 @end
