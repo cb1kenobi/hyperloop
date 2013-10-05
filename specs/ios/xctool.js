@@ -17,14 +17,14 @@ describe("ios xctool", function(){
 		exec('git submodule init && git submodule update',done);
 	});
 
-	it.skip("should run xctool", function(done){
+	it("should run xctool", function(done){
 		var dir = path.join(__dirname,'testsuite'),
 			cmd = 'xcodebuild',
 			env = {cwd:dir};
 		exec(cmd,env,done);
 	});
 
-	it.only("should run xctool tests", function(done){
+	it("should run xctool tests", function(done){
 		var dir = path.join(__dirname,'testsuite'),
 			xctool = path.join(__dirname,'../../tools/xctool/xctool.sh'),
 			project = path.join(dir, 'testsuite.xcodeproj'),
@@ -98,7 +98,6 @@ describe("ios xctool", function(){
 						console.log(buf.toString());
 					});
 					process.on('close',function(exitCode){
-						console.log('exitCode',exitCode);
 						completed = true;
 						done(exitCode!=0 ? new Error('testsuite test(s) failed') : null);
 					});
