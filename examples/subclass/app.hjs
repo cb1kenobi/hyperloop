@@ -1,0 +1,24 @@
+@import('SpriteKit/SKScene');
+
+// object inspection
+function log(obj){
+	if (obj) {
+		console.log('    ' + Object.keys(obj.__proto__).join('\n    '));
+	}
+	console.log('    ' + Object.keys(obj).join('\n    '));
+}
+
+@class('MyScene', SKScene, [], []);
+
+console.log('********** SKScene **********');
+console.log('- Class');
+log(SKScene);
+console.log('- Instance');
+log(new SKScene());
+
+console.log('');
+console.log('********** MyScene **********');
+console.log('- Class');
+log(MyScene);
+console.log('- Instance');
+log(new MyScene());
