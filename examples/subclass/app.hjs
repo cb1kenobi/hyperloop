@@ -8,7 +8,17 @@ function log(obj){
 	console.log('    ' + Object.keys(obj).join('\n    '));
 }
 
-@class('MyScene', SKScene, [], []);
+function update() {
+}
+
+@class('MyScene', SKScene, [], [
+	{
+		name: 'update',
+		returnType: 'void',
+		arguments: [ { type: 'id', name: 'sender' }, { type: 'id', name: 'foo', property:'bar'} ],
+		action: update
+	}
+]);
 
 console.log('********** SKScene **********');
 console.log('- Class');
