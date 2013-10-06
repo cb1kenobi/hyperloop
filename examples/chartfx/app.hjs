@@ -1,0 +1,225 @@
+/**
+ * How to run this demo
+ * 
+ * add --chartfx_home=<CHART_FX_HOME> and --chartfx_license="LICENSETEXT" to your compiler command line such as:
+ *
+ * hyperloop package --src=examples/chartfx/ --dest=build --platform=ios --name=foo --appid=com.appcelerator.foo --debug --chartfx_home=/Users/jhaynie/Downloads/ChartFXiOSTrial --chartfx_license="T;2013/10/5;30;;Built using Chart FX Trial;5ad46e08f11c938acf12f95e4a4addcb533cc91ca0f3bc70420d4a218f4a3874f76508c89693c0e69a8f08cb8e9bd64e1d2f8bd8a3d889693fad3aa66bef3d50483161be43980f683b8d86ba13ec99ed2e73154e1b8c24c1ee5fc4aef6602a954265bb70d72c5bca937314a0d4af2cd0307b01d7cde055c18593b74f15aaa4f4"
+ *
+ * This variable value will be defined as a global constant when this file is compiled and you can use it to append the 
+ * path to the framework path.
+ *
+ * Download a free trial version of ChartFX at http://www.softwarefx.com/iOS/
+ */
+
+@compiler({
+     cflags: ['-F'+CHARTFX_HOME+'/Framework'],
+     linkflags: ['-framework ChartFX','-framework ChartFX.Annotation', '-lstdc++','-lxml2'],
+     infoplist: {
+     	'ChartFX License': {
+     		type: 'string',
+     		value: CHARTFX_LICENSE
+     	}
+     }
+});
+
+@import('ChartFX/CFXChart');
+@import('ChartFX/CFXGalleryLines');
+@import('ChartFX/CFXMarkerShapeNone');
+@import('ChartFX/CFXTickMarkNone');
+@import('ChartFX/CFXGridLine');
+@import('ChartFX/CFXDashStyleDot');
+@import('ChartFX/CFXRealTimeModeLoop');
+@import('ChartFX/CFXVectorLine');
+@import('ChartFX/CFXStringAlignmentNear');
+@import('ChartFX/CFXStringAlignmentFar');
+@import('ChartFX/CFXStringAlignmentCenter');
+@import('ChartFX/CFXRealTimeActionAppend');
+@import('ChartFX.Annotation/CFXAnnotations');
+@import('ChartFX.Annotation/CFXAnnotationText');
+@import('ChartFX.Annotation/CFXAnnotationPicture');
+
+@import('Foundation/NSString');
+@import('Foundation/NSTimer');
+@import('Foundation/NSSelectorFromString');
+@import('CoreGraphics/CGRectMake');
+@import('UIKit/UIColor');
+@import('UIKit/UIFont');
+@import('UIKit/UIImage');
+@import('UIKit/UIApplication');
+@import('UIKit/UIViewAutoresizingFlexibleWidth');
+@import('UIKit/UIViewAutoresizingFlexibleHeight');
+
+// Initialize heartbeat related variables
+var heartBeatfactor = 1,
+    pointCount = 0,
+    offset = 2.15,
+    forceR = false,
+    nTick = 0,
+	offset,
+	heartBeatfactor,
+	nTotalPoints = 181,
+	forceR,
+	pointCount;
+
+var win = UIApplication.sharedApplication().keyWindow;
+var chart = new CFXChart();
+var bounds = win.bounds;
+var size = bounds.size;
+chart.frame = CGRectMake(0, 0, size.width, size.height);
+chart.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+chart.gallery = CFXGalleryLines;
+chart.legendBox.visible = false;
+
+chart.data.series = 1;
+chart.data.points = nTotalPoints;
+
+var brightColor = UIColor.colorWithRed(0/255.0,228/255.0,2/255.0,1.0);
+chart.backgroundColor = UIColor.blackColor();
+
+chart.series.objectAtIndex(0).color = brightColor;
+chart.series.objectAtIndex(0).line.width = 2;
+chart.series.objectAtIndex(0).markerShape = CFXMarkerShapeNone;
+chart.axisX.grids.major.visible = false;
+chart.axisX.textColor = UIColor.colorWithRed(255,0,0,0.0);
+chart.axisX.line.width = 0;
+chart.axisX.grids.major.tickMark = CFXTickMarkNone;
+chart.axisX.grids.minor.tickMark = CFXTickMarkNone;
+
+var gridLineColor = UIColor.colorWithRed(2/255.0,89/255.0,47/255.0,1.0);
+chart.foreColor = gridLineColor;
+
+var gridLine = chart.axisY.grids.major;
+gridLine.style = CFXDashStyleDot;
+gridLine.width = 1;
+gridLine.color = gridLineColor;
+
+gridLine = chart.axisX.grids.major;
+gridLine.visible = true;
+gridLine.style = CFXDashStyleDot;
+gridLine.width = 1;
+gridLine.color = gridLineColor;
+
+chart.axisY.min = 2.05;
+chart.axisY.max = 2.45;
+
+chart.realTime.bufferSize = nTotalPoints;
+chart.realTime.mode = CFXRealTimeModeLoop;
+
+var line = chart.galleryAttributes;
+line.templateText = NSString.stringWithUTF8String("LineBasic");
+
+chart.updateSizeNow();
+
+var annot = new CFXAnnotations();
+var list = annot.list;
+    
+var bpmText = new CFXAnnotationText();
+bpmText.text = NSString.stringWithUTF8String("120");
+bpmText.font = UIFont.fontWithName(NSString.stringWithUTF8String("HelveticaNeue-Bold"),36);
+bpmText.textColor = brightColor;
+bpmText.border.width = 0;
+bpmText.attachWithHorizontalAlignment(CFXStringAlignmentFar,155,CFXStringAlignmentCenter,2.05);
+list.add(bpmText);
+    
+var text2 = new CFXAnnotationText();
+text2.text = NSString.stringWithUTF8String("bpm");
+text2.font = UIFont.fontWithName(NSString.stringWithUTF8String("HelveticaNeue-Bold"),14);
+text2.textColor = brightColor;
+text2.border.width = 0;
+text2.attachWithHorizontalAlignment(CFXStringAlignmentNear,155,CFXStringAlignmentNear,2.05);
+list.add(text2);
+    
+var picture = new CFXAnnotationPicture();
+picture.border.width = 0;
+picture.picture = UIImage.imageNamed(NSString.stringWithUTF8String("HeartMonitor.png"));
+picture.sizeToFit();
+picture.attachWithHorizontalAlignment(CFXStringAlignmentNear,155,CFXStringAlignmentCenter,2.06);
+list.add(picture);
+    
+chart.extensions.add(annot);
+
+@class('ViewController', NSObject, [], [
+	{
+		name: 'getHeartRate',
+		returnType: 'void',
+		arguments: [],
+		action: function(params) {
+
+		    // This function simulates the behavior of a heartbeat
+		    var dPotential = 0;
+		    var randomDouble = Math.floor(Math.random()*100)/100.0;
+		    
+		    nTick += 25;
+		    
+		    //Generate p
+		    if (nTick < 200)
+		        dPotential = Math.min((randomDouble / 75) + offset, 2.17);
+		    if (nTick >= 200 && nTick < 400)
+		        dPotential = Math.max(offset - (randomDouble / 75), 2.15);
+		    
+		    //Generate p-q
+		    if (nTick >= 400 && nTick < 800)
+		    {
+		        var dRandom = (randomDouble / 50);
+		        dPotential = dRandom + 2.14;
+		    }
+		    
+		    //generate q
+		    if (nTick >= 800 && nTick < 850)
+		    {
+		        dPotential = Math.min((randomDouble / 75) + offset, 2.151);
+		        forceR = true;
+		    }
+		    
+		    //generate r
+		    if ((nTick >= 850 && nTick < 900) || forceR)
+		    {
+		        dPotential = Math.max((randomDouble / 75) + offset, 2.397);
+		        forceR = false;
+		    }
+		    
+		    //generate r-s
+		    if (nTick >= 900 && nTick < 950)
+		        dPotential = Math.min(offset - (randomDouble / 75), 2.12);
+		    
+		    //generate t
+		    if (nTick >= 950 && nTick < 1050)
+		        dPotential = Math.min((randomDouble / 75) + offset, 2.18);
+		    if (nTick >= 1050 && nTick < 1200)
+		        dPotential = Math.max(offset - (randomDouble / 75), 2.15);
+		    
+		    //generate t-end
+		    if (nTick >= 1200 && nTick <= 1500) {
+		        var dRandom = (randomDouble / 50);
+		        dPotential = dRandom + 2.14;
+		    }
+		    
+		    offset = dPotential;
+		    if (nTick >= 1500) {
+		        nTick = 0;
+			}		    
+		    
+		    chart.realTime.beginAddDataForNumberOfPoints(1,CFXRealTimeActionAppend);
+		    chart.data.setValue(dPotential,0,0);
+		    chart.realTime.endAddDataScrollingLabels(true,true);
+
+		}
+	},
+	{
+		name: 'getBPM',
+		returnType: 'void',
+		arguments: [],
+		action: function(params) {
+			var bpm = Math.floor(Math.random()*5) + 117;
+		    bpmText.text = NSString.stringWithFormat(NSString.stringWithUTF8String("%d"),bpm);
+		}
+	}
+]);
+
+var controller = new ViewController();
+
+NSTimer.scheduledTimerWithTimeInterval(0.05,controller,NSSelectorFromString('getHeartRate'),null,true);
+NSTimer.scheduledTimerWithTimeInterval(3,controller,NSSelectorFromString('getBPM'),null,true);
+
+win.addSubview(chart);
+
