@@ -139,14 +139,17 @@ void HyperloopDestroyPrivateObject(JSObjectRef object)
  */
 id HyperloopGetPrivateObjectAsID(JSObjectRef object)
 {
-	JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
-	if (p!=NULL)
-	{
-		if (p->type == JSPrivateObjectTypeID)
-		{
-			return (id)p->object;
-		}
-	}
+    if (object!=NULL)
+    {
+        JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
+        if (p!=NULL)
+        {
+            if (p->type == JSPrivateObjectTypeID)
+            {
+                return (id)p->object;
+            }
+        }
+    }
 	return nil;
 }
 
@@ -155,14 +158,17 @@ id HyperloopGetPrivateObjectAsID(JSObjectRef object)
  */
 Class HyperloopGetPrivateObjectAsClass(JSObjectRef object)
 {
-	JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
-	if (p!=NULL)
-	{
-		if (p->type == JSPrivateObjectTypeClass)
-		{
-			return (Class)p->object;
-		}
-	}
+    if (object!=NULL)
+    {
+        JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
+        if (p!=NULL)
+        {
+            if (p->type == JSPrivateObjectTypeClass)
+            {
+                return (Class)p->object;
+            }
+        }
+    }
 	return nil;
 }
 
@@ -171,14 +177,17 @@ Class HyperloopGetPrivateObjectAsClass(JSObjectRef object)
  */
 JSBuffer* HyperloopGetPrivateObjectAsJSBuffer(JSObjectRef object)
 {
-	JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
-	if (p!=NULL)
-	{
-		if (p->type == JSPrivateObjectTypeJSBuffer)
-		{
-			return (JSBuffer*)p->object;
-		}
-	}
+    if (object!=NULL)
+    {
+        JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
+        if (p!=NULL)
+        {
+            if (p->type == JSPrivateObjectTypeJSBuffer)
+            {
+                return (JSBuffer*)p->object;
+            }
+        }
+    }
 	return NULL;
 }
 
@@ -187,12 +196,15 @@ JSBuffer* HyperloopGetPrivateObjectAsJSBuffer(JSObjectRef object)
  */
 void* HyperloopGetPrivateObjectAsPointer(JSObjectRef object)
 {
-    JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
-    if (p!=NULL)
+    if (object!=NULL)
     {
-        if (p->type == JSPrivateObjectTypePointer)
+        JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
+        if (p!=NULL)
         {
-            return p->object;
+            if (p->type == JSPrivateObjectTypePointer)
+            {
+                return p->object;
+            }
         }
     }
     return NULL;
@@ -203,12 +215,15 @@ void* HyperloopGetPrivateObjectAsPointer(JSObjectRef object)
  */
 double HyperloopGetPrivateObjectAsNumber(JSObjectRef object)
 {
-    JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
-    if (p!=NULL)
+    if (object!=NULL)
     {
-        if (p->type == JSPrivateObjectTypeNumber)
+        JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
+        if (p!=NULL)
         {
-            return p->value;
+            if (p->type == JSPrivateObjectTypeNumber)
+            {
+                return p->value;
+            }
         }
     }
     return NAN;
@@ -220,11 +235,14 @@ double HyperloopGetPrivateObjectAsNumber(JSObjectRef object)
  */
 bool HyperloopPrivateObjectIsType(JSObjectRef object, JSPrivateObjectType type)
 {
-	JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
-	if (p!=NULL)
-	{
-		return p->type == type;
-	}
+    if (object!=NULL)
+    {
+        JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
+        if (p!=NULL)
+        {
+            return p->type == type;
+        }
+    }
 	return false;
 }
 
