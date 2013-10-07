@@ -1,10 +1,11 @@
-//
-//  ViewController.m
-//  OpenGLTemplateiOS7Xcode5
-//
-//  Created by Eric Wing on 8/29/13.
-//  Copyright (c) 2013 Eric Wing. All rights reserved.
-//
+/**
+ * Copyright (c) 2013 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Apache Public License
+ * Please see the LICENSE included with this distribution for details.
+ *
+ * This generated code and related technologies are covered by patents
+ * or patents pending by Appcelerator, Inc.
+ */
 
 #import "ViewController.h"
 
@@ -112,7 +113,7 @@ GLfloat gCubeVertexData[] =
     [super viewDidLoad];
     
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
-
+    
     if (!self.context) {
         NSLog(@"Failed to create ES context");
     }
@@ -125,18 +126,19 @@ GLfloat gCubeVertexData[] =
 }
 
 - (void)dealloc
-{    
+{
     [self tearDownGL];
     
     if ([EAGLContext currentContext] == self.context) {
         [EAGLContext setCurrentContext:nil];
     }
+    [super dealloc];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-
+    
     if ([self isViewLoaded] && ([[self view] window] == nil)) {
         self.view = nil;
         
@@ -147,7 +149,7 @@ GLfloat gCubeVertexData[] =
         }
         self.context = nil;
     }
-
+    
     // Dispose of any resources that can be recreated.
 }
 
@@ -158,7 +160,7 @@ GLfloat gCubeVertexData[] =
 	GLint max_texture_size;
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
 	NSLog(@"Max texture size is %d", max_texture_size);
-
+    
 	NSDictionary * options = [NSDictionary dictionaryWithObjectsAndKeys:
                               [NSNumber numberWithBool:YES],
                               GLKTextureLoaderOriginBottomLeft,
@@ -166,19 +168,19 @@ GLfloat gCubeVertexData[] =
 	NSError* out_error = nil;
 	NSString* bundlepath = [[NSBundle mainBundle] pathForResource:@"AppcLanicaHyperloop1024" ofType:@"jpg"];
 	self.textureInfo = [GLKTextureLoader textureWithContentsOfFile:bundlepath
-		options:options              /* Options that control how the image is loaded. */
-		error:&out_error
-	];
+                                                           options:options              /* Options that control how the image is loaded. */
+                                                             error:&out_error
+                        ];
 	if(nil == self.textureInfo && nil != out_error)
 	{
 		NSLog(@"error %@", [out_error localizedDescription]);
 		NSLog(@"GL Error = %u", glGetError());
 		
 	}
-
+    
 	
     [self loadShaders];
-
+    
     self.effect = [[GLKBaseEffect alloc] init];
     self.effect.light0.enabled = GL_TRUE;
     self.effect.light0.diffuseColor = GLKVector4Make(1.0f, 0.4f, 0.4f, 1.0f);
@@ -186,28 +188,28 @@ GLfloat gCubeVertexData[] =
 	self.effect.texture2d0.enabled = GL_TRUE;
 	self.effect.texture2d0.envMode = GLKTextureEnvModeDecal;
 	self.effect.texture2d0.target = GLKTextureTarget2D;
-//	self.effect.texture2d0.target = self.textureInfo.target;
+    //	self.effect.texture2d0.target = self.textureInfo.target;
 	self.effect.texture2d0.name = self.textureInfo.name;
-
+    
     glEnable(GL_DEPTH_TEST);
-
+    
     glGenVertexArraysOES(1, &_vertexArray);
     glBindVertexArrayOES(_vertexArray);
     
     glGenBuffers(1, &_vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(gCubeVertexData), gCubeVertexData, GL_STATIC_DRAW);
-
+    
     glEnableVertexAttribArray(GLKVertexAttribPosition);
     glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 32, BUFFER_OFFSET(0));
     glEnableVertexAttribArray(GLKVertexAttribNormal);
     glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, 32, BUFFER_OFFSET(12));
 	glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
     glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, 32, BUFFER_OFFSET(24));
-
+    
     glBindVertexArrayOES(0);
-
-
+    
+    
 	
 }
 
@@ -261,11 +263,11 @@ GLfloat gCubeVertexData[] =
 {
     glClearColor(0.65f, 0.65f, 0.65f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    
 	//	glBindTexture( GL_TEXTURE_2D, self.textureInfo.name);
 	// target should be GL_TEXTURE_2D in this case, but this is more flexible if it changes
 	glBindTexture(self.textureInfo.target, self.textureInfo.name);
-
+    
     glBindVertexArrayOES(_vertexArray);
     
     // Render the object with GLKit
@@ -281,8 +283,8 @@ GLfloat gCubeVertexData[] =
     // Set the sampler texture unit to 0
 	glUniform1i(uniforms[UNIFORM_TEXTURE_SAMPLER], 0);
 	
-
-
+    
+    
     glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
@@ -345,7 +347,7 @@ GLfloat gCubeVertexData[] =
     uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX] = glGetUniformLocation(_program, "modelViewProjectionMatrix");
     uniforms[UNIFORM_NORMAL_MATRIX] = glGetUniformLocation(_program, "normalMatrix");
     uniforms[UNIFORM_TEXTURE_SAMPLER] = glGetUniformLocation(_program, "texture");
-
+    
     // Release vertex and fragment shaders.
     if (vertShader) {
         glDetachShader(_program, vertShader);
@@ -355,7 +357,7 @@ GLfloat gCubeVertexData[] =
         glDetachShader(_program, fragShader);
         glDeleteShader(fragShader);
     }
-
+    
     return YES;
 }
 

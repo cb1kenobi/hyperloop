@@ -388,15 +388,13 @@ JSValueRef putStringForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjec
 {
     BUFFER(buffer);
     ARGCOUNTMIN(1);
-    if (JSValueIsString(ctx,arguments[0])) 
+    NSString *string = HyperloopToNSString(ctx,arguments[0]);
+    if (string!=nil)
     {
-        CHECK_EXCEPTION_UNDEFINED;
-        JSStringRef string = JSValueToStringCopy(ctx, arguments[0], exception);
-        CHECK_EXCEPTION_UNDEFINED;
-        size_t length = JSStringGetMaximumUTF8CStringSize(string);
+        size_t length = [string length];
         CHECK_SIZE_AND_GROW(length,0);
-        JSStringGetUTF8CString(string,buffer->buffer,length);
-        JSStringRelease(string);
+        const char *copy = [string UTF8String];
+        memcpy(buffer->buffer,copy,length);
     }
     return JSValueMakeUndefined(ctx);
 }
@@ -655,8 +653,8 @@ JSValueRef resetForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef
         {
             free(buffer->buffer);
         }
-        buffer->length = 1;
-        buffer->buffer = malloc(1);
+        buffer->length = sizeof(int);
+        buffer->buffer = malloc(buffer->length);
         buffer->type = JSBufferTypePointer;
     }
     return object;

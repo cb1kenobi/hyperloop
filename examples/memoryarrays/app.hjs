@@ -1,0 +1,61 @@
+/**
+ * example on how to create memory in various ways using array of values
+ */
+var size_of_float = 4;
+
+function assert (value, test, msg) {
+	console.log(
+		(value ? '\033[32m✓\033[39m\033[0m ' : '\033[31m✘\033[39m\033[0m') + 
+		'  ' + test + ' ' +
+		(!value ? ('\t(received: '+msg+')') : '')
+	);
+}
+
+// 2 x 2 x 2 multi-dimensional array
+var m = @memory([
+	[ [1,2], [1,2] ],
+	[ [1,2], [1,2] ]
+]);
+
+assert(m.length===(2*2*2*size_of_float), "2 x 2 x 2 array length", m.length);
+assert(m.isNaN()===false, "2 x 2 x 2 array NaN", m.isNaN());
+
+// 2 x 2 multi-dimensional array
+m = @memory([
+	[1,2],
+	[2,1]
+]);
+
+assert(m.length===(2*2*size_of_float), "2 x 2 array length", m.length);
+assert(m.isNaN()===false, "2 x 2 array NaN", m.isNaN());
+
+
+// single-dimension array
+m = @memory([
+    0.5, -0.5, -0.5, 1.0, 0.0, 0.0,	1.0, 0.0,
+]);
+
+assert(m.length===(8*size_of_float), "single dimension array length", m.length)
+assert(m.isNaN()===false, "single dimension array NaN", m.isNaN());
+assert(m.toFloat(0)==0.5, "single dimension array index 0", m.toFloat(0));
+assert(m.toFloat(1)==-0.5, "single dimension array index 1", m.toFloat(1));
+assert(m.toFloat(2)==-0.5, "single dimension array index 2", m.toFloat(2));
+assert(m.toFloat(3)==1.0, "single dimension array index 3", m.toFloat(3));
+assert(m.toFloat(4)==0.0, "single dimension array index 4", m.toFloat(4));
+assert(m.toFloat(5)==0.0, "single dimension array index 5", m.toFloat(5));
+assert(m.toFloat(6)==1.0, "single dimension array index 6", m.toFloat(6));
+assert(m.toFloat(7)==0.0, "single dimension array index 7", m.toFloat(7));
+
+
+// no size, should be initialized to an int array with length of 1 and value of 0
+m = @memory();
+
+assert(m.length===(1*size_of_float), "@memory() length", m.length);
+assert(m.isNaN()===true, "@memory() NaN", m.isNaN());
+
+// specific size
+m = @memory(10);
+
+assert(m.length===(10), "@memory(10) length", m.length);
+assert(m.isNaN()===true, "@memory(10) NaN", m.isNaN());
+
