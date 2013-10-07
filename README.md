@@ -48,10 +48,18 @@ The following Platforms are being targeted for supported.
 
 ### Possible, Likely (dreaming, wanna help?)
 
-- _Blackberry_ - BB 10 
 - _Tizen_ - Tizen OS
 - _Leapmotion_ - Leapmotion SDK
+- _Firefox OS_ - Firefox OS
 
+### Maybe, not?
+
+- _Blackberry_ - BB 10 
+
+
+## Examples
+
+We have built a few examples to show off our work.  Please look in the [Examples](https://github.com/appcelerator/hyperloop/tree/master/examples) folder for them.  Please help by contribributing new examples that show off the power of Hyperloop.
 
 ## Design
 
@@ -123,6 +131,11 @@ For CNI, you would use the following method.
 var window = NSWindow.alloc().initWithContentRect(NSRectMake(0,0,100,200),NSTitledWindowMask,NSBackingStoreBuffered,false);
 ~~~
 
+#### Named method arguments with different names but same number of parameters
+
+Currently, if you have multiple methods with the same first argument name and different additional arguments as part of the selector and the number of arguments are the same, only the first method will be generated.  We will address this limitation before release.
+
+
 ## Tooling Plugins
 
 #### Sublime Text 2
@@ -158,6 +171,10 @@ For Titanium (and Hyperloop), modules just become Hyperloop CNI code packaged as
 The next generation Titanium SDK, called [Ti.Next](http://ceogeek.tumblr.com/post/54456815189/thoughts-on-ti-next), is being rebuilt around Hyperloop.  However, we are separating the new compiler (hyperloop) in a standalone project so that developers can use hyperloop without Titanium.  Ti.Next uses the hyperloop compiler to build the new Titanium SDK.
 
 The target for "hyperloop standalone" is developers who would like to write native applications using JavaScript (as a language) but prefer to use the target platforms API directly, instead of using the cross-platform Titanium API.  
+
+## Reporting Bugs or submitting fixes
+
+If you run into problems, and trust us, there are likely plenty of them at this point -- please create an [Issue](https://github.com/appcelerator/hyperloop/issues) or, even better, send us a Pull Request.
 
 ## Contributors
 

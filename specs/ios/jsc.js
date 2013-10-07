@@ -96,7 +96,8 @@ describe("jsc", function(){
 				assert(emptyBuffer.toFloat()===20.110000610351562, "emptyBuffer.toFloat() should be 20.110000610351562, was: "+emptyBuffer.toFloat());
 
 				emptyBuffer.reset();
-				assert(emptyBuffer.length===1, "emptyBuffer.reset() should have length of 1, was: "+emptyBuffer.length);
+				// reset to int size as default with value as NaN
+				assert(emptyBuffer.length===4, "emptyBuffer.reset() should have length of 4, was: "+emptyBuffer.length);
 
 				emptyBuffer.putChar("a");
 				assert(emptyBuffer.toChar()==="a", "emptyBuffer.toChar() should be a, was: "+emptyBuffer.toChar());
@@ -104,7 +105,7 @@ describe("jsc", function(){
 				emptyBuffer.putChar("b",1);
 				assert(emptyBuffer.toChar(1)==="b", "emptyBuffer.toChar(1) should be b, was: "+emptyBuffer.toChar(1));
 				assert(emptyBuffer.toChar(0)==="a", "emptyBuffer.toChar(0) should be a, was: "+emptyBuffer.toChar(0));
-				assert(emptyBuffer.toCharArray()==="ab", "emptyBuffer.toCharArray() should be ab, was: "+emptyBuffer.toCharArray());
+				assert(emptyBuffer.toCharArray()=="ab", "emptyBuffer.toCharArray() should be ab, was: "+emptyBuffer.toCharArray());
 
 				emptyBuffer.putDouble(0);
 				emptyBuffer.putDouble(1,1);

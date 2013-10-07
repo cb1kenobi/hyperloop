@@ -1,0 +1,371 @@
+/**
+ * OpenGL demo
+ */
+@import('Foundation/NSDictionary');
+@import('Foundation/NSMutableDictionary');
+@import('Foundation/NSNumber');
+@import('Foundation/NSBundle');
+@import('Foundation/NSString');
+@import('Foundation/NSUTF8StringEncoding');
+@import('Foundation/NSObject');
+
+@import('UIKit/UIApplication');
+@import('UIKit/UIApplicationDelegate');
+@import('UIKit/UIColor');
+
+@import('CoreGraphics/CGRectMake');
+
+@import('GLKit/EAGLContext');
+@import('GLKit/GLKViewController');
+@import('GLKit/GLKView');
+@import('GLKit/kEAGLRenderingAPIOpenGLES2');
+@import('GLKit/GLKViewDrawableDepthFormat24');
+@import('GLKit/GLint');
+@import('GLKit/glGetIntegerv');
+@import('GLKit/GLKTextureLoaderOriginBottomLeft');
+@import('GLKit/GLKTextureLoader');
+@import('GLKit/glCreateProgram');
+@import('GLKit/glCreateShader');
+@import('GLKit/glShaderSource');
+@import('GLKit/glCompileShader');
+@import('GLKit/glAttachShader');
+@import('GLKit/glBindAttribLocation');
+@import('GLKit/glGetUniformLocation');
+@import('GLKit/GLKVertexAttribPosition');
+@import('GLKit/GLKVertexAttribNormal');
+@import('GLKit/GLKVertexAttribTexCoord0');
+@import('GLKit/glLinkProgram');
+@import('GLKit/glGetProgramiv');
+@import('GLKit/glDetachShader');
+@import('GLKit/glDeleteShader');
+@import('GLKit/GLKBaseEffect');
+@import('GLKit/GLKVector4Make');
+@import('GLKit/GLKTextureEnvModeDecal');
+@import('GLKit/GLKTextureTarget2D');
+@import('GLKit/glEnable');
+@import('GLKit/glGenVertexArraysOES');
+@import('GLKit/glBindVertexArrayOES');
+@import('GLKit/glGenBuffers');
+@import('GLKit/glBindBuffer');
+@import('GLKit/glBufferData');
+@import('GLKit/glEnableVertexAttribArray');
+@import('GLKit/glVertexAttribPointer');
+@import('GLKit/glBindVertexArrayOES');
+@import('GLKit/GLKMatrix4MakePerspective');
+@import('GLKit/GLKMathDegreesToRadians');
+@import('GLKit/GLKMatrix4MakeTranslation');
+@import('GLKit/GLKMatrix4Rotate');
+@import('GLKit/GLKMatrix4Multiply');
+@import('GLKit/GLKMatrix3InvertAndTranspose');
+@import('GLKit/GLKMatrix4GetMatrix3');
+@import('GLKit/glClearColor');
+@import('GLKit/glClear');
+@import('GLKit/glBindTexture');
+@import('GLKit/glDrawArrays');
+@import('GLKit/glUseProgram');
+@import('GLKit/glUniformMatrix4fv');
+@import('GLKit/glUniformMatrix3fv');
+@import('GLKit/glUniform1i');
+@import('GLKit/glDrawArrays');
+@import('GLKit/GLKMatrix4Make');
+@import('GLKit/GLKMatrix3Make');
+
+
+// TODO: the metabase isn't finding #define
+var GL_MAX_TEXTURE_SIZE = 0x0D33;
+var GL_FRAGMENT_SHADER = 0x8B30;
+var GL_VERTEX_SHADER = 0x8B31;
+var GL_LINK_STATUS = 0x8B82;
+var GL_TRUE = 1;
+var GL_FALSE = 0;
+var GL_DEPTH_TEST = 0x0B71;
+var GL_ARRAY_BUFFER = 0x8892;
+var GL_FLOAT = 0x1406;
+var GL_STATIC_DRAW = 0x88E4;
+var GL_COLOR_BUFFER_BIT = 0x00004000;
+var GL_DEPTH_BUFFER_BIT = 0x00000100;
+var GL_TRIANGLES = 0x0004;
+
+var gCubeVertexData = @memory([
+	// right wall
+    0.5, -0.5, -0.5,        1.0, 0.0, 0.0,	1.0, 0.0,
+    0.5, 0.5, -0.5,         1.0, 0.0, 0.0,	1.0, 1.0,
+    0.5, -0.5, 0.5,         1.0, 0.0, 0.0,	0.0, 0.0,
+    0.5, -0.5, 0.5,         1.0, 0.0, 0.0,	0.0, 0.0,
+    0.5, 0.5, -0.5,         1.0, 0.0, 0.0,	1.0, 1.0,
+    0.5, 0.5, 0.5,          1.0, 0.0, 0.0,	0.0, 1.0,
+    
+	// top wall
+    0.5, 0.5, -0.5,         0.0, 1.0, 0.0,	1.0, 0.0,
+    -0.5, 0.5, -0.5,        0.0, 1.0, 0.0,	1.0, 1.0,
+    0.5, 0.5, 0.5,          0.0, 1.0, 0.0,	0.0, 0.0,
+    0.5, 0.5, 0.5,          0.0, 1.0, 0.0,	0.0, 0.0,
+    -0.5, 0.5, -0.5,        0.0, 1.0, 0.0,	1.0, 1.0,
+    -0.5, 0.5, 0.5,         0.0, 1.0, 0.0,	0.0, 1.0,
+    
+	// left wall
+    -0.5, 0.5, -0.5,        -1.0, 0.0, 0.0,	1.0, 0.0,
+    -0.5, -0.5, -0.5,       -1.0, 0.0, 0.0,	1.0, 1.0,
+    -0.5, 0.5, 0.5,         -1.0, 0.0, 0.0,	0.0, 0.0,
+    -0.5, 0.5, 0.5,         -1.0, 0.0, 0.0,	0.0, 0.0,
+    -0.5, -0.5, -0.5,       -1.0, 0.0, 0.0,	1.0, 1.0,
+    -0.5, -0.5, 0.5,        -1.0, 0.0, 0.0,	0.0, 1.0,
+    
+	// bottom wall
+    -0.5, -0.5, -0.5,       0.0, -1.0, 0.0,	1.0, 0.0,
+    0.5, -0.5, -0.5,        0.0, -1.0, 0.0,	1.0, 1.0,
+    -0.5, -0.5, 0.5,        0.0, -1.0, 0.0,	0.0, 0.0,
+    -0.5, -0.5, 0.5,        0.0, -1.0, 0.0,	0.0, 0.0,
+    0.5, -0.5, -0.5,        0.0, -1.0, 0.0,	1.0, 1.0,
+    0.5, -0.5, 0.5,         0.0, -1.0, 0.0,	0.0, 1.0,
+    
+	// front wall
+    0.5, 0.5, 0.5,          0.0, 0.0, 1.0,	1.0, 0.0,
+    -0.5, 0.5, 0.5,         0.0, 0.0, 1.0,	1.0, 1.0,
+    0.5, -0.5, 0.5,         0.0, 0.0, 1.0,	0.0, 0.0,
+    0.5, -0.5, 0.5,         0.0, 0.0, 1.0,	0.0, 0.0,
+    -0.5, 0.5, 0.5,         0.0, 0.0, 1.0,	1.0, 1.0,
+    -0.5, -0.5, 0.5,        0.0, 0.0, 1.0,	0.0, 1.0,
+    
+	// back wall
+    0.5, -0.5, -0.5,        0.0, 0.0, -1.0,	1.0, 0.0,
+    -0.5, -0.5, -0.5,       0.0, 0.0, -1.0,	1.0, 1.0,
+    0.5, 0.5, -0.5,         0.0, 0.0, -1.0,	0.0, 0.0,
+    0.5, 0.5, -0.5,         0.0, 0.0, -1.0,	0.0, 0.0,
+    -0.5, -0.5, -0.5,       0.0, 0.0, -1.0,	1.0, 1.0,
+    -0.5, 0.5, -0.5,        0.0, 0.0, -1.0, 0.0, 1.0
+]);
+
+
+var _ = NSString.stringWithUTF8String;
+
+var vertexArray = @memory();
+var vertexBuffer = @memory();
+var effect;
+var modelViewProjectionMatrix = GLKMatrix4Make(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+var normalMatrix = GLKMatrix3Make(0,0,0,0,0,0,0,0,0);
+var rotation = 0.0;
+
+@class('MyGLController', GLKViewController, [], [
+	{
+		name: 'glkView',
+		returnType: 'void',
+		arguments: [ { type: 'GLKView *', name: 'view' }, { type: 'CGRect', name: 'drawInRect', property:'rect' } ],
+		action: render
+	},
+	{
+		name: 'update',
+		returnType: 'void',
+		arguments: [],
+		action: update
+	}
+]);
+
+function update (params) {
+	
+   	try {
+		var aspect = Math.abs(view.bounds.size.width / view.bounds.size.height);
+		var projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0), aspect, 0.1, 100.0);
+
+		effect.transform.projectionMatrix = projectionMatrix;
+
+		var baseModelViewMatrix = GLKMatrix4MakeTranslation(0.0, 0.0, -4.0);
+		baseModelViewMatrix = GLKMatrix4Rotate(baseModelViewMatrix, rotation, 0.0, 1.0, 0.0);
+
+		// Compute the model view matrix for the object rendered with GLKit
+		var modelViewMatrix = GLKMatrix4MakeTranslation(0.0, 0.0, -1.5);
+		modelViewMatrix = GLKMatrix4Rotate(modelViewMatrix, rotation, 1.0, 1.0, 1.0);
+		modelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, modelViewMatrix);
+
+		effect.transform.modelviewMatrix = modelViewMatrix;
+
+		// Compute the model view matrix for the object rendered with ES2
+		modelViewMatrix = GLKMatrix4MakeTranslation(0.0, 0.0, 1.5);
+		modelViewMatrix = GLKMatrix4Rotate(modelViewMatrix, rotation, 1.0, 1.0, 1.0);
+		modelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, modelViewMatrix);
+
+		normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelViewMatrix), null);
+
+		modelViewProjectionMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
+
+		rotation += controller.timeSinceLastUpdate * 0.5;
+   	}
+   	catch (E) {
+   		console.log('update:',E.message);
+   	}
+}
+
+function render (params) {
+
+	try {
+		glClearColor(0.65, 0.65, 0.65, 1.0);
+
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// target should be GL_TEXTURE_2D in this case, but this is more flexible if it changes
+		glBindTexture(textureInfo.target, textureInfo.name);
+
+		glBindVertexArrayOES(vertexArray.toInt());
+
+		// Render the object with GLKit
+		effect.prepareToDraw();
+
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// Render the object again with ES2
+		glUseProgram(program);
+
+		glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, modelViewProjectionMatrix.m);
+		glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, normalMatrix.m);
+		
+		// Set the sampler texture unit to 0
+		glUniform1i(uniforms[UNIFORM_TEXTURE_SAMPLER], 0);
+
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+	}
+	catch (E) {
+		console.log('render:',E.message);
+	}
+}
+
+// create the OpenGL context
+var context = EAGLContext.alloc().initWithAPI(kEAGLRenderingAPIOpenGLES2);
+
+// you *MUST* set this or your calls to APIs will fail
+EAGLContext.setCurrentContext(context);
+
+// create a GL view
+var view = GLKView.alloc().initWithFrame(CGRectMake(0,0,0,0),context);
+view.drawableDepthFormat = GLKViewDrawableDepthFormat24;
+
+// remove the base view
+var keyWindow = UIApplication.sharedApplication().keyWindow;
+keyWindow.subviews.objectAtIndex(0).removeFromSuperview();
+
+// create our custom GL controller
+var controller = new MyGLController();
+controller.view = view;
+keyWindow.rootViewController = controller;
+keyWindow.addSubview(view);
+
+var max_texture_size = @memory();
+max_texture_size.putInt(1);
+glGetIntegerv(GL_MAX_TEXTURE_SIZE, max_texture_size);
+console.log("Max texture size is:",max_texture_size.toInt());
+
+var options = new NSMutableDictionary();
+options.setValue(NSNumber.numberWithBool(true),GLKTextureLoaderOriginBottomLeft);
+
+// load image
+var bundlepath = NSBundle.mainBundle().pathForResource(_('AppcLanicaHyperloop1024'),_('jpg'));
+
+// create texture
+var textureInfo = GLKTextureLoader.textureWithContentsOfFile(bundlepath,options,null);
+
+// create shader program
+var program = glCreateProgram();
+var vertShaderPathname = NSBundle.mainBundle().pathForResource(_('Shader'),_('vsh'));
+var fragShaderPathname = NSBundle.mainBundle().pathForResource(_('Shader'),_('fsh'));
+
+var uniforms = [],
+	UNIFORM_MODELVIEWPROJECTION_MATRIX = 0,
+	UNIFORM_NORMAL_MATRIX = 1,
+	UNIFORM_TEXTURE_SAMPLER = 2;
+
+function compileShader(type, file) {
+	var source = NSString.stringWithContentsOfFile(file,NSUTF8StringEncoding,null);
+	// create a memory buffer to store the char*
+	var buffer = @memory();
+	buffer.putString(source);
+	var shader = glCreateShader(type);
+	var length = @memory();
+	// create a memory buffer to store the int as int*
+	length.putInt(source.length());
+	glShaderSource(shader, 1, buffer, length);
+	glCompileShader(shader);
+	return shader;
+}
+
+function loadShaders () {
+	var vertShader = compileShader(GL_VERTEX_SHADER,vertShaderPathname);
+
+	var fragShader = compileShader(GL_FRAGMENT_SHADER,fragShaderPathname);
+
+	glAttachShader(program, vertShader);
+
+	glAttachShader(program, fragShader);
+
+	glBindAttribLocation(program, GLKVertexAttribPosition, 'position');
+
+	glBindAttribLocation(program, GLKVertexAttribNormal, 'normal');
+
+	glBindAttribLocation(program, GLKVertexAttribTexCoord0, 'texCoord');
+
+	glLinkProgram(program);
+
+	// create an int* (default) that will serve as out pointer to receive back the status
+	// this is the same as this in C:
+	//
+	// size_t size = 0;
+	// glGetProgramiv(program, GL_LINK_STATUS, &size);
+	//
+	// where size is passed as (int*) and glGetProgramiv sets the value in the pointer location
+	var status = @memory();
+
+	glGetProgramiv(program, GL_LINK_STATUS, status);
+
+	if (!status.toInt()) {
+		console.log('Received invalid status from GL_LINK_STATUS, should have been 1, was:',status.toInt());
+		return false;
+	}
+
+    // Get uniform locations.
+	uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX] = glGetUniformLocation(program, 'modelViewProjectionMatrix');
+	uniforms[UNIFORM_NORMAL_MATRIX] = glGetUniformLocation(program, 'normalMatrix');
+	uniforms[UNIFORM_TEXTURE_SAMPLER] = glGetUniformLocation(program, 'texture');
+
+	glDetachShader(program, vertShader);
+	glDeleteShader(vertShader);
+
+	glDetachShader(program, fragShader);
+	glDeleteShader(fragShader);
+
+	return true;
+}
+
+try {
+	if (loadShaders()) {
+
+		effect = new GLKBaseEffect();
+		effect.light0.enabled = GL_TRUE;
+		effect.light0.diffuseColor = GLKVector4Make(1.0, 0.4, 0.4, 1.0);
+		effect.texture2d0.enabled = GL_TRUE;
+		effect.texture2d0.envMode = GLKTextureEnvModeDecal;
+		effect.texture2d0.target = GLKTextureTarget2D;
+		effect.texture2d0.name = textureInfo.name;
+
+		glEnable(GL_DEPTH_TEST);
+
+	    glGenVertexArraysOES(1, vertexArray);
+	    glBindVertexArrayOES(vertexArray.toInt());
+	    
+	    glGenBuffers(1, vertexBuffer);
+	    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer.toInt());
+
+	    glBufferData(GL_ARRAY_BUFFER, gCubeVertexData.length, gCubeVertexData, GL_STATIC_DRAW);
+
+	    glEnableVertexAttribArray(GLKVertexAttribPosition);
+	    
+	    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 32, 0);
+	    glEnableVertexAttribArray(GLKVertexAttribNormal);
+	    glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, 32, 12);
+		glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
+	    glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, 32, 24);
+
+	    glBindVertexArrayOES(0);
+	}
+}
+catch(E){
+	console.log(E.message);
+}
+

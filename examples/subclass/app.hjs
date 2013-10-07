@@ -1,4 +1,6 @@
 @import('SpriteKit/SKScene');
+@import('Foundation/CGSize');
+@import('Foundation/CGSizeMake');
 
 // object inspection
 function log(obj){
@@ -8,7 +10,17 @@ function log(obj){
 	console.log('    ' + Object.keys(obj).join('\n    '));
 }
 
-@class('MyScene', SKScene, [], []);
+function update() {
+}
+
+@class('MyScene', SKScene, [], [
+	{
+		name: 'update',
+		returnType: 'void',
+		arguments: [ { type: 'id', name: 'sender' }, { type: 'id', name: 'foo', property:'bar'} ],
+		action: update
+	}
+]);
 
 console.log('********** SKScene **********');
 console.log('- Class');
@@ -22,3 +34,16 @@ console.log('- Class');
 log(MyScene);
 console.log('- Instance');
 log(new MyScene());
+
+@class('MyScene2', SKScene, [], [
+    {
+        name: 'initWithSize',
+        returnType: 'id',
+        arguments: [ { type: 'CGSize', name: 'size' } ],
+        action: function(params) {
+        	console.log('initWithSize called with size=',params.size.width+'x'+params.size.height);
+        }
+    }
+]);
+var scene = new MyScene2();
+var scene2 = MyScene2.alloc().initWithSize(CGSizeMake(10,10));

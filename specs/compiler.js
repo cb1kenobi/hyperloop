@@ -115,7 +115,7 @@ describe("compiler", function() {
 			sourcefile = new MockSourceFile(),
 			ast = compiler.compile(source, 'test', sourcefile),
 			code = compiler.compress(ast,{},'test');
-		code.should.eql('var mem=new JSBuffer(1024);');
+		code.should.eql('var mem=JSBuffer0;');
 		sourcefile.name.should.be.eql('test');
 		sourcefile.filename.should.be.eql('/test');
 		sourcefile.dirname.should.be.eql('/');
@@ -126,7 +126,7 @@ describe("compiler", function() {
 			sourcefile = new MockSourceFile(),
 			ast = compiler.compile(source, 'test', sourcefile),
 			code = compiler.compress(ast,{},'test');
-		code.should.eql('var mem=new JSBuffer;');
+		code.should.eql('var mem=JSBuffer1;');
 		sourcefile.name.should.be.eql('test');
 		sourcefile.filename.should.be.eql('/test');
 		sourcefile.dirname.should.be.eql('/');
