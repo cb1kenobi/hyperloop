@@ -562,12 +562,13 @@ JSValueRef toCharArrayForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObj
     BUFFER(buffer);
     PRIMITIVE_GET_ARRAY(char);
     size_t len = buffer->length / sizeof(char);
-    JSChar buf[len];
+    char *buf = malloc(len);
     for (size_t c = 0; c < len; c++)
     {
-        buf[c] = value[c];
+        buf[c] = (char)value[c];
     }
-    JSStringRef stringRef = JSStringCreateWithCharacters(buf, len);
+    buf[len]='\0';
+    JSStringRef stringRef = JSStringCreateWithUTF8CString(buf);
     JSValueRef result = JSValueMakeString(ctx,stringRef);
     JSStringRelease(stringRef);
     return result;
