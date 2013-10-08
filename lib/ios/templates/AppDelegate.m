@@ -11,10 +11,15 @@
 // Generated on <%=new Date%>
 
 #import "AppDelegate.h"
+@import Foundation;
+@import JavaScriptCore;
 
-extern JSContextRef HyperloopCreateVM (NSString *name);
+extern JSContextRef HyperloopCreateVM(NSString *name);
 
-@implementation AppDelegate
+@implementation AppDelegate {
+	JSContextRef context;
+}
+
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {

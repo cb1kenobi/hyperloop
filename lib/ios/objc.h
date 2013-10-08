@@ -29,6 +29,7 @@
 @import GSS;
 @import GameController;
 @import GameKit;
+@import IOKit;
 @import ImageIO;
 @import JavaScriptCore;
 @import MapKit;
@@ -52,4 +53,5 @@
 @import SystemConfiguration;
 @import Twitter;
 @import UIKit;
+@import VideoToolbox;
 @import iAd;
