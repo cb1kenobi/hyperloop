@@ -46,16 +46,16 @@ The following Platforms are being targeted for supported.
 - _Windows Phone 8_ - Windows Phone / Tablet
 - _OSX_ - OSX desktop
 
-### Possible, Likely (dreaming, wanna help?)
+### Experimental Ideas
 
 - _Tizen_ - Tizen OS
 - _Leapmotion_ - Leapmotion SDK
 - _Firefox OS_ - Firefox OS
-
-### Maybe, not?
-
 - _Blackberry_ - BB 10 
 
+## Documentation
+
+- [hyperloop wiki](https://github.com/appcelerator/hyperloop/wiki)
 
 ## Examples
 
@@ -67,41 +67,7 @@ Hyperloop works by using a high-level [DSL](http://en.wikipedia.org/wiki/Domain-
 
 The compiler is broken into two subsystems: _backend_ and _frontend_.  The _frontend_ will parse the input JavaScript source code and transform it into an [AST](http://en.wikipedia.org/wiki/Abstract_syntax_tree) and will resolve special reserved JavaScript keywords which instruct the compiler to perform specific code transformations (we call this CNI, short for Common Native Interface).  Once CNI instructions are encountered, the _backend_ compiler will emit the appropriate language and OS specific code for the target platform.  The _backend_ compiler is specific to each OS while the _frontend_ compiler is generic for all platforms.
 
-### CNI keywords
-
-The DSL provides a small number of specific reserved keywords which form the DSL for CNI.  While the keywords are platform independent, the specific values passed are usually platform dependent.
-
-* _@import_ - import a specific symbol.  Typically this is used to import a static symbol or class.  
-* _@compiler_ - instruct the native compiler to use specific settings which are passed as an object.
-* _@class_ - create a class implementation of a specific interface or an anonymous (classless) implementation.
-* _@memory_ - create a direct memory buffer (equivalent to C malloc).
-
-For example, in iOS, you could do something such as:
-
-```javascript
-@import('UIKit/UIView');
-var view = new UIView();
-```
-
-In the above example, the _@import_ keyword will cause the compiler to import the `UIKit` framework and load the `UIView` interface and make it available in the current JS scope of the file.  Notice that `UIView` doesn't need to be defined, it is automatically available in scope when the JS is executed.  We can now treat `UIView` as a normal class.  In the second line, we will then instantiate the class using normal JS semantics.  This will create a native `UIView` implementation and return a pointer to it in the JS variable `view`.
-
-You can now perform specific platform dependent methods that are defined in the OS interface:
-
-```javascript
-view.frame = CGRectMake(0,0,200,200);
-view.backgroundColor = UIColor.blueColor();
-```
-
-However, before we can compile this code, we will need to add the additional imports for the additional native functions (before the code above):
-
-```javascript
-@import('CoreGraphics/CGRectMake');
-@import('UIKit/UIColor');
-```
-
-You'll notice that we're importing a static method defined in the `CoreGraphics` framework named `CGRectMake`.  We can use this C function as we would any standard JS function.
-
-### Generating Code
+#### Generating Code
 
 The backend compiler will turn the appropriate CNI into the target language of that platform. For example, for iOS, the backend will generate Objective-C source code.  For Android, the backend will generate Java, and so forth.
 
@@ -147,24 +113,18 @@ See tools/ST2/README.md for information on how to install the ST2 plugin.
 
 #### [iOS] Will this work with iOS 5 or iOS 6?
 
-RTFM. No, look above.
+Nope. iOS 7 is the current minimum for this architecture.
 
 #### [iOS] What happens when I add my own methods to UIView (for example)?  i.e. subclass it?  Does it get compiled in to the native class?  Or is it JS only?  Or maybe there's a specific syntax used to make it a native method vs. JS-only method?
 
 Any JS Object (i.e. Class) imported in principle is a first-class JS object where the native methods and properties are prototypes on the returned JS Object.  This will allow you to also add your own functions and properties to the returned Object as either direct properties of the object or on the prototype of the JS class.
 
-#### Is this like XYZ?
+#### Why the non-standard JS symbols like @?
 
-Sure. I guess. Just like Titanium is like PhoneGap.  No.
-
-#### Why the funky non-standard JS symbols like @?
-
-Well, we wanted to specifically confuse JSLint and wreak havoc for your editors. Seriously, we wanted to specifically distinguish specific keywords that we're using as _special_ CNI keywords distinctly.  We want developers to understand that these keywords are specific to CNI and special and do magic things, thus the special `@` symbol prefix.  This is very similar to what other compilers do such as clang using `@import` to import modules or C pre-processor using `#ifdef` to tell the compiler that it wants to do something special before compiling the language.  
-
+We wanted to specifically distinguish specific keywords that we're using as _special_ CNI keywords distinctly.  We want developers to understand that these keywords are specific to CNI compile-time syntax, thus the special `@` symbol prefix.  This is very similar to what other compilers do such as clang using `@import` to import modules or C pre-processor using `#ifdef` to tell the compiler that it wants to do something special before compiling the language.  
 #### Can I write modules?
 
-For Titanium (and Hyperloop), modules just become Hyperloop CNI code packaged as [Common JS](http://wiki.commonjs.org/wiki/CommonJS) and loaded via `require`.  We will make a new packaging mechanism to make it easier to distribute them such as Node does with NPM modules. 
-
+For Titanium (and Hyperloop), modules just become Hyperloop CNI code packaged as [Common JS](http://wiki.commonjs.org/wiki/CommonJS) and loaded via `require`. In essence, modules as you think of them in traditional Titanium code are now written inline using the target platform's own APIs, directly in Javascript. We will make a new packaging mechanism to make it easier to distribute them such as Node does with NPM modules.
 
 ## Hyperloop and Titanium
 
@@ -174,19 +134,7 @@ The target for "hyperloop standalone" is developers who would like to write nati
 
 ## Reporting Bugs or submitting fixes
 
-If you run into problems, and trust us, there are likely plenty of them at this point -- please create an [Issue](https://github.com/appcelerator/hyperloop/issues) or, even better, send us a Pull Request.
-
-## Contributors
-
-The original source and design for this project was developed by [Jeff Haynie](http://github.com/jhaynie) ([@jhaynie](http://twitter.com/jhaynie)).
-
-The following people have contributed significantly to the development of Hyperloop:
-
-- [Matt Langston](https://github.com/matt-langston)
-- [Tony Lukasavage](https://github.com/tonylukasavage)
-- [Chris Barber](https://github.com/cb1kenobi)
-- [Dawson Toth](https://github.com/dawsontoth)
-
+If you run into problems, and trust us, there are likely plenty of them at this point -- please create an [Issue](https://github.com/appcelerator/hyperloop/issues) or, even better, send us a pull request.
 
 ## Contributing
 
@@ -195,6 +143,28 @@ Hyperloop is an open source project.  Hyperloop wouldn't be where it is now with
 To protect the interests of the Hyperloop contributors, Appcelerator, customers and end users we require contributors to sign a Contributors License Agreement (CLA) before we pull the changes into the main repository. Our CLA is simple and straightforward - it requires that the contributions you make to any Appcelerator open source project are properly licensed and that you have the legal authority to make those changes. This helps us significantly reduce future legal risk for everyone involved. It is easy, helps everyone, takes only a few minutes, and only needs to be completed once.
 
 [You can digitally sign the CLA](http://bit.ly/app_cla) online. Please indicate your email address in your first pull request so that we can make sure that will locate your CLA.  Once you've submitted it, you no longer need to send one for subsequent submissions.
+
+## Contributors
+
+The original source and design for this project was developed by [Jeff Haynie](http://github.com/jhaynie) ([@jhaynie](http://twitter.com/jhaynie)).
+
+```
+ project  : hyperloop
+ repo age : 7 weeks ago
+ commits  : 214
+ active   : 36 days
+ files    : 177
+ authors  : 
+   141	Jeff Haynie             65.9%
+    47	Tony Lukasavage         22.0%
+    11	Dawson Toth             5.1%
+     5	matt-langston           2.3%
+     5	Allen Yeung             2.3%
+     2	Chris Barber            0.9%
+     1	Matt Langston           0.5%
+     1	ewmailing               0.5%
+     1	Eric Wing               0.5%
+```
 
 ## Legal
 
