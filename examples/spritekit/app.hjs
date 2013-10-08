@@ -87,22 +87,6 @@ skView.setShowsNodeCount(true);
 // add SKView to the main window
 keyWindow.addSubview(skView);
 
-// create a scene based on the view
-var scene = SKScene.sceneWithSize(skView.bounds.size);
-scene.scaleMode = SKSceneScaleModeAspectFill;
-scene.backgroundColor = UIColor.colorWithRed(0.9, 0.9, 0.9, 1.0);
-
-// add background image
-var bg = SKSpriteNode.spriteNodeWithImageNamed(__('background'));
-bg.position = CGPointMake(WIDTH/2, HEIGHT/2);
-scene.addChild(bg);
-
-// create the sprite
-var sprite = SKSpriteNode.spriteNodeWithImageNamed(__("dragon/Slice-1"));
-sprite.position = CGPointMake(WIDTH/2, HEIGHT/2-25);
-sprite.size = CGSizeMake(SPRITE_WIDTH*3, SPRITE_HEIGHT*3);
-scene.addChild(sprite);
-
 // create an action for cycling through the sprite textures
 var textureAction = SKAction.animateWithTextures(
 	textureArrayFromSlices('dragon'), FRAME_DURATION);
@@ -122,8 +106,40 @@ var fullAction = SKAction.group(NSArray.arrayWithObjects([
 	motionSequence
 ]));
 
-// run the composite action
-sprite.runAction(SKAction.repeatActionForever(fullAction));
+// create the native class for overriding SKScene with our behavior
+@class('RyuScene', SKScene, [], [
+	{
+		name: 'initWithSize',
+		returnType: 'id',
+		arguments: [ { type: 'CGSize', name: 'size' } ],
+		action: function(params) {
+			var size = params.size;
+
+			// set scene properties
+			this.scaleMode = SKSceneScaleModeAspectFill;
+			this.backgroundColor = UIColor.colorWithRed(0.9, 0.9, 0.9, 1.0);
+
+			// add background image
+			var bg = SKSpriteNode.spriteNodeWithImageNamed(__('background'));
+			bg.position = CGPointMake(size.width/2, size.height/2);
+			this.addChild(bg);
+
+			// create the sprite
+			var sprite = SKSpriteNode.spriteNodeWithImageNamed(__("dragon/Slice-1"));
+			sprite.position = CGPointMake(size.width/2, size.height/2-25);
+			sprite.size = CGSizeMake(SPRITE_WIDTH*3, SPRITE_HEIGHT*3);
+			this.addChild(sprite);
+
+			// run the composite action
+			sprite.runAction(SKAction.repeatActionForever(fullAction));
+
+			return this;
+		}
+	}
+]);
+
+// create a scene based on the view bounds
+var scene = RyuScene.alloc().initWithSize(skView.bounds.size);
 
 // present scene
 skView.presentScene(scene);
