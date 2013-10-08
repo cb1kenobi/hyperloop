@@ -59,7 +59,7 @@ describe("jsc", function(){
 
 				assert(JSBuffer.prototype.constructor.name==='JSBuffer', "JSBuffer.prototype.constructor.name should return JSBuffer, was: "+JSBuffer.prototype.constructor.name);
 
-				assert(emptyBuffer.isNaN(), "emptyBuffer.isNan() should be true, was: "+emptyBuffer.isNaN());
+				assert(emptyBuffer.isNaN(), "emptyBuffer.isNaN() should be true, was: "+emptyBuffer.isNaN());
 
 				assert(isNaN(emptyBuffer.NaN), "isNaN(emptyBuffer.NaN) should be true, was: "+isNaN(emptyBuffer.NaN));
 
@@ -105,6 +105,7 @@ describe("jsc", function(){
 				emptyBuffer.putChar("b",1);
 				assert(emptyBuffer.toChar(1)==="b", "emptyBuffer.toChar(1) should be b, was: "+emptyBuffer.toChar(1));
 				assert(emptyBuffer.toChar(0)==="a", "emptyBuffer.toChar(0) should be a, was: "+emptyBuffer.toChar(0));
+				assert(emptyBuffer.length===4, "emptyBuffer.length should have length of 4, was: "+emptyBuffer.length);
 				assert(emptyBuffer.toCharArray()=="ab", "emptyBuffer.toCharArray() should be ab, was: "+emptyBuffer.toCharArray());
 
 				emptyBuffer.putDouble(0);
@@ -138,6 +139,21 @@ describe("jsc", function(){
 				var sliceBuf = emptyBuffer.slice(0,1);
 				assert(sliceBuf.length, "sliceBuf.length should be 1, was: "+sliceBuf.length);
 				assert(sliceBuf.toShort()===0, "sliceBuf.toShort() should be 0, was: "+sliceBuf.toShort());
+
+				assert(typeof(sliceBuf.SIZE_OF_CHAR)==='number',"SIZE_OF_CHAR should be defined as number, was: "+typeof(sliceBuf.SIZE_OF_CHAR));
+				assert(typeof(sliceBuf.SIZE_OF_LONG)==='number',"SIZE_OF_LONG should be defined as number, was: "+typeof(sliceBuf.SIZE_OF_LONG));
+				assert(typeof(sliceBuf.SIZE_OF_INT)==='number',"SIZE_OF_INT should be defined as number, was: "+typeof(sliceBuf.SIZE_OF_INT));
+				assert(typeof(sliceBuf.SIZE_OF_SHORT)==='number',"SIZE_OF_SHORT should be defined as number, was: "+typeof(sliceBuf.SIZE_OF_SHORT));
+				assert(typeof(sliceBuf.SIZE_OF_FLOAT)==='number',"SIZE_OF_FLOAT should be defined as number, was: "+typeof(sliceBuf.SIZE_OF_FLOAT));
+				assert(typeof(sliceBuf.SIZE_OF_DOUBLE)==='number',"SIZE_OF_DOUBLE should be defined as number, was: "+typeof(sliceBuf.SIZE_OF_DOUBLE));
+
+				// this are OS architecture dependent but in general we're running the simulator in 32-bit mode so these match those
+				assert(sliceBuf.SIZE_OF_CHAR===1,"SIZE_OF_CHAR should be 1, was: "+sliceBuf.SIZE_OF_CHAR);
+				assert(sliceBuf.SIZE_OF_SHORT===2,"SIZE_OF_CHAR should be 2, was: "+sliceBuf.SIZE_OF_SHORT);
+				assert(sliceBuf.SIZE_OF_INT===4,"SIZE_OF_INT should be 4, was: "+sliceBuf.SIZE_OF_INT);
+				assert(sliceBuf.SIZE_OF_FLOAT===4,"SIZE_OF_FLOAT should be 4, was: "+sliceBuf.SIZE_OF_FLOAT);
+				assert(sliceBuf.SIZE_OF_LONG===4,"SIZE_OF_LONG should be 4, was: "+sliceBuf.SIZE_OF_LONG);
+				assert(sliceBuf.SIZE_OF_DOUBLE===8,"SIZE_OF_DOUBLE should be 8, was: "+sliceBuf.SIZE_OF_DOUBLE);
 
 
 			}).toString().trim().replace(/^function \(\){/,'').replace(/}$/,'').replace(/[\n]/g,'\\n').replace(/"/g,'\\"').trim();
