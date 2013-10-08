@@ -561,12 +561,9 @@ JSValueRef toCharArrayForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObj
 {
     BUFFER(buffer);
     PRIMITIVE_GET_ARRAY(char);
-    size_t len = buffer->length / sizeof(char);
+    size_t len = buffer->length + 1;
     char *buf = malloc(len);
-    for (size_t c = 0; c < len; c++)
-    {
-        buf[c] = (char)value[c];
-    }
+    strcpy(buf,buffer->buffer);
     buf[len]='\0';
     JSStringRef stringRef = JSStringCreateWithUTF8CString(buf);
     JSValueRef result = JSValueMakeString(ctx,stringRef);
@@ -657,6 +654,7 @@ JSValueRef resetForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef
         buffer->length = sizeof(int);
         buffer->buffer = malloc(buffer->length);
         buffer->type = JSBufferTypePointer;
+        memset(buffer->buffer,0,buffer->length);
     }
     return object;
 }
@@ -711,10 +709,36 @@ JSValueRef MakeInstanceFromFunctionForJSBuffer (JSContextRef ctx, JSObjectRef fu
     return MakeInstance(ctx,argumentCount,arguments,exception);
 }
 
+#define SIZE_OF_FUNCTION_DEF(type) \
+JSValueRef GetSizeOf##type##ForJSBuffer (JSContextRef ctx, JSObjectRef object, JSStringRef propertyName, JSValueRef* exception)\
+{\
+    return JSValueMakeNumber(ctx,sizeof(type));\
+}\
+
+#define STRINGIFY(x) #x
+
+#define SIZE_OF_FUNCTION_DECL(type, name) \
+    { "SIZE_OF_" STRINGIFY(name), GetSizeOf##type##ForJSBuffer, 0, kJSPropertyAttributeReadOnly }
+
+
+SIZE_OF_FUNCTION_DEF(float)
+SIZE_OF_FUNCTION_DEF(int)
+SIZE_OF_FUNCTION_DEF(char)
+SIZE_OF_FUNCTION_DEF(bool)
+SIZE_OF_FUNCTION_DEF(double)
+SIZE_OF_FUNCTION_DEF(long)
+SIZE_OF_FUNCTION_DEF(short)
 
 static JSStaticValue StaticValueArrayForJSBuffer [] = {
     { "length", GetLengthForJSBuffers, 0, kJSPropertyAttributeReadOnly },
     { "NaN", GetNaNForJSBuffers, 0, kJSPropertyAttributeReadOnly },
+    SIZE_OF_FUNCTION_DECL(float,FLOAT),
+    SIZE_OF_FUNCTION_DECL(int,INT),
+    SIZE_OF_FUNCTION_DECL(char,CHAR),
+    SIZE_OF_FUNCTION_DECL(bool,BOOL),
+    SIZE_OF_FUNCTION_DECL(double,DOUBLE),
+    SIZE_OF_FUNCTION_DECL(long,LONG),
+    SIZE_OF_FUNCTION_DECL(short,SHORT),
     { 0, 0, 0, 0 }
 };
 
