@@ -12,7 +12,7 @@ var should = require('should'),
 describe("ios buildlib", function(){
 
 	before(function(done){
-		buildlib.getXcodeSettings(function(err,xcode){	
+		buildlib.getXcodeSettings(function(err,xcode){
 			settings = xcode;
 
 			settings.should.have.property('version');
@@ -198,7 +198,7 @@ describe("ios buildlib", function(){
 			"@implementation TestButton",
 			"@end"
 		];
-		 
+
 
 		temp.mkdir('hltest', function(err, dirPath) {
 			if (err) return done(err);
@@ -253,7 +253,7 @@ describe("ios buildlib", function(){
 			"@implementation TestButton",
 			"@end"
 		];
-		 
+
 
 		temp.mkdir('hltest', function(err, dirPath) {
 			if (err) return done(err);
@@ -346,7 +346,7 @@ describe("ios buildlib", function(){
 			"@implementation TestButton",
 			"@end"
 		];
-		 
+
 		temp.mkdir('hltest', function(err, dirPath) {
 			if (err) return done(err);
 
@@ -391,7 +391,7 @@ describe("ios buildlib", function(){
 			"   o = [[NSObject alloc] init];",
 			"}"
 		];
-		 
+
 		temp.mkdir('hltest', function(err, dirPath) {
 			if (err) return done(err);
 
@@ -437,7 +437,7 @@ describe("ios buildlib", function(){
 			"  height = b;",
 			"}"
 		];
-		 
+
 		temp.mkdir('hltest', function(err, dirPath) {
 			if (err) return done(err);
 
@@ -476,7 +476,7 @@ describe("ios buildlib", function(){
 			'   printf("Foo bar");',
 			"}"
 		];
-		 
+
 		temp.mkdir('hltest', function(err, dirPath) {
 			if (err) return done(err);
 

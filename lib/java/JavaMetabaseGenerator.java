@@ -14,7 +14,7 @@ import org.json.*;
 /**
  * Class that will generate a metadatabase from the Java classpath
  */
-public class JavaMetabaseGenerator 
+public class JavaMetabaseGenerator
 {
     private static final SyntheticRepository repo = SyntheticRepository.getInstance();
     private static final Pattern isClass = Pattern.compile("\\.class$");
@@ -26,7 +26,7 @@ public class JavaMetabaseGenerator
 
 	/**
 	 * enumerate over a zip/jar and load up it's classes
-	 */    
+	 */
 	private static void enumerate (Enumeration<? extends ZipEntry> e, HashMap<String,JavaClass> cache) throws Exception {
 
 		for (;e.hasMoreElements();)
@@ -43,7 +43,7 @@ public class JavaMetabaseGenerator
 	/**
 	 * add access modifiers for a field or method
 	 */
-	private static JSONArray addAttributes(AccessFlags obj) 
+	private static JSONArray addAttributes(AccessFlags obj)
 	{
 		JSONArray json = new JSONArray();
 
@@ -81,14 +81,14 @@ public class JavaMetabaseGenerator
 	/**
 	 * this class takes no arguments and returns JSON as System.out
 	 */
-    public static void main(String[] args) throws Exception 
+    public static void main(String[] args) throws Exception
     {
 
     	ClassPath cp = new ClassPath();
     	String classpath = cp.getClassPath();
     	String tokens [] = classpath.split(File.pathSeparator);
     	HashMap<String,JavaClass> cache = new HashMap<String,JavaClass>();
-    	for (String token : tokens) 
+    	for (String token : tokens)
     	{
     		if (token.endsWith(".jar")) {
     			JarFile jarFile = new JarFile(token);
@@ -125,7 +125,7 @@ public class JavaMetabaseGenerator
     		classJSON.put("methods", methodsJSON);
 
     		Method methods [] = javaClass.getMethods();
-    		for (Method method : methods) 
+    		for (Method method : methods)
     		{
     			JSONObject methodJSON = new JSONObject();
     			methodJSON.put("attributes",addAttributes(method));
@@ -156,7 +156,7 @@ public class JavaMetabaseGenerator
     		classJSON.put("properties", propertiesJSON);
 
     		Field fields [] = javaClass.getFields();
-    		for (Field field : fields) 
+    		for (Field field : fields)
     		{
     			JSONObject fieldJSON = new JSONObject();
     			fieldJSON.put("attributes",addAttributes(field));

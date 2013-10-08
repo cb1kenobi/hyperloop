@@ -53,10 +53,10 @@ describe("ios xctool", function(){
 						'char [37]',
 						'char [4096]',
 						'char [512]',
-						'int *', 
-						'int []', 
-						'int [1024]', 
-						'int [8]', 
+						'int *',
+						'int []',
+						'int [1024]',
+						'int [8]',
 						'int [18]',
 						'int [19]',
 						'integer_t *',
@@ -82,7 +82,7 @@ describe("ios xctool", function(){
 
 					var testlibdir = path.join(__dirname,"testsuite","testsuite");
 
-					
+
 					// copy libfile into path so that we can still run inside xcode as well
 					fs.writeFileSync(path.join(testlibdir,config.libname),fs.readFileSync(results.libfile));
 

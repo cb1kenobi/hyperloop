@@ -14,17 +14,17 @@ iPhone Simulator's ".app" package.
 on run argv
 	if (count of argv) is 1 then
 		set iphone_simulator to item 1 of argv
-		
+
 		set max_wait_time to 5 --- seconds
 		set delay_time to 0.01 --- seconds
 		set repeat_count to max_wait_time / delay_time
-		
+
 		repeat repeat_count times
 			if application iphone_simulator is running then
 				tell application iphone_simulator to activate
 				exit repeat
 			end if
-			
+
 			delay delay_time
 		end repeat
 	end if

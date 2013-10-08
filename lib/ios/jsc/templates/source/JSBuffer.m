@@ -182,15 +182,15 @@ JSValueRef duplicateForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjec
     newbuf->length = buffer->length;
     if (buffer->length)
     {
-        if (buffer->type == JSBufferTypePointer) 
+        if (buffer->type == JSBufferTypePointer)
         {
             newbuf->buffer = malloc(newbuf->length);
             memcpy(newbuf->buffer, buffer->buffer, buffer->length);
         }
-        else 
+        else
         {
             // JSValueRef is a copy
-            newbuf->buffer = buffer->buffer;            
+            newbuf->buffer = buffer->buffer;
         }
         newbuf->type = buffer->type;
     }
@@ -224,11 +224,11 @@ JSValueRef putForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef o
         *exception = JSObjectMakeError(ctx, 1, &message, 0);
         return JSValueMakeUndefined(ctx);
     }
-    
+
     GET_NUMBER(1,srcIndex);
     GET_NUMBER(2,srcLength);
     GET_NUMBER(3,destIndex);
-    
+
     if (srcLength > srcBuffer->length)
     {
         JSStringRef string = JSStringCreateWithUTF8CString("source length passed in greater than source buffer length");
@@ -237,7 +237,7 @@ JSValueRef putForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef o
         *exception = JSObjectMakeError(ctx, 1, &message, 0);
         return JSValueMakeUndefined(ctx);
     }
-    
+
     if (srcLength <= 0)
     {
         JSStringRef string = JSStringCreateWithUTF8CString("source length must be greater than 0");
@@ -246,12 +246,12 @@ JSValueRef putForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef o
         *exception = JSObjectMakeError(ctx, 1, &message, 0);
         return JSValueMakeUndefined(ctx);
     }
-    
+
     void *src = &(srcBuffer->buffer[(int)srcIndex]);
     size_t newsize = (buffer->length - (int)destIndex);
     newsize = newsize + srcLength - newsize;
     void *dest = &(buffer->buffer[(int)destIndex]);
-    
+
     if (newsize  > buffer->length)
     {
         // new to grow it
@@ -627,7 +627,7 @@ JSValueRef sliceForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef
         *exception = JSObjectMakeError(ctx, 1, &message, 0);
         return JSValueMakeUndefined(ctx);
     }
-    
+
     void *memory = malloc(length);
     void *start = &(buffer->buffer[(int)index]);
     memcpy(memory,start,length);
@@ -635,7 +635,7 @@ JSValueRef sliceForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef
     newbuffer->buffer = memory;
     newbuffer->length = length;
     newbuffer->type = JSBufferTypePointer;
-    
+
     return MakeObjectForJSBuffer(ctx,newbuffer);
 }
 
@@ -645,7 +645,7 @@ JSValueRef sliceForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef
 JSValueRef resetForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef object, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
 {
     BUFFER(buffer);
-    if (buffer->length) 
+    if (buffer->length)
     {
         if (buffer->type == JSBufferTypePointer)
         {
@@ -691,7 +691,7 @@ JSObjectRef MakeInstance (JSContextRef ctx, size_t argumentCount, const JSValueR
 
 /**
  * called to make an instance of the JSBuffer class using the proper
- * constructor and prototype chain.  this is called when you call 
+ * constructor and prototype chain.  this is called when you call
  * new JSBuffer()
  */
 JSObjectRef MakeInstanceForJSBuffer (JSContextRef ctx, JSObjectRef constructor, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
@@ -775,7 +775,7 @@ static JSStaticFunction StaticFunctionArrayForJSBuffer [] = {
     { "slice", sliceForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
     { "isNaN", isNaNForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
     { "reset", resetForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum | kJSPropertyAttributeDontDelete },
-    
+
     { "release", releaseForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum | kJSPropertyAttributeDontDelete },
     { "toString", toStringForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum | kJSPropertyAttributeDontDelete },
     { 0, 0, 0 }
@@ -800,15 +800,15 @@ JSClassRef CreateClassForJSBufferConstructor ()
     if (!init)
     {
         init = true;
-        
+
         ClassDefinitionForJSBufferConstructor = kJSClassDefinitionEmpty;
         ClassDefinitionForJSBufferConstructor.callAsConstructor = MakeInstanceForJSBuffer;
         ClassDefinitionForJSBufferConstructor.callAsFunction = MakeInstanceFromFunctionForJSBuffer;
         ClassDefinitionForJSBufferConstructor.className = "JSBufferConstructor";
-        
-        
+
+
         JSBufferClassDefForConstructor = JSClassCreate(&ClassDefinitionForJSBufferConstructor);
-        
+
         JSClassRetain(JSBufferClassDefForConstructor);
 
     }
@@ -824,15 +824,15 @@ JSClassRef CreateClassForJSBuffer ()
     if (!init)
     {
         init = true;
-        
+
         ClassDefinitionForJSBuffer = kJSClassDefinitionEmpty;
         ClassDefinitionForJSBuffer.staticValues = StaticValueArrayForJSBuffer;
         ClassDefinitionForJSBuffer.staticFunctions = StaticFunctionArrayForJSBuffer;
         ClassDefinitionForJSBuffer.finalize = FinalizerForJSBuffer;
         ClassDefinitionForJSBuffer.className = "JSBuffer";
-        
+
         JSBufferClassDef = JSClassCreate(&ClassDefinitionForJSBuffer);
-        
+
         JSClassRetain(JSBufferClassDef);
     }
     return JSBufferClassDef;
@@ -848,7 +848,7 @@ JSObjectRef MakeObjectForJSBuffer (JSContextRef ctx, JSBuffer *instance)
 {
     JSObjectRef object = JSObjectMake(ctx, CreateClassForJSBuffer(), HyperloopMakePrivateObjectForJSBuffer(instance));
     JSObjectRef value = JSObjectMake(ctx, CreateClassForJSBufferConstructor(), 0);
-    
+
     JSStringRef cproperty = JSStringCreateWithUTF8CString("constructor");
     JSObjectSetProperty(ctx, object, cproperty, value, kJSPropertyAttributeDontEnum, 0);
     JSStringRelease(cproperty);
@@ -895,13 +895,13 @@ JSObjectRef MakeObjectForJSBufferConstructor (JSContextRef ctx)
 
 /**
  * register JSBuffer into global context. you can call this safely multiple times but it
- * will only register into the global context once.  however, this is currently not safe if 
+ * will only register into the global context once.  however, this is currently not safe if
  * you have *multiple* JSContextRef you're trying to use.
  */
 void RegisterJSBuffer (JSContextRef ctx, JSObjectRef global)
 {
     static bool init;
-    if (!init) 
+    if (!init)
     {
         JSStringRef property = JSStringCreateWithUTF8CString("JSBuffer");
         JSObjectRef object = MakeObjectForJSBufferConstructor(ctx);
@@ -918,7 +918,7 @@ void DestroyJSBuffer(JSBuffer *buffer)
 {
     switch (buffer->type)
     {
-        case JSBufferTypePointer: 
+        case JSBufferTypePointer:
         {
             free(buffer->buffer);
             break;
@@ -928,7 +928,7 @@ void DestroyJSBuffer(JSBuffer *buffer)
             // don't free, it's assigned
             break;
         }
-    }    
+    }
     buffer->buffer = NULL;
     free(buffer);
     buffer=NULL;
@@ -940,7 +940,7 @@ void DestroyJSBuffer(JSBuffer *buffer)
 void SetJSBufferValue(JSContextRef ctx, JSObjectRef objectRef, JSValueRef sourceRef)
 {
     JSBuffer *buffer = (JSBuffer*)HyperloopGetPrivateObjectAsJSBuffer(objectRef);
-    if (buffer!=NULL) 
+    if (buffer!=NULL)
     {
         DestroyJSBuffer(buffer);
     }
@@ -959,7 +959,7 @@ void SetJSBufferValue(JSContextRef ctx, JSObjectRef objectRef, JSValueRef source
 void SetJSBufferPointer(JSContextRef ctx, JSObjectRef objectRef, void* pointer)
 {
     JSBuffer *buffer = (JSBuffer*)HyperloopGetPrivateObjectAsJSBuffer(objectRef);
-    if (buffer!=NULL) 
+    if (buffer!=NULL)
     {
         DestroyJSBuffer(buffer);
     }

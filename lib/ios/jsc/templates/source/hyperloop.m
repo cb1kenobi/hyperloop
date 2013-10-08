@@ -109,11 +109,11 @@ void HyperloopDestroyPrivateObject(JSObjectRef object)
 			Class cls = (Class)p->object;
 			[cls release];
 		}
-        else if (p->type == JSPrivateObjectTypePointer) 
+        else if (p->type == JSPrivateObjectTypePointer)
         {
             p->object = NULL;
         }
-        else if (p->type == JSPrivateObjectTypeNumber) 
+        else if (p->type == JSPrivateObjectTypeNumber)
         {
             p->value = NAN;
         }
@@ -267,11 +267,11 @@ JSValueRef HyperloopMakeException(JSContextRef ctx, const char *error, JSValueRe
 JSValueRef HyperloopToString(JSContextRef ctx, id object)
 {
     NSString *description;
-    if ([object isKindOfClass:[NSString class]]) 
+    if ([object isKindOfClass:[NSString class]])
     {
         description = (NSString*)object;
     }
-    else 
+    else
     {
         description = [object description];
     }
@@ -326,7 +326,7 @@ id HyperloopGetOwner(JSObjectRef object)
 	return nil;
 }
 
-NSData* HyperloopDecompressBuffer (NSData*  _data) 
+NSData* HyperloopDecompressBuffer (NSData*  _data)
 {
     NSUInteger dataLength = [_data length];
     NSUInteger halfLength = dataLength / 2;
@@ -426,10 +426,10 @@ NSString* HyperloopToNSString(JSContextRef ctx, JSValueRef value)
     {
         return @"<null>";
     }
-    else if (JSValueIsObject(ctx,value)) 
+    else if (JSValueIsObject(ctx,value))
     {
     	JSObjectRef objectRef = JSValueToObject(ctx, value, 0);
-        if (JSObjectIsFunction(ctx,objectRef)) 
+        if (JSObjectIsFunction(ctx,objectRef))
         {
             //TODO: return body of function?
             return @"[native function]";
@@ -487,7 +487,7 @@ JSValueRef HyperloopLogger (JSContextRef ctx, JSObjectRef function, JSObjectRef 
 JSContextRef HyperloopCreateVM (NSString *name)
 {
 	Class<HyperloopModule> cls = NSClassFromString(name);
-	if (cls==nil) 
+	if (cls==nil)
 	{
 		return nil;
 	}
@@ -525,7 +525,7 @@ JSContextRef HyperloopCreateVM (NSString *name)
 /**
  * given a context, get the global context
  */
-JSGlobalContextRef HyperloopGetGlobalContext (JSContextRef ctx) 
+JSGlobalContextRef HyperloopGetGlobalContext (JSContextRef ctx)
 {
     JSObjectRef global = JSContextGetGlobalObject(ctx);
     JSStringRef prop = JSStringCreateWithUTF8CString("hyperloop$global");
@@ -542,7 +542,7 @@ JSGlobalContextRef HyperloopGetGlobalContext (JSContextRef ctx)
 /**
  * destroy a hyperloop VM
  */
-void HyperloopDestroyVM (JSContextRef ctx) 
+void HyperloopDestroyVM (JSContextRef ctx)
 {
     JSGlobalContextRef globalCtx = HyperloopGetGlobalContext(ctx);
     if (globalCtx!=NULL)
@@ -568,11 +568,11 @@ id HyperloopDynamicInvoke (JSContextRef ctx, const JSValueRef *arguments, size_t
     [invocation setSelector:selector];
     [invocation setTarget:target];
 
-    for (size_t c=0;c<argumentCount;c++) 
+    for (size_t c=0;c<argumentCount;c++)
     {
         JSValueRef value = arguments[c];
         void *arg = NULL;
-        if (JSValueIsObject(ctx,value)) 
+        if (JSValueIsObject(ctx,value))
         {
             JSObjectRef objectRef = JSValueToObject(ctx, value, 0);
             if (HyperloopPrivateObjectIsType(objectRef,JSPrivateObjectTypeID))
@@ -593,7 +593,7 @@ id HyperloopDynamicInvoke (JSContextRef ctx, const JSValueRef *arguments, size_t
                 arg = HyperloopGetPrivateObjectAsPointer(objectRef);
             }
         }
-        else if (JSValueIsBoolean(ctx,value)) 
+        else if (JSValueIsBoolean(ctx,value))
         {
             arg = (void*)JSValueToBoolean(ctx,value);
         }
@@ -602,7 +602,7 @@ id HyperloopDynamicInvoke (JSContextRef ctx, const JSValueRef *arguments, size_t
             double d = JSValueToNumber(ctx,value,0);
             arg = &d;
         }
-        else if (JSValueIsString(ctx,value)) 
+        else if (JSValueIsString(ctx,value))
         {
             JSStringRef stringRef = JSValueToStringCopy(ctx, value, 0);
             size_t buflen = JSStringGetMaximumUTF8CStringSize(stringRef);
@@ -619,9 +619,9 @@ id HyperloopDynamicInvoke (JSContextRef ctx, const JSValueRef *arguments, size_t
 
     id returnValue = nil;
 
-    if ([[invocation methodSignature] methodReturnLength] > 0) 
+    if ([[invocation methodSignature] methodReturnLength] > 0)
     {
-        if (strncmp([[invocation methodSignature] methodReturnType],@encode(id), 1)) 
+        if (strncmp([[invocation methodSignature] methodReturnType],@encode(id), 1))
         {
             char *buffer = malloc([[invocation methodSignature] methodReturnLength]);
             if (buffer != NULL) {
@@ -630,7 +630,7 @@ id HyperloopDynamicInvoke (JSContextRef ctx, const JSValueRef *arguments, size_t
                 free(buffer);
             }
         }
-        else 
+        else
         {
             [invocation getReturnValue: &returnValue];
         }

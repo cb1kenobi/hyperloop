@@ -51,7 +51,7 @@ JSValueRef AssertionCallback (JSContextRef ctx, JSObjectRef function, JSObjectRe
     JSValueRef resultRef = JSEvaluateScript(context, sourceStr, 0, 0, 0, &exception);
     JSStringRelease(sourceStr);
 
-    if (exception!=NULL) 
+    if (exception!=NULL)
     {
         char buf[4000];
         JSStringRef resultStr = JSValueToStringCopy(context, exception, 0);

@@ -34,12 +34,12 @@ extern JSContextRef HyperloopCreateVM(NSString *name);
     if (context==NULL)
     {
         NSLog(@"[ERROR] Application '<%=main_js%>' not loaded. Make sure that you have the appropriately built library");
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Application Error" 
-            message: @"Could not load your application." 
-            delegate: nil 
-            cancelButtonTitle:@"OK" 
-            otherButtonTitles:nil]; 
-        [alert show]; 
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Application Error"
+            message: @"Could not load your application."
+            delegate: nil
+            cancelButtonTitle:@"OK"
+            otherButtonTitles:nil];
+        [alert show];
     }
 
     return YES;

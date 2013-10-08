@@ -41,7 +41,7 @@ describe("java metabase", function() {
 	});
 
 	it("should parse into buffer",function(done) {
-	
+
 		metabase.generate(androidPath, function(err,buf){
 			should.not.exist(err);
 			should.exist(buf);
@@ -51,7 +51,7 @@ describe("java metabase", function() {
 	});
 
 	it("should parse into JSON",function(done) {
-	
+
 		metabase.generateJSON(androidPath, function(err,json){
 			should.not.exist(err);
 			should.exist(json);
@@ -69,7 +69,7 @@ describe("java metabase", function() {
 	});
 
 	it("should parse into file",function(done) {
-	
+
 		var f = path.join(process.env.TMPDIR,'metabase.out');
 		if (fs.existsSync(f)){
 			fs.unlinkSync(f);
