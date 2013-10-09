@@ -1,0 +1,36 @@
+@import("fabs");
+
+@import('Foundation/NSString');
+@import('UIKit/UIApplication');
+@import('UIKit/UIWindow');
+@import('UIKit/UIColor');
+@import('UIKit/UIScreen');
+@import('UIKit/UIView');
+@import('UIKit/UILabel');
+@import('UIKit/UIFont');
+@import('UIKit/NSTextAlignmentCenter');
+@import('UIKit/NSLineBreakByWordWrapping');
+@import('CoreGraphics/CGRectMake');
+
+/*
+ Utility.
+ */
+String.prototype.toUTF8 = function() {
+	return NSString.stringWithUTF8String('' + this);
+};
+
+var pi = fabs(Math.PI);
+
+var keyWindow = UIApplication.sharedApplication().keyWindow;
+keyWindow.backgroundColor = UIColor.whiteColor();
+
+var label = new UILabel();
+label.textColor = UIColor.darkTextColor();
+label.frame = CGRectMake(20, 20, 280, 280);
+label.font = UIFont.systemFontOfSize(24);
+label.textAlignment = NSTextAlignmentCenter;
+label.lineBreakMode = NSLineBreakByWordWrapping;
+label.numberOfLines = 0;
+label.text = ("PI is:\n\n"+pi).toUTF8();
+
+keyWindow.addSubview(label);
