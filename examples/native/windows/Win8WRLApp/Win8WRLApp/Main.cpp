@@ -28,6 +28,9 @@ using namespace ABI::Windows::UI::Xaml;
 using namespace ABI::Windows::UI::Xaml::Markup;
 using namespace ABI::Windows::ApplicationModel::Activation;
 
+/*
+* Using XAML here to test dynamically loading XAML. It also makes this sample a bit less verbose.
+*/
 #define MARKUP_TO_LOAD \
 	L"<Grid xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">" \
 	L"  <TextBlock Text=\"Native Application using WRL!\" VerticalAlignment=\"Center\" HorizontalAlignment=\"Center\" FontSize=\"48\" />" \
@@ -73,11 +76,6 @@ public:
 	STDMETHOD(OnFileSavePickerActivated)(IFileSavePickerActivatedEventArgs* args) { return pBaseImpl->OnFileSavePickerActivated(args); }
 	STDMETHOD(OnCachedFileUpdaterActivated)(ICachedFileUpdaterActivatedEventArgs* args) { return pBaseImpl->OnCachedFileUpdaterActivated(args); }
 };
-
-/*
-*  A snippet of XAML. Using XAML here to test dynamically loading XAML. It also makes this sample a bit
-* less verbose.
-*/
 
 STDMETHODIMP AppOverides::OnWindowCreated(IWindowCreatedEventArgs* args)
 {
