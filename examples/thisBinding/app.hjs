@@ -1,0 +1,45 @@
+@import('UIKit/UIApplication');
+@import('UIKit/UIWindow');
+@import('UIKit/UIColor');
+@import('UIKit/UIScreen');
+@import('UIKit/UIView');
+
+@import('CoreGraphics/CGRectMake');
+
+
+@class('MyView', UIView, [], [
+
+    {
+        name: 'didAddSubview',
+        returnType: 'void',
+        arguments: [{type: 'UIView', name: 'subview'}],
+        action: function(params) {
+            console.log('didAddSubView: ' + this.info);
+
+            console.log('contentView === this? ', contentView === this);
+
+            this.backgroundColor = UIColor.yellowColor();
+        }
+    }
+]);
+
+
+var keyWindow = UIApplication.sharedApplication().keyWindow;
+keyWindow.backgroundColor = UIColor.blueColor();
+
+var contentView = new MyView();
+contentView.info = 'view1';
+
+console.log('contentView.info: ' + contentView.info);
+
+
+contentView.frame = UIScreen.mainScreen().applicationFrame;
+contentView.backgroundColor = UIColor.darkTextColor();
+keyWindow.addSubview(contentView);
+
+var blueView = new UIView();
+blueView.frame = CGRectMake(10,10,300,300);
+blueView.backgroundColor = UIColor.blueColor();
+
+
+contentView.addSubview(blueView);
