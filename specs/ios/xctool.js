@@ -36,7 +36,7 @@ describe("ios xctool", function(){
 		exec(cmd,env,done);
 	});
 
-	it.only("should run xctool tests", function(done){
+	it("should run xctool tests", function(done){
 		var dir = path.join(__dirname,'testsuite'),
 			xctool = path.join(__dirname,'../../tools/xctool/xctool.sh'),
 			project = path.join(dir, 'testsuite.xcodeproj'),
