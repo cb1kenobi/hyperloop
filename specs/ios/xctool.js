@@ -6,6 +6,7 @@ var should = require('should'),
 	fs = require('fs'),
 	temp = require('temp'),
 	buildlib = require('../../lib/ios/buildlib'),
+	codegen = require('../../lib/ios/jsc/codegen'),
 	typegenerator = require('../../lib/ios/jsc/typegenerator'),
 	exec = require('child_process').exec,
 	spawn = require('child_process').spawn,
@@ -35,7 +36,7 @@ describe("ios xctool", function(){
 		exec(cmd,env,done);
 	});
 
-	it("should run xctool tests", function(done){
+	it.only("should run xctool tests", function(done){
 		var dir = path.join(__dirname,'testsuite'),
 			xctool = path.join(__dirname,'../../tools/xctool/xctool.sh'),
 			project = path.join(dir, 'testsuite.xcodeproj'),
@@ -77,7 +78,7 @@ describe("ios xctool", function(){
 					outdir: sourcedir,
 					libname: 'libhyperloop.a'
 				};
-				typegenerator.compile(metadata, config, function(err,results){
+				codegen.compile(metadata, config, function(err,results){
 					if (err) return done(err);
 
 					var testlibdir = path.join(__dirname,"testsuite","testsuite");
