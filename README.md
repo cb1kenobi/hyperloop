@@ -42,7 +42,7 @@ The following Platforms are being targeted for supported.
 ### Planned (in development)
 
 - _Android_ - Android
-- _Windows 8_ - Win8 desktop 
+- _Windows 8_ - Win8 desktop
 - _Windows Phone 8_ - Windows Phone / Tablet
 - _OSX_ - OSX desktop
 
@@ -51,7 +51,7 @@ The following Platforms are being targeted for supported.
 - _Tizen_ - Tizen OS
 - _Leapmotion_ - Leapmotion SDK
 - _Firefox OS_ - Firefox OS
-- _Blackberry_ - BB 10 
+- _Blackberry_ - BB 10
 
 ## Documentation
 
@@ -63,7 +63,7 @@ We have built a few examples to show off our work.  Please look in the [Examples
 
 ## Design
 
-Hyperloop works by using a high-level [DSL](http://en.wikipedia.org/wiki/Domain-specific_language) written in JavaScript and compiling that into native code using an [AOT](http://en.wikipedia.org/wiki/AOT_compiler) compiler. 
+Hyperloop works by using a high-level [DSL](http://en.wikipedia.org/wiki/Domain-specific_language) written in JavaScript and compiling that into native code using an [AOT](http://en.wikipedia.org/wiki/AOT_compiler) compiler.
 
 The compiler is broken into two subsystems: _backend_ and _frontend_.  The _frontend_ will parse the input JavaScript source code and transform it into an [AST](http://en.wikipedia.org/wiki/Abstract_syntax_tree) and will resolve special reserved JavaScript keywords which instruct the compiler to perform specific code transformations (we call this CNI, short for Common Native Interface).  Once CNI instructions are encountered, the _backend_ compiler will emit the appropriate language and OS specific code for the target platform.  The _backend_ compiler is specific to each OS while the _frontend_ compiler is generic for all platforms.
 
@@ -121,7 +121,7 @@ Any JS Object (i.e. Class) imported in principle is a first-class JS object wher
 
 #### Why the non-standard JS symbols like @?
 
-We wanted to specifically distinguish specific keywords that we're using as _special_ CNI keywords distinctly.  We want developers to understand that these keywords are specific to CNI compile-time syntax, thus the special `@` symbol prefix.  This is very similar to what other compilers do such as clang using `@import` to import modules or C pre-processor using `#ifdef` to tell the compiler that it wants to do something special before compiling the language.  
+We wanted to specifically distinguish specific keywords that we're using as _special_ CNI keywords distinctly.  We want developers to understand that these keywords are specific to CNI compile-time syntax, thus the special `@` symbol prefix.  This is very similar to what other compilers do such as clang using `@import` to import modules or C pre-processor using `#ifdef` to tell the compiler that it wants to do something special before compiling the language.
 #### Can I write modules?
 
 For Titanium (and Hyperloop), modules just become Hyperloop CNI code packaged as [Common JS](http://wiki.commonjs.org/wiki/CommonJS) and loaded via `require`. In essence, modules as you think of them in traditional Titanium code are now written inline using the target platform's own APIs, directly in Javascript. We will make a new packaging mechanism to make it easier to distribute them such as Node does with NPM modules.
@@ -130,7 +130,7 @@ For Titanium (and Hyperloop), modules just become Hyperloop CNI code packaged as
 
 The next generation Titanium SDK, called [Ti.Next](http://ceogeek.tumblr.com/post/54456815189/thoughts-on-ti-next), is being rebuilt around Hyperloop.  However, we are separating the new compiler (hyperloop) in a standalone project so that developers can use hyperloop without Titanium.  Ti.Next uses the hyperloop compiler to build the new Titanium SDK.
 
-The target for "hyperloop standalone" is developers who would like to write native applications using JavaScript (as a language) but prefer to use the target platforms API directly, instead of using the cross-platform Titanium API.  
+The target for "hyperloop standalone" is developers who would like to write native applications using JavaScript (as a language) but prefer to use the target platforms API directly, instead of using the cross-platform Titanium API.
 
 ## Reporting Bugs or submitting fixes
 
@@ -149,21 +149,22 @@ To protect the interests of the Hyperloop contributors, Appcelerator, customers 
 The original source and design for this project was developed by [Jeff Haynie](http://github.com/jhaynie) ([@jhaynie](http://twitter.com/jhaynie)).
 
 ```
- project  : hyperloop
+project  : hyperloop
  repo age : 7 weeks ago
- commits  : 214
- active   : 36 days
- files    : 177
- authors  : 
-   141	Jeff Haynie             65.9%
-    47	Tony Lukasavage         22.0%
-    11	Dawson Toth             5.1%
-     5	matt-langston           2.3%
-     5	Allen Yeung             2.3%
-     2	Chris Barber            0.9%
-     1	Matt Langston           0.5%
-     1	ewmailing               0.5%
-     1	Eric Wing               0.5%
+ commits  : 256
+ active   : 39 days
+ files    : 220
+ authors  :
+   157	Jeff Haynie             61.3%
+    52	Tony Lukasavage         20.3%
+    22	matt-langston           8.6%
+    11	Dawson Toth             4.3%
+     5	Allen Yeung             2.0%
+     4	Matt Langston           1.6%
+     2	Chris Barber            0.8%
+     1	Olivier Morandi         0.4%
+     1	Eric Wing               0.4%
+     1	ewmailing               0.4%
 ```
 
 ## Legal
@@ -171,4 +172,4 @@ The original source and design for this project was developed by [Jeff Haynie](h
 Copyright (c) 2013 by [Appcelerator, Inc](http://www.appcelerator.com). All Rights Reserved.
 This code contains patents and/or patents pending by Appcelerator, Inc.
 Hyperloop is a trademark of Appcelerator, Inc.
-This project is licensed under the Apache Public License, version 2.  Please see details in the LICENSE file. 
+This project is licensed under the Apache Public License, version 2.  Please see details in the LICENSE file.
