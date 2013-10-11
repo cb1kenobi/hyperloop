@@ -1,153 +1,83 @@
 /*
-* Simple Windows Store (Metro) app that runs on ARM and x86 Windows. The source is completely ISO CPP.
+* Simple Windows Store (Metro) C++/CX app that runs on ARM and x86 Windows. 
 * 
 * Will not run on Windows Phone.
 *
-* TODO: 
-*     Still need to add gesture recognition
-*     Need to create UIElements without XAML
+* Russ + Dawsonish
 *
 */
 
-#include <windows.h>
-#include <roapi.h>
-#include <wchar.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <wrl.h>
-
-#include <Windows.UI.Xaml.h>
-#include <Windows.UI.Xaml.Markup.h>
-#include <Windows.ApplicationModel.Activation.h>
-
-using namespace Microsoft::WRL;
-using namespace Microsoft::WRL::Wrappers;
+using namespace Windows::UI;
+using namespace Windows::UI::Core;
+using namespace Windows::UI::Input;
+using namespace Windows::UI::Xaml;
+using namespace Windows::UI::Xaml::Media;
+using namespace Windows::UI::Xaml::Input;
+using namespace Windows::UI::Xaml::Controls;
+using namespace Windows::UI::Xaml::Controls::Primitives;
 using namespace Windows::Foundation;
-using namespace ABI::Windows::UI::Xaml;
-using namespace ABI::Windows::UI::Xaml::Markup;
-using namespace ABI::Windows::ApplicationModel::Activation;
+using namespace Windows::ApplicationModel;
+using namespace Windows::ApplicationModel::Activation;
+using namespace Windows::Globalization;
+using namespace Platform::Details;
 
-/*
-* Using XAML here to test dynamically loading XAML. It also makes this sample a bit less verbose.
-*/
-#define MARKUP_TO_LOAD \
-	L"<Grid xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">" \
-	L"  <TextBlock Text=\"Native Application using WRL!\" VerticalAlignment=\"Center\" HorizontalAlignment=\"Center\" FontSize=\"48\" />" \
-	L"</Grid>"
-
-void CheckHRESULT(HRESULT hr, LPCWSTR message)
+ref class App sealed : public ::Application
 {
-	if (FAILED(hr))
-	{
-		WCHAR aBuf[1024];
-		swprintf_s(aBuf, L"Error 0x%08X during: %s", hr, message);
-		// TODO: Add logger functionality
-		//MessageBoxW(NULL, aBuf, L"BareMetalMetroApp", MB_ICONERROR);
-		exit(1);
-	}
-}
-
-/*
-* A WRL WinRT component. Usually in it's own dll with winmd metadata but put here for simplicity.
-*/
-
-class AppOverides: public RuntimeClass<IApplicationOverrides>
-{
-	InspectableClass(L"BareMetalWRLApp.AppOverides", BaseTrust);
-
-protected:
-	ComPtr<IApplicationOverrides> pBaseImpl;
-
 public:
-	void SetBase(IApplicationOverrides* _pBaseImpl)
-	{
-		pBaseImpl = _pBaseImpl;
-	}
-
-	STDMETHOD(OnLaunched)(ILaunchActivatedEventArgs* args);
-	STDMETHOD(OnWindowCreated)(IWindowCreatedEventArgs* args);
-
-	STDMETHOD(OnActivated)(IActivatedEventArgs* args) { return pBaseImpl->OnActivated(args); }	
-	STDMETHOD(OnFileActivated)(IFileActivatedEventArgs* args) { return pBaseImpl->OnFileActivated(args); }
-	STDMETHOD(OnSearchActivated)(ISearchActivatedEventArgs* args) { return pBaseImpl->OnSearchActivated(args); }
-	STDMETHOD(OnShareTargetActivated)(IShareTargetActivatedEventArgs* args) { return pBaseImpl->OnShareTargetActivated(args); }
-	STDMETHOD(OnFileOpenPickerActivated)(IFileOpenPickerActivatedEventArgs* args) { return pBaseImpl->OnFileOpenPickerActivated(args); }
-	STDMETHOD(OnFileSavePickerActivated)(IFileSavePickerActivatedEventArgs* args) { return pBaseImpl->OnFileSavePickerActivated(args); }
-	STDMETHOD(OnCachedFileUpdaterActivated)(ICachedFileUpdaterActivatedEventArgs* args) { return pBaseImpl->OnCachedFileUpdaterActivated(args); }
+	App();
+	virtual void OnLaunched(LaunchActivatedEventArgs^ args) override;
+	virtual void App::PointerPressed(Object^ sender, TappedRoutedEventArgs^ e);
+private:
+	TextBlock^ text;
+	Grid^ grid;
 };
 
-STDMETHODIMP AppOverides::OnWindowCreated(IWindowCreatedEventArgs* args)
+App::App()
 {
-	return S_OK;
 }
 
-STDMETHODIMP AppOverides::OnLaunched(ILaunchActivatedEventArgs* args)
+void App::OnLaunched(LaunchActivatedEventArgs^ args)
 {
-	HStringReference WindowClsName(RuntimeClass_Windows_UI_Xaml_Window);
-	HStringReference XamlReaderClsName(RuntimeClass_Windows_UI_Xaml_Markup_XamlReader);
-	HStringReference MarkupData(MARKUP_TO_LOAD);
+	auto window = Window::Current;
 
-	// Puts up the statistics strip. Shows memory, frame rates and more
-	ComPtr<IWindow> pCurWin;
-	{
-		ComPtr<IWindowStatics> pWinStatics;
-		CheckHRESULT(GetActivationFactory(WindowClsName.Get(), &pWinStatics), L"IWinStatics");
-		CheckHRESULT(pWinStatics->get_Current(&pCurWin), L"get_Current");
-	}
+	this->grid = ref new Grid();
+	auto red = ref new SolidColorBrush();
+	red->Color = Colors::Red;
+	grid->Background = red;
 
-	ComPtr<IUIElement> pContent;
-	{
-		ComPtr<IXamlReaderStatics> pXamlReaderStatics;
-		ComPtr<IInspectable> pObj;
+	this->text = ref new TextBlock();
+	text->Text = "Tap me to find out\nwhat time it is!";
+	text->TextAlignment = TextAlignment::Center;
+	text->VerticalAlignment = VerticalAlignment::Center;
+	text->HorizontalAlignment = HorizontalAlignment::Center;
+	text->FontSize = 60;
+	grid->Children->Append(text);
 
-		// pContent = XamlReader::Load(MarkupData)
-		CheckHRESULT(GetActivationFactory(XamlReaderClsName.Get(), &pXamlReaderStatics), L"IXamlReaderStatics");
-		CheckHRESULT(pXamlReaderStatics->Load(MarkupData.Get(), &pObj), L"Markup loading failure");
-		CheckHRESULT(pObj.As(&pContent), L"IUIElement");
-	}
+	grid->Tapped += ref new TappedEventHandler(this, &App::PointerPressed);
 
-	// pCurWin->Content = pContent
-	pCurWin->put_Content(pContent.Get());
-	pCurWin->Activate();
+	window->Content = grid;
 
-	return S_OK;
+	window->Activate();
 }
 
-static STDMETHODIMP InitApplication(IApplicationInitializationCallbackParams* args)
+void App::PointerPressed(Object^ sender, TappedRoutedEventArgs^ e)
 {
-	// Prepare HSTRING versions of class names
-	HStringReference ApplicationClsName(RuntimeClass_Windows_UI_Xaml_Application);
+	auto green = ref new SolidColorBrush();
+	green->Color = Colors::DarkGreen;
+	grid->Background = green;
 
-	ComPtr<IApplicationFactory> pAppFactory;
-	CheckHRESULT(GetActivationFactory(ApplicationClsName.Get(), &pAppFactory), L"IApplicationFactory");
-
-	ComPtr<AppOverides> pAppOverides = Make<AppOverides>();
-	ComPtr<IApplication> pApp;
-	{
-		IInspectable* pInner;
-		CheckHRESULT(pAppFactory->CreateInstance(pAppOverides.Get(), &pInner, &pApp), L"CreateInstance");
-	}
-
-	// Set the inherited Application object
-	ComPtr<IApplicationOverrides> pBaseImpl;
-	CheckHRESULT(pApp.As(&pBaseImpl), L"IApplicationOverrides");
-	pAppOverides->SetBase(pBaseImpl.Get());
-
-	return S_OK;
+	auto cal = ref new Calendar();
+	this->text->FontSize = 180;
+	this->text->Text = cal->HourAsPaddedString(2)
+		+ ":" + cal->MinuteAsPaddedString(2)
+		+ ":" + cal->SecondAsPaddedString(2);
 }
 
-int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
+int main(Platform::Array<Platform::String^>^)
 {
-	RoInitializeWrapper init(RO_INIT_MULTITHREADED);
-	CheckHRESULT(init, L"RoInitialize");
-
-	ComPtr<IApplicationStatics> pAppStatics;
-	HStringReference ApplicationClsName(RuntimeClass_Windows_UI_Xaml_Application);
-	CheckHRESULT(GetActivationFactory(ApplicationClsName.Get(), &pAppStatics), L"IApplicationStatics");
-
-	ComPtr<IApplicationInitializationCallback> pCallback = Callback<IApplicationInitializationCallback>(InitApplication);
-	pAppStatics->Start(pCallback.Get());
+	Application::Start(ref new ApplicationInitializationCallback([](ApplicationInitializationCallbackParams^ params) {
+		auto app = ref new App();
+	}));
 
 	return 0;
 }

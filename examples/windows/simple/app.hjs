@@ -1,0 +1,67 @@
+@import("Windows::UI::Colors");
+@import("Windows::UI::Xaml::Controls::Grid");
+@import("Windows::UI::Xaml::Controls::TextBlock");
+@import("Windows::UI::Xaml::Media::SolidBrushColor");
+@import("Windows::UI::Xaml::Application");
+@import("Windows::UI::Xaml::TextAlignment");
+@import("Windows::UI::Xaml::VerticalAlignment");
+@import("Windows::UI::Xaml::HorizontalAlignment");
+@import("Windows::UI::Xaml::Window");
+@import("Windows::ApplicationModel::Activation::LaunchActivatedEventArgs");
+@import("Windows::Globalization::Calendar");
+
+@native({
+	application: 'MyApp'
+});
+
+
+var grid,
+	window,
+	text;
+
+@class('MyApp', Application, [], [
+
+	{
+		name: 'OnLaunched',
+		returnType: 'void',
+		arguments: [ { name: 'args', type: 'LaunchActivatedEventArgs^'} ],
+		action: function(params) {
+			
+			window = Window.Current;
+
+			grid = new Grid();
+			var red = new SolidColorBrush();
+			red.Color = Colors.Red;
+			grid.Background = red;
+
+			text = new TextBlock();
+			text.Text = "Tap me to find out\nwhat time it is!";
+			text.TextAlignment = TextAlignment.Center;
+			text.VerticalAlignment = VerticalAlignment.Center;
+			text.HorizontalAlignment = HorizontalAlignment.Center;
+			text.FontSize = 60;
+
+			grid.children.Append(text);
+
+			window.Context = grid;
+			window.Activate();
+		}
+	},
+
+	{
+		name: 'PointerPressed',
+		returnType: 'void',
+		arguments: [ {name: 'sender', type: 'Object^'}, {name:'e', type: 'TappedRoutedEventArgs^'}],
+		action: function(params) {
+			var green = new SolidColorBrush();
+			green.Color = Colors.DarkGreen;
+			grid.Background = green;
+
+			var cal = new Calendar();
+			text.FontSize = 180;
+			text.Text = cal.HourAsPaddedString(2) + ':' + cal.MinuteAsPaddedString(2) + ':' + cal.SecondAsPaddedString(2);
+		}
+	}
+
+]);
+
