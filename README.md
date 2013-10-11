@@ -30,6 +30,7 @@ The initial compile will take a minute or so to generate the AST for the system 
 
 If all goes well, this should compile the application source code and the native application and launch it in the iOS Simulator.
 
+*Note:* Add the `--clean` command to clean the `build` dir before building a different example.
 
 ## Platforms Supported
 
