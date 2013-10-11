@@ -1,0 +1,13 @@
+@class('MyClass', NSObject, [], [
+	{
+		name: 'doSomething',
+		returnType: 'void',
+		arguments: [],
+		action: function(params) {
+			throw new Error('This is the exception message');
+		}
+	}
+]);
+
+var mine = new MyClass();
+mine.doSomething();
