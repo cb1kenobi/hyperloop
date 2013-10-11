@@ -1,5 +1,14 @@
+@import("Windows::UI::Colors");
 @import("Windows::UI::Xaml::Controls::Grid");
+@import("Windows::UI::Xaml::Controls::TextBlock");
 @import("Windows::UI::Xaml::Media::SolidBrushColor");
+@import("Windows::UI::Xaml::Application");
+@import("Windows::UI::Xaml::TextAlignment");
+@import("Windows::UI::Xaml::VerticalAlignment");
+@import("Windows::UI::Xaml::HorizontalAlignment");
+@import("Windows::UI::Xaml::Window");
+@import("Windows::ApplicationModel::Activation::LaunchActivatedEventArgs");
+@import("Windows::Globalization::Calendar");
 
 @native({
 	application: 'MyApp'
