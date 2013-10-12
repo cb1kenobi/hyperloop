@@ -7,13 +7,13 @@
 {
 
 	if (exception != nil) {
-		NSMutableDictionary *fields = [@{
+		NSMutableDictionary *fields = [[@{
 			@"name": @"HyperloopException",
 			@"message": @"Uncaught Javascript exception",
 			@"sourceURL": @"<file unknown>",
 			@"line": @"<line unknown>",
 			@"stack": @"<no stack trace>"
-		} mutableCopy];
+		} mutableCopy] autorelease];
 
 		// make sure we actually have an object for the exception
 		if (JSValueIsObject(context, exception)) {
