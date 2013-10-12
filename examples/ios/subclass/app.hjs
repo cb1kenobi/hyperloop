@@ -42,8 +42,11 @@ log(new MyScene());
         arguments: [ { type: 'CGSize', name: 'size' } ],
         action: function(params) {
         	console.log('initWithSize called with size=',params.size.width+'x'+params.size.height);
+        	console.log('super is',this.super.initWithSize);
+        	return this.super.initWithSize(params.size);
         }
     }
 ]);
 var scene = new MyScene2();
 var scene2 = MyScene2.alloc().initWithSize(CGSizeMake(10,10));
+console.log(scene2);
