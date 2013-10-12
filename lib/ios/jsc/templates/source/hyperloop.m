@@ -404,13 +404,7 @@ NSString* HyperloopToNSString(JSContextRef ctx, JSValueRef value)
     if (JSValueIsString(ctx,value))
     {
         JSStringRef stringRef = JSValueToStringCopy(ctx, value, 0);
-        size_t buflen = JSStringGetMaximumUTF8CStringSize(stringRef);
-        char buf[buflen];
-        buflen = JSStringGetUTF8CString(stringRef, buf, buflen);
-        buf[buflen] = '\0';
-        NSString *result = [NSString stringWithUTF8String:buf];
-        JSStringRelease(stringRef);
-        return result;
+        return HyperloopToNSStringFromString(ctx, stringRef);
     }
     else if (JSValueIsNumber(ctx,value))
     {
