@@ -57,7 +57,7 @@ The following Platforms are being targeted for supported.
 ## Documentation
 
 - [Wiki](https://github.com/appcelerator/hyperloop/wiki)
-- [Mailing List](https://groups.google.com/forum/#!topic/tinext)
+- [Mailing List](https://groups.google.com/forum/#!forum/tinext)
 
 ## Examples
 
@@ -136,7 +136,7 @@ The target for "hyperloop standalone" is developers who would like to write nati
 
 ## Reporting Bugs or submitting fixes
 
-If you run into problems, and trust us, there are likely plenty of them at this point -- please create an [Issue](https://github.com/appcelerator/hyperloop/issues) or, even better, send us a pull request. You should also check out the [Mailing List](https://groups.google.com/forum/#!topic/tinext).
+If you run into problems, and trust us, there are likely plenty of them at this point -- please create an [Issue](https://github.com/appcelerator/hyperloop/issues) or, even better, send us a pull request. You should also check out the [Mailing List](https://groups.google.com/forum/#!forum/tinext).
 
 ## Contributing
 
