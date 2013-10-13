@@ -71,7 +71,13 @@ JSValueRef JSGetLoaded (JSContextRef ctx, JSObjectRef object, JSStringRef proper
 JSValueRef JSGetDirname (JSContextRef ctx, JSObjectRef object, JSStringRef propertyName, JSValueRef* exception)
 {
     HyperloopJS *module = (HyperloopJS*)JSObjectGetPrivate(object);
-    return JSValueMakeBoolean(ctx, [module.filename stringByDeletingLastPathComponent]);
+    NSString *dir = [module.filename stringByDeletingLastPathComponent];
+    dir = [NSString stringWithFormat:@"./%@",dir];
+    if ([dir hasSuffix:@"/"]==NO)
+    {
+        dir = [dir stringByAppendingString:@"/"];
+    }
+    return HyperloopToString(ctx, dir);
 }
 
 JSValueRef JSRequire (JSContextRef ctx, JSObjectRef function, JSObjectRef object, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)

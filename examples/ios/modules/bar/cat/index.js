@@ -1,9 +1,10 @@
-console.log('bar/cat/index filename=',!!(module.filename==='bar/cat/index.js'));
-console.log(module.filename,'parent=>',!!(module.parent.id==='app'));
-console.log(module.filename,'loaded=>',!!(module.parent.loaded===false));
+globals.assert(module.filename==='bar/cat/index.js',"module.filename should be 'bar/cat/index.js'",module.filename);
+globals.assert(module.parent.id==='app',"module.parent.id should be 'app'",module.parent.id);
+globals.assert(module.parent.loaded===false,"module.parent.loaded should be false",module.parent.loaded);
+
 
 var Lion = module.require('./lion');
 
 var lion = new Lion();
-console.log('should be "roar!" = ', !!(lion.sound()==='roar!'));
+globals.assert(lion.sound()==='roar!',"lion.sound() should be 'roar!'",lion.sound());
 
