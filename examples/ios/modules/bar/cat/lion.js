@@ -1,4 +1,3 @@
-console.log('hello inside lion.js = 1');
 
 var Lion = function() {
 };
@@ -7,3 +6,4 @@ Lion.prototype.sound = function() {
 };
 
 module.exports = Lion;
+

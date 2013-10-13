@@ -414,7 +414,7 @@ NSString* HyperloopToNSString(JSContextRef ctx, JSValueRef value)
     else if (JSValueIsBoolean(ctx,value))
     {
         bool result = JSValueToBoolean(ctx,value);
-        return [[NSNumber numberWithBool:result] stringValue];
+        return result ? @"true" : @"false";
     }
     else if (JSValueIsNull(ctx,value) || JSValueIsUndefined(ctx,value))
     {

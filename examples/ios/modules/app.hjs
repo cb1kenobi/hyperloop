@@ -1,4 +1,15 @@
-console.log('all values should be 1 below');
+/**
+ * require tests
+ */
+function assert (value, test, msg) {
+	console.log(
+		(value ? '\033[32m✓\033[39m\033[0m ' : '\033[31m✘\033[39m\033[0m') + 
+		'  ' + test + ' ' +
+		(!value ? ('\t(received: '+msg+')') : '')
+	);
+}
+globals.assert = assert;
+
 
 var mod = require('./mod'),					// local directory
 	bar = require('./bar/bar.js'),			// absolute with js file extension
@@ -9,9 +20,9 @@ var mod = require('./mod'),					// local directory
 	nested = require('./nested'),			// nested with node_modules
 	foo2 = require('/foo/bar');				// absolute directory from top
 
-console.log('loaded app.hjs');
-console.log('foo.bar=',foo.bar);
-console.log('cat is shelby=',!!(cat.name==='shelby'));
+assert(foo.bar===1, "foo.bar should be 1",foo.bar);
+assert(cat.name==='shelby', "cat.name should be shelby",cat.name);
+
 
 try {
 	// test trying to load a bad module
@@ -20,15 +31,18 @@ try {
 }
 catch(e) {
 	// check message to make sure it's correct
-	console.log('raised exception on bad module = '+(e.message==="cannot find module 'badname'" && 1));
-	console.log('code should be MODULE_NOT_FOUND = '+(e.code==="MODULE_NOT_FOUND" && 1));
+	assert(e.message==="cannot find module 'badname'", "bad require raised exception",e.message);
+	assert(e.code==="MODULE_NOT_FOUND", "exception code property",e.code);
 }
 
 // test making sure modules are only ever loaded once
 nested.count++;
 nested = require('./nested');
 
-console.log('nested count should be 2=',!!(nested.count===2));
-console.log('globals.foobar should be 123=',!!(globals.foobar===123));
-console.log('module.loaded should be false=',!!(false===module.loaded));
-console.log('module.parent should be null=',!!(null===module.parent));
+assert(nested.count===2,'nested count should be 2',nested.count);
+assert(globals.foobar===123,'globals.foobar should be 123',globals.foobar);
+assert(false===module.loaded,'module should not be loaded yet',module.loaded);
+assert(module.parent===null,'module should not have a parent',module.parent);
+
+assert(__dirname==='./',"__dirname should be './'",__dirname);
+
