@@ -1,0 +1,391 @@
+/**
+ * OpenGL demo
+ */
+@import('Foundation/NSDictionary');
+@import('Foundation/NSMutableDictionary');
+@import('Foundation/NSNumber');
+@import('Foundation/NSBundle');
+@import('Foundation/NSString');
+@import('Foundation/NSUTF8StringEncoding');
+@import('Foundation/NSObject');
+@import('Foundation/UILabel');
+@import("Foundation/NSLog");
+
+@import('UIKit/UIApplication');
+@import('UIKit/UIApplicationDelegate');
+@import('UIKit/UIColor');
+@import('UIKit/NSTextAlignmentCenter');
+@import('CoreGraphics/CGRectMake');
+
+@import('GLKit/EAGLContext');
+@import('GLKit/GLKViewController');
+@import('GLKit/GLKView');
+@import('GLKit/kEAGLRenderingAPIOpenGLES2');
+@import('GLKit/GLKViewDrawableDepthFormat24');
+@import('GLKit/GLint');
+@import('GLKit/glGetIntegerv');
+@import('GLKit/glCreateProgram');
+@import('GLKit/glCreateShader');
+@import('GLKit/glShaderSource');
+@import('GLKit/glCompileShader');
+@import('GLKit/glAttachShader');
+@import('GLKit/glBindAttribLocation');
+@import('GLKit/glGetUniformLocation');
+@import('GLKit/glUniform1f');
+@import('GLKit/GLKVertexAttribPosition');
+@import('GLKit/GLKVertexAttribColor');
+@import('GLKit/glLinkProgram');
+@import('GLKit/glGetProgramiv');
+@import('GLKit/glDetachShader');
+@import('GLKit/glDeleteShader');
+@import('GLKit/GLKBaseEffect');
+@import('GLKit/GLKVector4Make');
+@import('GLKit/glEnable');
+@import('GLKit/glGenVertexArraysOES');
+@import('GLKit/glBindVertexArrayOES');
+@import('GLKit/glGenBuffers');
+@import('GLKit/glBindBuffer');
+@import('GLKit/glBufferData');
+@import('GLKit/glEnableVertexAttribArray');
+@import('GLKit/glVertexAttribPointer');
+@import('GLKit/glBindVertexArrayOES');
+@import('GLKit/GLKMatrix4MakeOrtho');
+@import('GLKit/GLKMathDegreesToRadians');
+@import('GLKit/GLKMatrix4MakeTranslation');
+@import('GLKit/GLKMatrix4Multiply');
+@import('GLKit/GLKMatrix3InvertAndTranspose');
+@import('GLKit/GLKMatrix4GetMatrix3');
+@import('GLKit/GLKMatrix4Translate');
+@import('GLKit/GLKMatrix4Identity');
+@import('GLKit/glViewport');
+@import('GLKit/glClearColor');
+@import('GLKit/glClear');
+@import('GLKit/glDrawArrays');
+@import('GLKit/glUseProgram');
+@import('GLKit/glUniformMatrix4fv');
+@import('GLKit/glUniformMatrix3fv');
+@import('GLKit/glUniform1i');
+@import('GLKit/glDrawArrays');
+@import('GLKit/GLKMatrix4Make');
+@import('GLKit/GLKMatrix3Make');
+
+// shorthand for using NSLog
+var __ = NSString.stringWithUTF8String;
+
+var CELL_SIZE;
+if (typeof HYPERLOOP_XXSMALL !== 'undefined') {
+    CELL_SIZE = 1.0;
+} else if (typeof HYPERLOOP_XSMALL !== 'undefined') {
+    CELL_SIZE = 2.0;
+} else if (typeof HYPERLOOP_SMALL !== 'undefined') {
+    CELL_SIZE = 4.0;
+} else {
+    CELL_SIZE = 10.0;
+}
+
+// TODO: the metabase isn't finding #define
+var GL_FRAGMENT_SHADER = 0x8B30;
+var GL_VERTEX_SHADER = 0x8B31;
+var GL_LINK_STATUS = 0x8B82;
+var GL_TRUE = 1;
+var GL_FALSE = 0;
+var GL_DEPTH_TEST = 0x0B71;
+var GL_ARRAY_BUFFER = 0x8892;
+var GL_FLOAT = 0x1406;
+var GL_STATIC_DRAW = 0x88E4;
+var GL_DYNAMIC_DRAW = 0x88E8;
+var GL_COLOR_BUFFER_BIT = 0x00004000;
+var GL_DEPTH_BUFFER_BIT = 0x00000100;
+var GL_TRIANGLES = 0x0004;
+var GL_POINTS = 0x0000;
+
+var _ = NSString.stringWithUTF8String;
+
+var vertexArray  = @memory();
+var vertexBuffer = @memory();
+var colorBuffer  = @memory();
+var modelViewProjectionMatrix = GLKMatrix4Make(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+
+@class('MyGLController', GLKViewController, [], [
+	{
+		name: 'glkView',
+		returnType: 'void',
+		arguments: [ { type: 'GLKView *', name: 'view' }, { type: 'CGRect', name: 'drawInRect', property:'rect' } ],
+		action: render
+	},
+	{
+		name: 'update',
+		returnType: 'void',
+		arguments: [],
+		action: update
+	}
+]);
+
+// create the OpenGL context
+var context = EAGLContext.alloc().initWithAPI(kEAGLRenderingAPIOpenGLES2);
+
+// you *MUST* set this or your calls to APIs will fail
+EAGLContext.setCurrentContext(context);
+
+// create a GL view
+var view = GLKView.alloc().initWithFrame(CGRectMake(0,0,0,0),context);
+view.drawableDepthFormat = GLKViewDrawableDepthFormat24;
+
+// remove the base view
+var keyWindow = UIApplication.sharedApplication().keyWindow;
+keyWindow.subviews.objectAtIndex(0).removeFromSuperview();
+
+// create our custom GL controller
+var controller = new MyGLController();
+controller.view = view;
+keyWindow.rootViewController = controller;
+keyWindow.addSubview(view);
+
+// Set preferred frame per second
+controller.preferredFramesPerSecond = 60;
+
+// add FPS label
+var label = new UILabel();
+label.frame = CGRectMake(0, 20, 100, 40);
+label.backgroundColor = UIColor.colorWithRed(180/255, 0, 0, 0.8);
+label.textColor = UIColor.whiteColor();
+label.textAlignment = NSTextAlignmentCenter;
+label.setText(__('FPS: '));
+keyWindow.addSubview(label);
+
+// create shader program
+var program = glCreateProgram();
+var vertShaderPathname = NSBundle.mainBundle().pathForResource(_('Shader'),_('vsh'));
+var fragShaderPathname = NSBundle.mainBundle().pathForResource(_('Shader'),_('fsh'));
+
+var uniforms = [],
+	UNIFORM_MODELVIEWPROJECTION_MATRIX = 0,
+    xSize = view.bounds.size.width  / CELL_SIZE,
+    ySize = view.bounds.size.height / CELL_SIZE,
+    pointCount = xSize * ySize,
+    CELL_START = CELL_SIZE / 2;
+
+var viewport = [view.bounds.origin.x, view.bounds.origin.y, 
+                view.bounds.size.width, view.bounds.size.height];
+
+NSLog("Loading %@ vertices...it may take time.", pointCount);
+
+var cellLoadingStart = +new Date();
+
+var cellVertexData  = @memory();
+var colorBufferData = @memory();
+
+cellVertexData.putFloat(0,  (pointCount * 3) - 1);  // Grow size of the buffer
+colorBufferData.putFloat(0, (pointCount * 4) - 1); // Grow size of the buffer
+
+var cells = [];
+
+var cellindex  = 0;
+var colorindex = 0;
+for (var x = 0; x < xSize; x++) {
+    cells[x] = [];
+    for (var y = 0; y < ySize; y++) {
+        var alive = Math.random() >= 0.5;
+
+        // save the cell
+        cells[x][y] = {
+            lastAlive: alive,
+            alive: alive
+        };
+
+        var alpha = alive ? 1.0 : 0.0;
+
+        // TODO: need method to put data all at once
+        colorBufferData.putFloat(1.0,   colorindex);
+        colorBufferData.putFloat(1.0,   colorindex + 1);
+        colorBufferData.putFloat(1.0,   colorindex + 2);
+        colorBufferData.putFloat(alpha, colorindex + 3);
+
+        cellVertexData.putFloat(CELL_START + (x * CELL_SIZE), cellindex);
+        cellVertexData.putFloat(CELL_START + (y * CELL_SIZE), cellindex + 1);
+        cellVertexData.putFloat(0.0, cellindex + 2);
+
+        colorindex += 4;
+        cellindex  += 3;
+    }
+}
+NSLog("Finished loading vertices %@ msec", (+new Date() - cellLoadingStart));
+
+// calculate the next state of each cell
+function getNextState(x, y, alive) {
+    var count = 0,
+        xm1 = x > 0,
+        xp1 = x+1 < xSize,
+        ym1 = y > 0,
+        yp1 = y+1 < ySize;
+
+    if (xm1) {
+        if (ym1 && cells[x-1][y-1].lastAlive) { count++; }
+        if (cells[x-1][y].lastAlive) { count++; }
+        if (yp1 && cells[x-1][y+1].lastAlive) { count++; }
+    }
+    if (xp1) {
+        if (ym1 && cells[x+1][y-1].lastAlive) { count++; }
+        if (cells[x+1][y].lastAlive) { count++; }
+        if (yp1 && cells[x+1][y+1].lastAlive) { count++; }
+    }
+    if (ym1 && cells[x][y-1].lastAlive) { count++; }
+    if (yp1 && cells[x][y+1].lastAlive) { count++; }
+
+    return (alive && (count === 2 || count === 3)) || (!alive && count === 3);
+}
+
+var fpsUpdateDate = +new Date();
+var frameCount = 0;
+
+// the render function
+function update(params) {
+    var x, y, cell, colorindex, alpha;
+
+    // render current generation
+    for (x = 0; x < xSize; x++) {
+        for (y = 0; y < ySize; y++) {
+            cell = cells[x][y];
+
+            // minimze number of times we need to modify the proxy object
+            if (cell.alive !== cell.lastAlive) {
+                alpha = cell.alive ? 1.0 : 0.0;
+                colorindex = ((x * ySize) + y) * 4;
+                colorBufferData.putFloat(alpha, colorindex + 3);
+            }
+
+            // save the state
+            cell.lastAlive = cell.alive;
+        }
+    }
+
+    // build next generation
+    for (x = 0; x < xSize; x++) {
+        for (y = 0; y < ySize; y++) {
+            cell = cells[x][y];
+            cell.alive = getNextState(x, y, cell.lastAlive);
+        }
+    }
+
+    glBindBuffer(GL_ARRAY_BUFFER, colorBuffer.toInt());
+    glBufferData(GL_ARRAY_BUFFER, colorBufferData.length, colorBufferData, GL_STATIC_DRAW);
+
+    frameCount++;
+    var fpsUpdateDiff = +new Date() - fpsUpdateDate;
+    if (fpsUpdateDiff > 2000) {
+        label.setText(__('FPS: ' + frameCount / 2));
+        fpsUpdateDate = +new Date();
+        frameCount = 0;
+    }
+}
+
+function render (params) {
+
+    try {
+        glClearColor(0.0, 0.0, 0.0, 1.0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glBindVertexArrayOES(vertexArray.toInt());
+
+        // Render the object again with ES2
+        glUseProgram(program);
+
+        glUniform1f(glGetUniformLocation(program, "pointSize"), CELL_SIZE);
+        glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, modelViewProjectionMatrix.m);
+
+        glDrawArrays(GL_POINTS, 0, pointCount);
+    }
+    catch (E) {
+        console.log('render:',E.message);
+    }
+}
+
+function compileShader(type, file) {
+	var source = NSString.stringWithContentsOfFile(file,NSUTF8StringEncoding,null);
+	// create a memory buffer to store the char*
+	var buffer = @memory();
+	buffer.putString(source);
+	var shader = glCreateShader(type);
+	var length = @memory();
+	// create a memory buffer to store the int as int*
+	length.putInt(source.length());
+	glShaderSource(shader, 1, buffer, length);
+	glCompileShader(shader);
+	return shader;
+}
+
+function loadShaders () {
+	var vertShader = compileShader(GL_VERTEX_SHADER,vertShaderPathname);
+	var fragShader = compileShader(GL_FRAGMENT_SHADER,fragShaderPathname);
+
+	glAttachShader(program, vertShader);
+	glAttachShader(program, fragShader);
+
+	glBindAttribLocation(program, GLKVertexAttribPosition, 'position');
+    glBindAttribLocation(program, GLKVertexAttribColor, 'color'); 
+	glLinkProgram(program);
+
+	// create an int* (default) that will serve as out pointer to receive back the status
+	// this is the same as this in C:
+	//
+	// size_t size = 0;
+	// glGetProgramiv(program, GL_LINK_STATUS, &size);
+	//
+	// where size is passed as (int*) and glGetProgramiv sets the value in the pointer location
+	var status = @memory();
+
+	glGetProgramiv(program, GL_LINK_STATUS, status);
+
+	if (!status.toInt()) {
+		console.log('Received invalid status from GL_LINK_STATUS, should have been 1, was:',status.toInt());
+		return false;
+	}
+
+    // Get uniform locations.
+	uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX] = glGetUniformLocation(program, 'modelViewProjectionMatrix');
+
+	glDetachShader(program, vertShader);
+	glDeleteShader(vertShader);
+
+	glDetachShader(program, fragShader);
+	glDeleteShader(fragShader);
+
+	return true;
+}
+
+try {
+	if (loadShaders()) {
+
+  		glEnable(GL_DEPTH_TEST);
+
+	    glGenVertexArraysOES(1, vertexArray);
+	    glBindVertexArrayOES(vertexArray.toInt());
+	    
+	    glGenBuffers(1, vertexBuffer);
+	    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer.toInt());
+        glBufferData(GL_ARRAY_BUFFER, cellVertexData.length, cellVertexData, GL_STATIC_DRAW);
+
+        glEnableVertexAttribArray(GLKVertexAttribPosition);
+        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 12, 0);
+
+        glGenBuffers(1, colorBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, colorBuffer.toInt());
+        glBufferData(GL_ARRAY_BUFFER, colorBufferData.length, colorBufferData, GL_STATIC_DRAW);
+
+        glEnableVertexAttribArray(GLKVertexAttribColor);
+        glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, 16, 0);
+
+	    glBindVertexArrayOES(0);
+
+        // Setup coordinate that starts from top-left corner
+        var projectionMatrix = GLKMatrix4MakeOrtho(
+            viewport[0], viewport[2], viewport[3], viewport[1], -100, 100);
+
+        var modelViewMatrix = GLKMatrix4Identity;
+        modelViewProjectionMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
+	}
+}
+catch(E){
+	console.log(E.message);
+}
+
