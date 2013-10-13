@@ -4,6 +4,7 @@
 @import('UIKit/UIButton');
 @import('UIKit/UIScreen');
 @import('UIKit/UIView');
+@import('UIKit/UIAlertViewDelegate');
 @import('UIKit/UIControlStateNormal');
 @import('UIKit/UIControlEventTouchDown');
 @import('CoreGraphics/CGRectMake');
