@@ -59,7 +59,7 @@ var alertDelegate = new AlertViewDelegate();
 var button = new UIButton();
 button.frame = CGRectMake(110, 100, 100, 44);
 button.setTitle('click me', 0);
-button.setTitleColor(UIColor.blueColor(), 0); //UIControlStateHighlighted is not recognized, using its numeric value instead
+button.setTitleColor(UIColor.blueColor(), 0); //UIControlStateNormal is not recognized, using its numeric value instead
 contentView.addSubview(button);
 
 button.addTarget(buttonHandler, NSSelectorFromString('buttonClick'), 1); //UIControlEventTouchDown symbol is not recognized, using its numeric value instead
