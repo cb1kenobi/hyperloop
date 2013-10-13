@@ -12,6 +12,7 @@
 #import <zlib.h>
 #import "JSBuffer.h"
 #import "JSOwner.h"
+#import "Module.h"
 
 #define UNUSED(x) (void)(x)
 
@@ -36,7 +37,8 @@ typedef struct JSPrivateObject {
 @end
 
 @protocol HyperloopModule
-+(JSValueRef)load:(JSContextRef)context;
++(NSData*)buffer;
++(void)load:(JSContextRef)context withObject:(JSObjectRef)object;
 @end
 
 /**
@@ -127,7 +129,7 @@ NSString* HyperloopToNSString(JSContextRef ctx, JSValueRef value);
 /**
  * create a hyperloop VM
  */
-JSContextRef HyperloopCreateVM (NSString *name);
+JSContextRef HyperloopCreateVM (NSString *name, NSString *prefix);
 
 /**
  * given a context, get the global context

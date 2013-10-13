@@ -1,0 +1,3 @@
+console.log('bar filename=',!!(module.filename==='bar/bar.js'));
+console.log(module.filename,'parent=>',!!(module.parent.id==='app'));
+console.log(module.filename,'loaded=>',!!(module.parent.loaded===false));
