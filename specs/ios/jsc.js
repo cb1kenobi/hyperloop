@@ -162,10 +162,11 @@ describe("jsc", function(){
 			fs.writeFileSync(path.join(srcdir,"jsc_test.m"),fs.readFileSync(path.join(__dirname,"src","jsc_test.m")).toString().replace("JS_TEST_SRC",js_test_src));
 
 			var headerPath = path.join(__dirname,"../../lib/ios/jsc/templates/source"),
+				sourceFiles = fs.readdirSync(headerPath).filter(function(f){return (f.indexOf('.h')==-1)}).map(function(f){return path.join(headerPath,f)}),
 				options = {
 					minVersion : "7.0",
 					libname: "libjsc_test.a",
-					srcfiles: [path.join(headerPath,"JSBuffer.m"),path.join(headerPath,"hyperloop.m"),path.join(srcdir,"jsc_test.m")],
+					srcfiles: sourceFiles.concat([path.join(srcdir,"jsc_test.m")]),
 					outdir: build,
 					cflags: ["-I"+headerPath],
 					linkflags: ['-framework JavaScriptCore'],
@@ -175,7 +176,8 @@ describe("jsc", function(){
 					debug: true,
 					launch: true,
 					no_arc: true,
-					hide: true
+					hide: true,
+					classprefix: 'hl$'
 				},
 				failures = 0,
 				failureRegex = /^FAIL:/;

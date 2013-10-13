@@ -1,0 +1,4 @@
+console.log(module.filename,'loaded=>',!!(__filename==='mod.js'));
+console.log(module.filename,'parent=>',!!(module.parent.id==='app'));
+console.log(module.filename,'loaded=>',!!(module.parent.loaded===false));
+

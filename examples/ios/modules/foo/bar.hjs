@@ -1,0 +1,8 @@
+var mod2 = require('../mod2');
+
+console.log('foo/bar filename=',!!(module.filename==='foo/bar.js'));
+console.log(module.filename,'parent=>',!!(module.parent.id==='app'));
+console.log(module.filename,'loaded=>',!!(module.parent.loaded===false));
+
+
+exports.bar = 1;

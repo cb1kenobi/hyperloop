@@ -4,7 +4,8 @@
 #import "JSBuffer.h"
 
 @protocol HyperloopModule
-+(JSValueRef)load:(JSContextRef)context;
++(NSData*)buffer;
++(void)load:(JSContextRef)context withObject:(JSObjectRef)object;
 @end
 
 @interface hl$app : NSObject<HyperloopModule>
@@ -31,10 +32,16 @@ JSValueRef AssertionCallback (JSContextRef ctx, JSObjectRef function, JSObjectRe
 
 @implementation hl$app
 
-+(JSValueRef)load:(JSContextRef)context
++(NSData*)buffer
 {
-    JSObjectRef globalObject = JSContextGetGlobalObject(context);
+    static UInt8 data[] = {
+        0
+    };
+    return [NSData dataWithBytes:((void*)data) length:1];
+}
 
++(void)load:(JSContextRef)context withObject:(JSObjectRef)globalObject
+{
     JSStringRef assertProperty = JSStringCreateWithUTF8CString("assert");
     JSObjectRef function = JSObjectMakeFunctionWithCallback(context, assertProperty, AssertionCallback);
     JSObjectSetProperty(context, globalObject, assertProperty, function, kJSPropertyAttributeNone, 0);
@@ -61,7 +68,6 @@ JSValueRef AssertionCallback (JSContextRef ctx, JSObjectRef function, JSObjectRe
     }
 
     NSLog(@"[DEBUG] EXIT");
-    return nil;
 }
 
 @end

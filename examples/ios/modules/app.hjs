@@ -1,0 +1,30 @@
+console.log('all values should be 1 below');
+
+var mod = require('./mod'),					// local directory
+	bar = require('./bar/bar.js'),			// absolute with js file extension
+	barcat = require('./bar/cat'),			// module from folder with index.js
+	cat = require('./cat'),					// module from package.json
+	foo = require('./foo/bar'),				// multi-directory
+	mymodule = require('mymodule'),			// module from node_modules
+	nested = require('./nested'),			// nested with node_modules
+	foo2 = require('/foo/bar');				// absolute directory from top
+
+console.log('loaded app.hjs');
+console.log('foo.bar=',foo.bar);
+console.log('cat is shelby=',!!(cat.name==='shelby'));
+
+try {
+	// test trying to load a bad module
+	require('badname');
+	console.log("should have raised an exception and it didn't = 0");
+}
+catch(e) {
+	// check message to make sure it's correct
+	console.log('raised exception on bad module = '+(e.message==="cannot find module 'badname'" && 1));
+}
+
+// test making sure modules are only ever loaded once
+nested.count++;
+nested = require('./nested');
+
+console.log('nested count should be 2=',!!(nested.count===2));
