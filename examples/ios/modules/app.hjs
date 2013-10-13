@@ -21,6 +21,7 @@ try {
 catch(e) {
 	// check message to make sure it's correct
 	console.log('raised exception on bad module = '+(e.message==="cannot find module 'badname'" && 1));
+	console.log('code should be MODULE_NOT_FOUND = '+(e.code==="MODULE_NOT_FOUND" && 1));
 }
 
 // test making sure modules are only ever loaded once
@@ -28,3 +29,6 @@ nested.count++;
 nested = require('./nested');
 
 console.log('nested count should be 2=',!!(nested.count===2));
+console.log('globals.foobar should be 123=',!!(globals.foobar===123));
+console.log('module.loaded should be false=',!!(false===module.loaded));
+console.log('module.parent should be null=',!!(null===module.parent));

@@ -55,7 +55,11 @@ JSValueRef JSGetFilename (JSContextRef ctx, JSObjectRef object, JSStringRef prop
 JSValueRef JSGetParent (JSContextRef ctx, JSObjectRef object, JSStringRef propertyName, JSValueRef* exception)
 {
     HyperloopJS *module = (HyperloopJS*)JSObjectGetPrivate(object);
-    return HyperloopMakeJSObject(ctx,module.parent);
+    if (module.parent!=nil)
+    {
+        return HyperloopMakeJSObject(ctx,module.parent);
+    }
+    return JSValueMakeNull(ctx);
 }
 
 JSValueRef JSGetLoaded (JSContextRef ctx, JSObjectRef object, JSStringRef propertyName, JSValueRef* exception)
@@ -85,7 +89,14 @@ JSValueRef JSRequire (JSContextRef ctx, JSObjectRef function, JSObjectRef object
     if (js==nil)
     {
         NSString *msg = [NSString stringWithFormat:@"cannot find module '%@'",path];
-        return HyperloopMakeException(ctx,[msg UTF8String],exception);
+        HyperloopMakeException(ctx,[msg UTF8String],exception);
+        JSStringRef codeProperty = JSStringCreateWithUTF8CString("code");
+        JSStringRef msgProperty = JSStringCreateWithUTF8CString("MODULE_NOT_FOUND");
+        JSObjectRef exceptionObject = JSValueToObject(ctx,*exception,0);
+        JSObjectSetProperty(ctx, exceptionObject, codeProperty, JSValueMakeString(ctx,msgProperty), 0, 0);
+        JSStringRelease(codeProperty);
+        JSStringRelease(msgProperty);
+        return JSValueMakeUndefined(ctx);
     }
 
     return js.exports;
@@ -107,8 +118,11 @@ void JSInitialize (JSContextRef ctx, JSObjectRef object)
 void JSFinalize (JSObjectRef object)
 {
     HyperloopJS *module = (HyperloopJS*)JSObjectGetPrivate(object);
-    JSValueUnprotect(module.context, module.exports);
-    [module release];
+    if (module!=nil)
+    {
+        JSValueUnprotect(module.context, module.exports);
+        [module release];
+    }
 }
 
 static JSStaticValue StaticValueArrayForJS [] = {
@@ -366,6 +380,16 @@ HyperloopJS* HyperloopLoadJS (JSContextRef ctx, HyperloopJS *parent, NSString *p
         }
 
         module.loaded = YES;
+
+        // we need to pull the exports in case it got assigned (such as setting a Class to exports)
+        JSStringRef exportsProp = JSStringCreateWithUTF8CString("exports");
+        JSValueRef exportsValueRef = JSObjectGetProperty(ctx, moduleObjectRef, exportsProp, 0);
+        if (JSValueIsObject(ctx,exportsValueRef))
+        {
+            module.exports = JSValueToObject(ctx,exportsValueRef,0);
+        }
+        JSStringRelease(exportsProp);
+
         return [module autorelease];
     }
 
