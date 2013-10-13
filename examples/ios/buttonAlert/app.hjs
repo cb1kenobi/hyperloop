@@ -1,0 +1,65 @@
+@import('UIKit/UIApplication');
+@import('UIKit/UIAlertView');
+@import('UIKit/UIColor');
+@import('UIKit/UIButton');
+@import('UIKit/UIScreen');
+@import('UIKit/UIView');
+@import('CoreGraphics/CGRectMake');
+@import('Foundation/NSSelectorFromString');
+
+var keyWindow = UIApplication.sharedApplication().keyWindow;
+keyWindow.backgroundColor = UIColor.blueColor();
+
+var contentView = new UIView();
+contentView.frame = UIScreen.mainScreen().applicationFrame;
+contentView.backgroundColor = UIColor.whiteColor();
+keyWindow.addSubview(contentView);
+
+@class('AlertViewDelegate', NSObject, [UIAlertViewDelegate], [
+    {
+        name: 'alertView',
+        returnType: 'void',
+        arguments: [ { type: 'UIAlertView', name: 'alertView' }, { type: 'NSInteger', name: 'clickedButtonAtIndex'} ],
+        action: function(params) {
+            console.log('clicked alert button: ' + params.clickedButtonAtIndex);
+        }
+    }
+]);
+
+
+@class('ButtonHandler', NSObject, [], [
+    {
+        name: 'buttonClick',
+        returnType: 'void',
+        arguments: [],
+        action: function() {
+            console.log('clicked button');
+            showAlert();
+        }
+    }
+]);
+
+
+
+var showAlert = function() {
+    console.log('showAlert');
+    var alert = new UIAlertView();
+    alert.delegate = alertDelegate;
+    alert.title = 'The Title';
+    alert.message = 'The Message';
+    alert.addButtonWithTitle('OK');
+    alert.addButtonWithTitle('Cancel');
+    alert.show();
+};
+
+
+var buttonHandler = new ButtonHandler();
+var alertDelegate = new AlertViewDelegate();
+
+var button = new UIButton();
+button.frame = CGRectMake(110, 100, 100, 44);
+button.setTitle('click me', 0);
+button.setTitleColor(UIColor.blueColor(), 0); //UIControlStateHighlighted is not recognized, using its numeric value instead
+contentView.addSubview(button);
+
+button.addTarget(buttonHandler, NSSelectorFromString('buttonClick'), 1); //UIControlEventTouchDown symbol is not recognized, using its numeric value instead
