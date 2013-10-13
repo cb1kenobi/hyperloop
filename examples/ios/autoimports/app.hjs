@@ -1,0 +1,29 @@
+/**
+ * test for autoimports where you just need to import the package and not the class, symbol, etc.
+ */
+@import('UIKit');
+@import('CoreGraphics');
+@import('Foundation');
+
+
+var button = new UIButton();
+button.frame = CGRectMake(110, 100, 100, 44);
+button.setTitle('click me', 0);
+button.setTitleColor(UIColor.blueColor(), UIControlStateNormal);
+var keyWindow = UIApplication.sharedApplication().keyWindow;
+keyWindow.addSubview(button);
+
+@class('ButtonHandler', NSObject, [], [
+	{
+		name: 'buttonClick',
+		returnType: 'void',
+		arguments: [],
+		action: function() {
+			console.log('clicked button');
+		}
+	}
+]);
+
+var buttonHandler = new ButtonHandler();
+button.addTarget(buttonHandler, NSSelectorFromString('buttonClick'), UIControlEventTouchDown);
+
