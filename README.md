@@ -10,11 +10,52 @@ Hyperloop requires at least [Node.js](http://nodejs.org/) 0.10.5 and iOS SDK 7.0
 
 ## Install
 
-To install hyperloop, using node npm:
+Hyperloop will be published via the NPM registry, but until we do install it straight from GitHub:
 
 ```bash
-[sudo] npm install hyperloop -g
+sudo npm install -g git://github.com/appcelerator/hyperloop.git
 ```
+
+If you have chown-ed the NPM folder to your local user (`sudo chown -R $USER /usr/local`) you can leave out the `sudo` bit.
+
+### Install to contribute
+
+If you want to contribute then install like this:
+
+1. On GitHub, fork this original repo.
+2. On your computer, clone your fork:
+
+    ```bash
+    git clone https://github.com/[YOU]/hyperloop.git 
+    ```
+    
+    **Note:** The above will create a new `hyperloop` folder in your current directory.
+    
+3. Add this original repo as a remote to your clone:
+
+   ```bash
+   cd hyperloop
+   git remote add appcelerator https://github.com/appcelerator/hyperloop.git
+   ```
+   
+3. Install the Hyperloop NPM module from your clone:
+
+    ```bash
+    npm install
+    sudo npm link
+    ```
+    
+    **Note:** By using `npm link` you will not need to re-install the module after each change/update.
+    
+4. To keep your clone and fork up to date pull from the `appcelerator` remote and push both these and local changes to your fork:
+
+    ```bash
+    git pull appcelerator master
+    git commit -am "My changes"
+    git push
+    ```
+
+5. To contribute, first read [Contributing](#contributing) and then use GitHub to do a pull request from your fork to this original repo.
 
 ## Quick Start
 
@@ -23,7 +64,7 @@ You can see examples under the `examples` directory.
 To compile, package and launch for iOS, use an example of the following command-line:
 
 ```bash
-hyperloop package --platform=ios --src=examples/simple/ --dest=build --name=foo --appid=com.foo --launch
+hyperloop package --platform=ios --src=examples/ios/simple/ --dest=build --name=foo --appid=com.foo --launch
 ```
 
 The initial compile will take a minute or so to generate the AST for the system frameworks. However, subsequent compiles will be almost instantaneous as it will be cached.  In the future, we plan on speeding this up greatly.
