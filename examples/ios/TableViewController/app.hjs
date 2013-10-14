@@ -1,0 +1,61 @@
+@import('UIKit');
+@import('Foundation');
+@import('CoreGraphics');
+
+
+var data = ['hello', 'world', 'how', 'are', 'you', 'doing?'];
+
+@class('TableViewController', UITableViewController, [], [
+	{
+		name: 'viewDidLoad',
+		returnType: 'void',
+		arguments: [],
+		action: function() {
+			this.cellId = NSString.stringWithUTF8String("Cell"); //this must be an NSString
+			this.tableView.registerClass(UITableViewCell.class(), this.cellId);
+		}
+	},
+	{
+		name: 'numberOfSectionsInTableView',
+		returnType: 'NSInteger',
+		arguments: [{type: 'UITableView', name: 'tableView'}],
+		action: function(params) {
+			return 1;
+		}
+	},
+	{
+		name: 'tableView',
+		returnType: 'NSInteger',
+		arguments: [{type: 'UITableView', name: 'tableView'}, {type: 'NSInteger', name: 'numberOfRowsInSection'}],
+		action: function(params) {
+			return data.length;
+		}
+	},
+
+	{
+		name: 'tableView',
+		returnType: 'UITableViewCell',
+		arguments: [{type: 'UITableView', name: 'tableView'}, {type: 'NSIndexPath', name: 'cellForRowAtIndexPath'}],
+		action: function(params) {
+
+			var cell = params.tableView.dequeueReusableCellWithIdentifier(this.cellId, params.cellForRowAtIndexPath);
+
+			if (!cell) {
+				cell = new UITableViewCell();
+				cell.reuseIdentifier = this.cellId;
+			}
+
+			var text = data[params.cellForRowAtIndexPath.row];
+			cell.textLabel.text = NSString.stringWithUTF8String(text);
+			return cell;
+		}
+	}
+]);
+
+
+var keyWindow = UIApplication.sharedApplication().keyWindow;
+keyWindow.backgroundColor = UIColor.blueColor();
+
+var tableViewController = TableViewController.alloc().initWithStyle(UITableViewStylePlain);
+
+keyWindow.addSubview(tableViewController.tableView);
