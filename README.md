@@ -42,9 +42,18 @@ If you want to contribute then install like this:
 
     ```bash
     sudo npm install -g .
+    sudo npm link
     ```
     
-4. To keep your clone and fork up to date, pull the master from the `appcelerator` remote and push both these and local changes back to your fork. Run step 3 again to update the installed NPM module.
+    **Note:** By using `npm link` the Node `hyperloop` command will link directly to your clone.
+    
+4. To keep your clone and fork up to date pull from the `appcelerator` remote and push both these and local changes to your fork:
+
+    ```bash
+    git pull appcelerator master
+    git commit -am "My changes"
+    git push
+    ```
 
 5. To contribute, first read [Contributing](#contributing) and then use GitHub to do a pull request from your fork to this original repo.
 
