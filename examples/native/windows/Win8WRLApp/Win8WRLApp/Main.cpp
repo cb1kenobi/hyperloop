@@ -1,12 +1,11 @@
 /*
-* Simple Windows Store (Metro) C++/CX app that runs on ARM and x86 Windows. 
-* 
-* Will not run on Windows Phone.
-*
-* Russ + Dawsonish
-*
-*/
-
+ * Simple Windows Store (Metro) C++/CX app that runs on ARM and x86 Windows. 
+ * 
+ * (Note that this will not yet run on Windows Phone.)
+ *
+ * Russ + Dawsonish
+ *
+ */
 using namespace Windows::UI;
 using namespace Windows::UI::Core;
 using namespace Windows::UI::Input;
@@ -21,31 +20,60 @@ using namespace Windows::ApplicationModel::Activation;
 using namespace Windows::Globalization;
 using namespace Platform::Details;
 
-ref class App sealed : public ::Application
+/*
+ * When tapped, color the Grid, and update the TextBlock to show the current time.
+ */
+ref class TapHandler sealed
 {
 public:
-	App();
-	virtual void OnLaunched(LaunchActivatedEventArgs^ args) override;
-	virtual void App::PointerPressed(Object^ sender, TappedRoutedEventArgs^ e);
+	TapHandler(TextBlock^ text, Grid^ grid);
+	void TapHandler::PointerPressed(Object^ sender, TappedRoutedEventArgs^ e);
 private:
 	TextBlock^ text;
 	Grid^ grid;
 };
-
-App::App()
+TapHandler::TapHandler(TextBlock^ text, Grid^ grid)
 {
+	this->text = text;
+	this->grid = grid;
+}
+void TapHandler::PointerPressed(Object^ sender, TappedRoutedEventArgs^ e)
+{
+	SolidColorBrush^ green = ref new SolidColorBrush();
+	green->Color = Colors::DarkGreen;
+	grid->Background = green;
+
+	Calendar^ cal = ref new Calendar();
+	this->text->FontSize = 180;
+	this->text->Text = cal->HourAsPaddedString(2)
+		+ ":" + cal->MinuteAsPaddedString(2)
+		+ ":" + cal->SecondAsPaddedString(2);
 }
 
-void App::OnLaunched(LaunchActivatedEventArgs^ args)
+/*
+ * Our app shows a TextBlock to the user.
+ */
+ref class MyApp sealed : public ::Application
+{
+public:
+	MyApp();
+	virtual void OnLaunched(LaunchActivatedEventArgs^ args) override;
+private:
+	TapHandler^ tapHandler;
+};
+MyApp::MyApp()
+{
+}
+void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 {
 	auto window = Window::Current;
 
-	this->grid = ref new Grid();
-	auto red = ref new SolidColorBrush();
+	Grid^ grid = ref new Grid();
+	SolidColorBrush^ red = ref new SolidColorBrush();
 	red->Color = Colors::Red;
 	grid->Background = red;
 
-	this->text = ref new TextBlock();
+	TextBlock^ text = ref new TextBlock();
 	text->Text = "Tap me to find out\nwhat time it is!";
 	text->TextAlignment = TextAlignment::Center;
 	text->VerticalAlignment = VerticalAlignment::Center;
@@ -53,8 +81,11 @@ void App::OnLaunched(LaunchActivatedEventArgs^ args)
 	text->FontSize = 60;
 	grid->Children->Append(text);
 
-	auto tapped = ref new TappedEventHandler(this, &App::PointerPressed);
-	// grid->Tapped += tapped;
+	// Tap handler needs to be an instance variable, or it will go out of scope
+	// and be released (or collected? not sure what word to use here). This
+	// means that delegates are not strong references.
+	this->tapHandler = ref new TapHandler(text, grid);
+	TappedEventHandler^ tapped = ref new TappedEventHandler(tapHandler, &TapHandler::PointerPressed);
 	grid->Tapped::add(tapped);
 
 	window->Content = grid;
@@ -62,23 +93,13 @@ void App::OnLaunched(LaunchActivatedEventArgs^ args)
 	window->Activate();
 }
 
-void App::PointerPressed(Object^ sender, TappedRoutedEventArgs^ e)
-{
-	auto green = ref new SolidColorBrush();
-	green->Color = Colors::DarkGreen;
-	grid->Background = green;
-
-	auto cal = ref new Calendar();
-	this->text->FontSize = 180;
-	this->text->Text = cal->HourAsPaddedString(2)
-		+ ":" + cal->MinuteAsPaddedString(2)
-		+ ":" + cal->SecondAsPaddedString(2);
-}
-
+/*
+ * Our standard entry point.
+ */
 int main(Platform::Array<Platform::String^>^)
 {
 	Application::Start(ref new ApplicationInitializationCallback([](ApplicationInitializationCallbackParams^ params) {
-		auto app = ref new App();
+		MyApp^ app = ref new MyApp();
 	}));
 
 	return 0;
