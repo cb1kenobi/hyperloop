@@ -24,7 +24,7 @@ var grid,
 	{
 		name: 'OnLaunched',
 		returnType: 'void',
-		arguments: [ { name: 'args', type: 'LaunchActivatedEventArgs^'} ],
+		arguments: [ { name: 'args', type: 'LaunchActivatedEventArgs^' } ],
 		action: function(params) {
 			
 			window = Window.Current;
@@ -40,10 +40,14 @@ var grid,
 			text.VerticalAlignment = VerticalAlignment.Center;
 			text.HorizontalAlignment = HorizontalAlignment.Center;
 			text.FontSize = 60;
+			grid.Children.Append(text);
 
-			grid.children.Append(text);
+			// TODO: grid->Tapped += ref new TappedEventHandler(this, &MyApp::PointerPressed);
+			// Option 1: grid.Tapped.add(new TappedEventHandler(this, &MyApp::PointerPressed));
+			// Option 2: @delegateAdd(grid.Tapped, new TappedEventHandler(this, &MyApp::PointerPressed));
+			// Either would still need to turn in to grid->Tapped += etc.
 
-			window.Context = grid;
+			window.Content = grid;
 			window.Activate();
 		}
 	},
@@ -51,7 +55,7 @@ var grid,
 	{
 		name: 'PointerPressed',
 		returnType: 'void',
-		arguments: [ {name: 'sender', type: 'Object^'}, {name:'e', type: 'TappedRoutedEventArgs^'}],
+		arguments: [ { name: 'sender', type: 'Object^' }, { name:'e', type: 'TappedRoutedEventArgs^' } ],
 		action: function(params) {
 			var green = new SolidColorBrush();
 			green.Color = Colors.DarkGreen;
