@@ -53,7 +53,9 @@ void App::OnLaunched(LaunchActivatedEventArgs^ args)
 	text->FontSize = 60;
 	grid->Children->Append(text);
 
-	grid->Tapped += ref new TappedEventHandler(this, &App::PointerPressed);
+	auto tapped = ref new TappedEventHandler(this, &App::PointerPressed);
+	// grid->Tapped += tapped;
+	grid->Tapped::add(tapped);
 
 	window->Content = grid;
 
