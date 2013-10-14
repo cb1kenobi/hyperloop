@@ -35,11 +35,11 @@ if (buffer->length <= ( index * size ) || (index == 0 && buffer->length < size))
     }\
     else\
     {\
-        void *copy = malloc(buffer->length + size);\
+        void *copy = malloc(size * (index + 1));\
         memcpy(copy, buffer->buffer, buffer->length);\
         free(buffer->buffer);\
         buffer->buffer = copy;\
-        buffer->length += size;\
+        buffer->length = size * (index + 1);\
     }\
 }\
 
@@ -352,7 +352,6 @@ JSValueRef putLongLongForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObj
     return object;
 }
 
-
 /**
  * putBool
  */
@@ -397,6 +396,115 @@ JSValueRef putStringForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjec
         memcpy(buffer->buffer,copy,length);
     }
     return JSValueMakeUndefined(ctx);
+}
+
+/**
+ * grow
+ */
+JSValueRef growForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef object, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
+{
+    BUFFER(buffer);
+    ARGCOUNTMIN(1);
+    GET_NUMBER(0,length);
+    CHECK_SIZE_AND_GROW(length, 0);
+    return object;
+}
+
+
+/**
+ * growInt
+ */
+JSValueRef growIntForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef object, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
+{
+    BUFFER(buffer);
+    ARGCOUNTMIN(1);
+    GET_NUMBER(0,count);
+    CHECK_SIZE_AND_GROW(sizeof(int),(count-1));
+    return object;
+}
+
+/**
+ * growFloat
+ */
+JSValueRef growFloatForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef object, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
+{
+    BUFFER(buffer);
+    ARGCOUNTMIN(1);
+    GET_NUMBER(0,count);
+    CHECK_SIZE_AND_GROW(sizeof(float),(count-1));
+    return object;
+}
+
+/**
+ * growDouble
+ */
+JSValueRef growDoubleForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef object, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
+{
+    BUFFER(buffer);
+    ARGCOUNTMIN(1);
+    GET_NUMBER(0,count);
+    CHECK_SIZE_AND_GROW(sizeof(double),(count-1));
+    return object;
+}
+
+/**
+ * growShort
+ */
+JSValueRef growShortForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef object, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
+{
+    BUFFER(buffer);
+    ARGCOUNTMIN(1);
+    GET_NUMBER(0,count);
+    CHECK_SIZE_AND_GROW(sizeof(short),(count-1));
+    return object;
+}
+
+/**
+ * growLong
+ */
+JSValueRef growLongForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef object, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
+{
+    BUFFER(buffer);
+    ARGCOUNTMIN(1);
+    GET_NUMBER(0,count);
+    CHECK_SIZE_AND_GROW(sizeof(long),(count-1));
+    return object;
+}
+
+/**
+ * growLongLong
+ */
+JSValueRef growLongLongForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef object, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
+{
+    BUFFER(buffer);
+    ARGCOUNTMIN(1);
+    GET_NUMBER(0,count);
+    CHECK_SIZE_AND_GROW(sizeof(long long),(count-1));
+    return object;
+}
+
+/**
+ * growBool
+ */
+JSValueRef growBoolForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef object, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
+{
+    BUFFER(buffer);
+    ARGCOUNTMIN(1);
+    GET_NUMBER(0,count);
+    CHECK_SIZE_AND_GROW(sizeof(bool),(count-1));
+    return object;
+}
+
+/**
+ * growChar
+ */
+JSValueRef growCharForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRef object, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
+{
+    BUFFER(buffer);
+    ARGCOUNTMIN(1);
+    GET_NUMBER(0,count);
+    CHECK_SIZE_AND_GROW(sizeof(char),(count-1));
+    return object;
 }
 
 /**
@@ -759,6 +867,16 @@ static JSStaticFunction StaticFunctionArrayForJSBuffer [] = {
     { "toShortArray", toShortArrayForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
     { "toBoolArray", toBoolArrayForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
     { "toCharArray", toCharArrayForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
+
+    { "grow", growForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
+    { "growInt", growIntForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
+    { "growFloat", growFloatForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
+    { "growDouble", growDoubleForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
+    { "growShort", growShortForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
+    { "growLong", growLongForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
+    { "growLongLong", growLongLongForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
+    { "growBool", growBoolForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
+    { "growChar", growCharForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
 
     { "put", putForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
     { "putInt", putIntForJSBuffer, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete },
