@@ -10,7 +10,7 @@ Hyperloop requires at least [Node.js](http://nodejs.org/) 0.10.5 and iOS SDK 7.0
 
 ## Install
 
-Hyperloop will be published via the NPM registry, but until we do install it straight from GitHub:
+#### straight from npm
 
 ```bash
 sudo npm install -g git://github.com/appcelerator/hyperloop.git
@@ -18,44 +18,28 @@ sudo npm install -g git://github.com/appcelerator/hyperloop.git
 
 If you have chown-ed the NPM folder to your local user (`sudo chown -R $USER /usr/local`) you can leave out the `sudo` bit.
 
-### Install to contribute
+#### fork, clone, and install locally
 
-If you want to contribute then install like this:
+Assuming your Github username is `hyperloopdev`, fork this repo and execute the following:
 
-1. On GitHub, fork this original repo.
-2. On your computer, clone your fork:
+```bash
+# create a local cloned repo
+git clone https://github.com/hyperloopdev/hyperloop.git
 
-    ```bash
-    git clone https://github.com/[YOU]/hyperloop.git 
-    ```
-    
-    **Note:** The above will create a new `hyperloop` folder in your current directory.
-    
-3. Add this original repo as a remote to your clone:
+# change to the new directory
+cd hyperloop
 
-   ```bash
-   cd hyperloop
-   git remote add appcelerator https://github.com/appcelerator/hyperloop.git
-   ```
-   
-3. Install the Hyperloop NPM module from your clone:
+# add the appcelerator repo as a remote
+git remote add appcelerator https://github.com/appcelerator/hyperloop.git
 
-    ```bash
-    npm install
-    sudo npm link
-    ```
-    
-    **Note:** By using `npm link` you will not need to re-install the module after each change/update.
-    
-4. To keep your clone and fork up to date pull from the `appcelerator` remote and push both these and local changes to your fork:
+# install dependencies locally
+npm install
 
-    ```bash
-    git pull appcelerator master
-    git commit -am "My changes"
-    git push
-    ```
+# link your PATH to the locally installed hyperloop. This removes the need to `npm install` after changes
+sudo npm link
+```
 
-5. To contribute, first read [Contributing](#contributing) and then use GitHub to do a pull request from your fork to this original repo.
+This will be the same installation you use for contributing as well.
 
 ## Quick Start
 
@@ -193,21 +177,23 @@ The original source and design for this project was developed by [Jeff Haynie](h
 
 ```
 project  : hyperloop
- repo age : 7 weeks ago
- commits  : 256
- active   : 39 days
- files    : 220
- authors  :
-   157	Jeff Haynie             61.3%
-    52	Tony Lukasavage         20.3%
-    22	matt-langston           8.6%
-    11	Dawson Toth             4.3%
-     5	Allen Yeung             2.0%
-     4	Matt Langston           1.6%
-     2	Chris Barber            0.8%
-     1	Olivier Morandi         0.4%
-     1	Eric Wing               0.4%
-     1	ewmailing               0.4%
+ repo age : 8 weeks ago
+ commits  : 325
+ active   : 46 days
+ files    : 259
+ authors  : 
+   198	Jeff Haynie             60.9%
+    68	Tony Lukasavage         20.9%
+    22	matt-langston           6.8%
+    15	Dawson Toth             4.6%
+     5	Allen Yeung             1.5%
+     4	Fokke Zandbergen        1.2%
+     4	Matt Langston           1.2%
+     3	Kota Iguchi             0.9%
+     2	Olivier Morandi         0.6%
+     2	Chris Barber            0.6%
+     1	ewmailing               0.3%
+     1	Eric Wing               0.3%
 ```
 
 ## Legal
