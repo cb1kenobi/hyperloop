@@ -59,3 +59,13 @@ m = @memory(10);
 assert(m.length===(10), "@memory(10) length", m.length);
 assert(m.isNaN()===true, "@memory(10) NaN", m.isNaN());
 
+// ASCII character
+m = @memory();
+m.putString("abcdefg");
+assert(m.length===(7), "ASCII character length", m.length);
+
+// Unicode character
+m = @memory();
+m.putString("こんにちは世界");
+assert(m.length===(21), "Unicode character length", m.length);
+
