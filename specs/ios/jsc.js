@@ -155,6 +155,10 @@ describe("jsc", function(){
 				assert(sliceBuf.SIZE_OF_LONG===4,"SIZE_OF_LONG should be 4, was: "+sliceBuf.SIZE_OF_LONG);
 				assert(sliceBuf.SIZE_OF_DOUBLE===8,"SIZE_OF_DOUBLE should be 8, was: "+sliceBuf.SIZE_OF_DOUBLE);
 
+				var unicode = new JSBuffer();
+				unicode.putString("こんにちは世界");
+				assert(unicode.length===21,"こんにちは世界 length should be 21, was: "+unicode.length);
+
 
 			}).toString().trim().replace(/^function \(\){/,'').replace(/}$/,'').replace(/[\n]/g,'\\n').replace(/"/g,'\\"').trim();
 
