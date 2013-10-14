@@ -13,6 +13,16 @@
 // FIXME: this isn't autoimported just yet since it's a base class of an autoimported class.
 @import("CoreLocation/CLBeacon");
 
+@compiler({
+	infoplist: {
+		// NOTE: the colons on both sides indicates it's an array and we want to append to it
+     	':UIRequiredDeviceCapabilities:': {
+     		type: 'string',
+     		value: 'bluetooth-le'
+     	}
+     }
+})
+
 var kUUID = "00000000-0000-0000-0000-000000000000",
 	kIdentifier = "SomeIdentifier";
 
