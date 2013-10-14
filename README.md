@@ -41,11 +41,11 @@ If you want to contribute then install like this:
 3. Install the Hyperloop NPM module from your clone:
 
     ```bash
-    sudo npm install -g .
+    npm install
     sudo npm link
     ```
     
-    **Note:** By using `npm link` the Node `hyperloop` command will link directly to your clone.
+    **Note:** By using `npm link` you will not need to re-install the module after each change/update.
     
 4. To keep your clone and fork up to date pull from the `appcelerator` remote and push both these and local changes to your fork:
 
