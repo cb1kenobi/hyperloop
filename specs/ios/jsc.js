@@ -38,7 +38,68 @@ describe("jsc", function(){
 			//
 			var js_test_src = (function(){
 
+				// platform dependent, but these work for simulator
+				var size_of_char     = 1;
+				var size_of_bool     = 1;
+				var size_of_short    = 2;
+				var size_of_int      = 4;
+				var size_of_float    = 4;
+				var size_of_long     = 4;
+				var size_of_double   = 8;
+				var size_of_longlong = 8;
 
+				// Grow to specific size
+				var m = new JSBuffer();
+				m.grow(10 * size_of_float);
+				assert(m.length===(10 * size_of_float), "@memory.grow(10)", m.length);
+
+				// Grow float test
+				m.putFloat(1.0, 10);
+				assert(m.length===(11 * size_of_float), "@memory.putFloat(1.0, 11)", m.length);
+
+				// Grow float test
+				m.putFloat(1.0, 15);
+				assert(m.length===(16 * size_of_float), "@memory.putFloat(1.0, 15)", m.length);
+
+				// Grow int buffer
+				m = new JSBuffer();
+				m.growInt(10);
+				assert(m.length===(10 * size_of_int), "@memory.growInt(10)", m.length);
+
+				// Grow float buffer
+				m = new JSBuffer();
+				m.growFloat(10);
+				assert(m.length===(10 * size_of_float), "@memory.growFloat(10)", m.length);
+
+				// Grow double buffer
+				m = new JSBuffer();
+				m.growDouble(10);
+				assert(m.length===(10 * size_of_double), "@memory.growDouble(10)", m.length);
+
+				// Grow short buffer
+				m = new JSBuffer();
+				m.growShort(10);
+				assert(m.length===(10 * size_of_short), "@memory.growShort(10)", m.length);
+
+				// Grow long buffer
+				m = new JSBuffer();
+				m.growLong(10);
+				assert(m.length===(10 * size_of_long), "@memory.growLong(10)", m.length);
+
+				// Grow long long buffer
+				m = new JSBuffer();
+				m.growLongLong(10);
+				assert(m.length===(10 * size_of_longlong), "@memory.growLongLong(10)", m.length);
+
+				// Grow bool buffer
+				m = new JSBuffer();
+				m.growBool(10);
+				assert(m.length===(10 * size_of_bool), "@memory.growBool(10)", m.length);
+
+				// Grow char buffer
+				m = new JSBuffer();
+				m.growChar(10);
+				assert(m.length===(10 * size_of_char), "@memory.growChar(10)", m.length);
 				assert('function'===typeof(JSBuffer),"JSBuffer should have been an function, was: "+typeof(JSBuffer));
 
 				var emptyBuffer = new JSBuffer();
