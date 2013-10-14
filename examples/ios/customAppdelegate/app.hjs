@@ -1,0 +1,46 @@
+/**
+ * in this example, we're going to create a new AppDelegate class and install
+ * it using the @compiler setting
+ */
+@import('Foundation');
+@import('UIKit');
+
+@compiler({
+	AppDelegate: 'CustomAppDelegate'
+});
+
+
+/*
+ Utility.
+ */
+String.prototype.toUTF8 = function() {
+	return NSString.stringWithUTF8String('' + this);
+};
+
+/*
+ Create our simple UI.
+ */
+var win = UIApplication.sharedApplication().keyWindow,
+	label = new UILabel();
+label.frame = CGRectMake(20, 20, 280, 280);
+label.font = UIFont.systemFontOfSize(36);
+label.textAlignment = NSTextAlignmentCenter;
+label.text = 'Loading...'.toUTF8();
+label.textColor = UIColor.redColor();
+label.lineBreakMode = NSLineBreakByTruncatingTail;
+label.numberOfLinesMode = 2;
+win.addSubview(label);
+
+
+@class('CustomAppDelegate', NSObject, [UIApplicationDelegate], [
+	{
+		name: 'application',
+		returnType: 'BOOL',
+		arguments: [{name:'application', type: 'UIApplication *'}, {name:'didFinishLaunchingWithOptions',type:'NSDictionary *', property:'launchOptions'}],
+		action: function () {
+			label.text = "こんにちは世界!".toUTF8();
+			return true;
+		}
+	}
+]);
+

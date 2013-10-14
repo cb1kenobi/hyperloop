@@ -6,9 +6,19 @@
  * This generated code and related technologies are covered by patents
  * or patents pending by Appcelerator, Inc.
  */
-int main(int argc, char * argv[])
+
+attribute vec4 position;
+
+uniform mat4 modelViewProjectionMatrix;
+uniform float pointSize;
+
+attribute vec4 color;
+varying vec4 vcolor;
+
+void main()
 {
-    @autoreleasepool {
-        return UIApplicationMain(argc, argv, @"HyperloopApp", @"AppDelegate");
-    }
+    gl_Position = modelViewProjectionMatrix * position;
+    gl_PointSize = pointSize;
+
+    vcolor = color;
 }

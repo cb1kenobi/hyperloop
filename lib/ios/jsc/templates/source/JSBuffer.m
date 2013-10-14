@@ -391,9 +391,9 @@ JSValueRef putStringForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjec
     NSString *string = HyperloopToNSString(ctx,arguments[0]);
     if (string!=nil)
     {
-        size_t length = [string length];
-        CHECK_SIZE_AND_GROW(length,0);
         const char *copy = [string UTF8String];
+        size_t length = strlen(copy);
+        CHECK_SIZE_AND_GROW(length,0);
         memcpy(buffer->buffer,copy,length);
     }
     return JSValueMakeUndefined(ctx);

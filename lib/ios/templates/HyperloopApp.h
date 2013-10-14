@@ -6,9 +6,11 @@
  * This generated code and related technologies are covered by patents
  * or patents pending by Appcelerator, Inc.
  */
-int main(int argc, char * argv[])
-{
-    @autoreleasepool {
-        return UIApplicationMain(argc, argv, @"HyperloopApp", @"AppDelegate");
-    }
-}
+@import UIKit;
+
+@interface HyperloopApp : UIApplication
+
+@property(nonatomic, readwrite, strong) UIWindow *window;
+@property(nonatomic, readwrite, strong) id<UIApplicationDelegate> mydelegate;
+
+@end

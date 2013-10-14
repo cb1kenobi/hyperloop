@@ -6,9 +6,14 @@
  * This generated code and related technologies are covered by patents
  * or patents pending by Appcelerator, Inc.
  */
-int main(int argc, char * argv[])
+
+precision mediump float;
+varying vec4 vcolor;
+
+void main()
 {
-    @autoreleasepool {
-        return UIApplicationMain(argc, argv, @"HyperloopApp", @"AppDelegate");
+    if (vcolor.a <= 0.0) {
+        discard;
     }
+    gl_FragColor = vcolor;
 }

@@ -1,0 +1,295 @@
+/**
+ * iBeacon demo
+ *
+ * To run, install on 2 different iOS7 devices and turn on advertising on one of them and 
+ * then turn on ranging on the other. On the one that has ranging turned on, you should see
+ * information about the device promixity, etc.
+ *
+ */
+@import("UIKit");
+@import("Foundation");
+@import("CoreLocation");
+
+// FIXME: this isn't autoimported just yet since it's a base class of an autoimported class.
+@import("CoreLocation/CLBeacon");
+
+@compiler({
+	infoplist: {
+		// NOTE: the colons on both sides indicates it's an array and we want to append to it
+     	':UIRequiredDeviceCapabilities:': {
+     		type: 'string',
+     		value: 'bluetooth-le'
+     	}
+     }
+});
+
+var kUUID = "00000000-0000-0000-0000-000000000000",
+	kIdentifier = "SomeIdentifier";
+
+var proximityUUID = NSUUID.alloc().initWithUUIDString(kUUID);
+
+/*
+ Utility.
+ */
+String.prototype.toUTF8 = function() {
+	return NSString.stringWithUTF8String('' + this);
+};
+
+console.log('UUID set to',proximityUUID.UUIDString());
+
+@class('LocationDelegate', NSObject, [CLLocationManagerDelegate,CBPeripheralManagerDelegate], [
+	{
+		name: 'changeAdvertisingState',
+		returnType: 'void',
+		arguments: [{name:'sender',type:'id'}],
+		action: function() {
+			if (advertisingSwitch.on) {
+				startAdvertisingBeacon();
+			}
+			else {
+				stopAdvertisingBeacon();
+			}
+		}
+	},
+	{
+		name: 'changeRangingState',
+		returnType: 'void',
+		arguments: [{name:'sender',type:'id'}],
+		action: function() {
+			if (rangingSwitch.on) {
+				startRangingForBeacons();
+			}
+			else {
+				stopRangingForBeacons();
+			}
+		}
+	},
+	{
+		name: 'locationManager',
+		returnType: 'void',
+		arguments: [ {name:'manager', type: 'CLLocationManager *'}, {name:'didChangeAuthorizationStatus',property:'status',type:'CLAuthorizationStatus'}],
+		action: function (params) {
+			console.log('locationManager',params.status);
+
+		    if (!CLLocationManager.locationServicesEnabled()) {
+		    	return updateStatus("Couldn't turn on ranging: Location services are not enabled.");
+		    }
+
+		    if (CLLocationManager.authorizationStatus() != kCLAuthorizationStatusAuthorized) {
+		        updateStatus("Couldn't turn on ranging: Location services not authorised.");
+		        rangingSwitch.on = false;
+		        return;
+		    }
+			rangingSwitch.on = true;
+		}
+	},
+	{
+		name: 'locationManager',
+		returnType: 'void',
+		arguments: [ {name: 'manager', type: 'CLLocationManager *'}, {name:'didRangeBeacons',property:'beacons',type:'NSArray*'}, {name:'inRegion',property:'region', type:'CLBeaconRegion'}],
+		action: function (params)  {
+			var count = params.beacons.count();
+
+		    if (count == 0) {
+		        updateStatus("No beacons found nearby.");
+		        return;
+		    } 
+
+		 	var msg = "Found "+count+" beacon" + (count>1 ? "s" : "") + "!\n\n";
+
+		    detectedBeacons = params.beacons;
+		    var beacon = detectedBeacons.objectAtIndex(0),
+		    	proximity = beacon.proximity;
+
+		    var proximityString = '';
+
+		    switch (proximity) {
+		        case CLProximityNear:
+		            proximityString = "Near";
+		            break;
+		        case CLProximityImmediate:
+		            proximityString = "Immediate";
+		            break;
+		        case CLProximityFar:
+		            proximityString = "Far";
+		            break;
+		        case CLProximityUnknown:
+		        default:
+		            proximityString = "Unknown";
+		            break;
+		    }
+
+		    msg += "Proximity: "+proximityString + '\n\nAccuracy: '+Number(beacon.accuracy).toFixed(2)+'\n\nSignal: '+beacon.rssi+'';
+		    updateStatus(msg);
+		}
+	},
+	{
+		name: 'peripheralManagerDidStartAdvertising',
+		returnType: 'void',
+		arguments: [ {name: 'peripheralManager', type: 'CBPeripheralManager *'}, {name:'error', type:'NSError *'}],
+		action: function (params) {
+
+			console.log('peripheralManagerDidStartAdvertising');
+
+		    if (params.error) {
+		        updateStatus("Couldn't turn on advertising:"+params.error);
+		        advertisingSwitch.on = false;
+		        return;
+		    }
+		    
+		    if (peripheralManager.isAdvertising) {
+		        updateStatus("Turned on advertising.");
+		        advertisingSwitch.on = true;
+		    }
+		}
+	},
+	{
+		name: 'peripheralManagerDidUpdateState',
+		returnType: 'void',
+		arguments: [ {name: 'peripheralManager', type: 'CBPeripheralManager *'}],
+		action: function (params) {
+			console.log('peripheralManagerDidUpdateState');
+			if (peripheralManager.state != CBPeripheralManagerStatePoweredOn) {
+				updateStatus("Peripheral manager is off.");
+        		advertisingSwitch.on = false;
+		        return;
+			}
+			updateStatus("Peripheral manager is on.");
+			turnOnAdvertising();
+		}
+	}
+]);
+
+var locationDelegate = new LocationDelegate(),
+	locationManager,
+	peripheralManager,
+	beaconRegion,
+	detectedBeacons;
+
+var win = UIApplication.sharedApplication().keyWindow;
+var advertisingSwitch = new UISwitch();
+var rangingSwitch = new UISwitch();
+
+var frame = win.frame;
+advertisingSwitch.frame = CGRectMake(frame.size.width-80,frame.size.height-100,50,50);
+rangingSwitch.frame = CGRectMake(frame.size.width-80,frame.size.height-50,50,50);
+
+var advertisingLabel = new UILabel();
+var rangingLabel = new UILabel();
+
+advertisingLabel.frame = CGRectMake(20,frame.size.height-110,250,50);
+rangingLabel.frame = CGRectMake(20,frame.size.height-60,250,50);
+
+advertisingLabel.textColor = UIColor.darkTextColor();
+advertisingLabel.font = UIFont.systemFontOfSize(18);
+advertisingLabel.textAlignment = NSTextAlignmentLeft;
+advertisingLabel.text = 'Turn on Advertising'.toUTF8();
+
+rangingLabel.textColor = UIColor.darkTextColor();
+rangingLabel.font = UIFont.systemFontOfSize(18);
+rangingLabel.textAlignment = NSTextAlignmentLeft;
+rangingLabel.text = 'Turn on Ranging'.toUTF8();
+
+var label = new UILabel();
+label.textColor = UIColor.darkTextColor();
+label.frame = CGRectMake(20, 20, 280, 280);
+label.font = UIFont.systemFontOfSize(24);
+label.textAlignment = NSTextAlignmentCenter;
+label.lineBreakMode = NSLineBreakByWordWrapping;
+label.numberOfLines = 0;
+label.text = proximityUUID.UUIDString();
+
+win.addSubview(advertisingSwitch);
+win.addSubview(rangingSwitch);
+win.addSubview(advertisingLabel);
+win.addSubview(rangingLabel);
+win.addSubview(label);
+
+advertisingSwitch.addTarget(locationDelegate,NSSelectorFromString('changeAdvertisingState:'),UIControlEventValueChanged);
+rangingSwitch.addTarget(locationDelegate,NSSelectorFromString('changeRangingState:'),UIControlEventValueChanged);
+
+function startAdvertisingBeacon() {
+	updateStatus("Turning on advertising...");
+	createBeaconRegion();
+	if (!peripheralManager) {
+		peripheralManager = CBPeripheralManager.alloc().initWithDelegate(locationDelegate,null,null);
+	}
+	turnOnAdvertising();
+}
+
+function stopAdvertisingBeacon() {
+	peripheralManager.stopAdvertising();
+    updateStatus("Turned off advertising.");
+}
+
+function stopAdvertising () {
+	peripheralManager.stopAdvertising();
+	updateStatus("Turned off advertising.");
+}
+
+function startRangingForBeacons() {
+	locationManager = new CLLocationManager();
+	locationManager.delegate = locationDelegate;
+	locationManager.activityType = CLActivityTypeFitness;
+	locationManager.distanceFilter = kCLDistanceFilterNone;
+	locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+	turnOnRanging();
+}
+
+function stopRangingForBeacons() {
+	if (locationManager.rangedRegions.count() == 0) {
+		updateStatus("Didn't turn off ranging: Ranging already off.");
+		return;
+	}
+
+	locationManager.stopRangingBeaconsInRegion(beaconRegion);
+	detectedBeacons = null;
+	updateStatus("Turned off ranging.");
+}
+
+function turnOnRanging() {
+	console.log('turning on ranging...');
+
+	// start ranging
+	if (!CLLocationManager.isRangingAvailable()) {
+        updateStatus("Couldn't turn on ranging: Ranging is not available.");
+        rangingSwitch.on = false;
+        return;
+	}
+
+    if (locationManager.rangedRegions.count() > 0) {
+    	// ranging already on
+    	updateStatus("Didn't turn on ranging: Ranging already on.");
+        return;
+    }
+    createBeaconRegion();
+    locationManager.startRangingBeaconsInRegion(beaconRegion);
+    updateStatus("Ranging turned on for region:"+beaconRegion);
+}
+
+function turnOnAdvertising() {
+	if (peripheralManager.state != CBPeripheralManagerStatePoweredOn) {
+		updateStatus("Peripheral manager is off.");
+		advertisingSwitch.on = false;
+		return;
+	}
+	var major = Math.floor(Math.round(10*Math.random())),
+		minor = Math.floor(Math.round(20*Math.random()));
+	var region = CLBeaconRegion.alloc().initWithProximityUUID(beaconRegion.proximityUUID,major,minor,beaconRegion.identifier);
+	var beaconPeripheralData = region.peripheralDataWithMeasuredPower(null);
+	peripheralManager.startAdvertising(beaconPeripheralData);
+}
+
+function createBeaconRegion() {
+	if (beaconRegion) {
+		return;
+	}
+	beaconRegion = CLBeaconRegion.alloc().initWithProximityUUID(proximityUUID,kIdentifier);
+	console.log('created beacon region',beaconRegion);
+}
+
+function updateStatus (text) {
+	console.log(text);
+	label.text = text.toUTF8();
+}
+
