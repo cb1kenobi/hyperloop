@@ -43,11 +43,9 @@ npm install
 sudo npm link
 ```
 
-This will be the same installation you use for contributing as well.
-
 ## Quick Start
 
-You can see examples under the `examples` directory.
+You can see examples under the [examples directory](https://github.com/appcelerator/hyperloop/tree/master/examples).
 
 To compile, package and launch for iOS, use an example of the following command-line:
 
@@ -59,16 +57,12 @@ The initial compile will take a minute or so to generate the AST for the system 
 
 If all goes well, this should compile the application source code and the native application and launch it in the iOS Simulator.
 
-*Note:* Add the `--clean` command to clean the `build` dir before building a different example.
+*Note:* Add the `--clean` command to clean the `build` dir before building a different example. You can also specify a different `--dest` folder to build multiple different examples.
 
 ## Documentation & Community
 
 - [Wiki](https://github.com/appcelerator/hyperloop/wiki)
 - [Mailing List](https://groups.google.com/forum/#!forum/tinext)
-
-## Examples
-
-We have built a few examples to show off our work.  Please look in the [Examples](https://github.com/appcelerator/hyperloop/tree/master/examples) folder for them.  Please help by contribributing new examples that show off the power of Hyperloop.
 
 ## Design
 
