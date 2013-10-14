@@ -66,7 +66,7 @@ MyApp::MyApp()
 }
 void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 {
-	auto window = Window::Current;
+	Window^ window = Window::Current;
 
 	Grid^ grid = ref new Grid();
 	SolidColorBrush^ red = ref new SolidColorBrush();
