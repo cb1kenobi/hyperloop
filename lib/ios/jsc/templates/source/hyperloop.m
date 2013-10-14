@@ -478,7 +478,7 @@ JSValueRef HyperloopLogger (JSContextRef ctx, JSObjectRef function, JSObjectRef 
 /**
  * create a hyperloop VM
  */
-JSContextRef HyperloopCreateVM (NSString *name, NSString *prefix)
+JSGlobalContextRef HyperloopCreateVM (NSString *name, NSString *prefix)
 {
     JSGlobalContextRef globalContextRef = JSGlobalContextCreate(NULL);
     JSObjectRef globalObjectref = JSContextGetGlobalObject(globalContextRef);
@@ -539,7 +539,7 @@ JSGlobalContextRef HyperloopGetGlobalContext (JSContextRef ctx)
 /**
  * destroy a hyperloop VM
  */
-void HyperloopDestroyVM (JSContextRef ctx)
+void HyperloopDestroyVM (JSGlobalContextRef ctx)
 {
     JSGlobalContextRef globalCtx = HyperloopGetGlobalContext(ctx);
     if (globalCtx!=NULL)
