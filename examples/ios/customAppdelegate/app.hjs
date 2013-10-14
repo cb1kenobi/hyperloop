@@ -22,7 +22,6 @@ String.prototype.toUTF8 = function() {
  */
 var win = UIApplication.sharedApplication().keyWindow,
 	label = new UILabel();
-label.textColor = UIColor.darkTextColor();
 label.frame = CGRectMake(20, 20, 280, 280);
 label.font = UIFont.systemFontOfSize(36);
 label.textAlignment = NSTextAlignmentCenter;
