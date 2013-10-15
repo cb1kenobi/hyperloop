@@ -14,5 +14,5 @@ hyperloop package --platform=ios --src=examples/lifegl --dest=build/lifegl --nam
 
 * `--hl-small` - Use 4x4 cells. 10x10 is the default.
 * `--hl-xsmall` - Use 2x2 cells. 10x10 is the default.
-* `--hl-xxsmall` - Use 1x1 cells. 10x10 is the default. It may take really long time to initialize.
+* `--hl-xxsmall` - Use 1x1 cells. 10x10 is the default.
 
