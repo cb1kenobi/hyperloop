@@ -50,7 +50,7 @@ sudo npm link
 
 ## Quick Start
 
-You can see examples under the [examples directory](https://github.com/appcelerator/hyperloop/tree/master/examples).
+To get started with iOS, check out the [Quick Start Guide](https://github.com/appcelerator/hyperloop/wiki/Getting-started-with-iOS-and-Hyperloop).  You can see a number of examples under the [examples directory](https://github.com/appcelerator/hyperloop/tree/master/examples).
 
 To compile, package and launch for iOS, use an example of the following command-line:
 
