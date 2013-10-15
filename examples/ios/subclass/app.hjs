@@ -47,6 +47,13 @@ log(new MyScene());
         }
     }
 ]);
+MyScene2.prototype.someFunc = function(){ console.log('hi there'); }
 var scene = new MyScene2();
 var scene2 = MyScene2.alloc().initWithSize(CGSizeMake(10,10));
+
+scene.foobar = function() { console.log ('hi again!'); }
+
 console.log(scene2);
+scene.someFunc(); 	// attach to the class prototype
+scene.foobar();		// attach to the instance prototype
+
