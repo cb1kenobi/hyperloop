@@ -43,7 +43,9 @@ log(new MyScene());
         action: function(params) {
         	console.log('initWithSize called with size=',params.size.width+'x'+params.size.height);
         	console.log('super is',this.super.initWithSize);
-        	return this.super.initWithSize(params.size);
+        	var self = this.super.initWithSize(params.size); // attach a property to self, should be on this
+        	self.customSelfProperty = true;
+        	return self;
         }
     }
 ]);
@@ -56,4 +58,6 @@ scene.foobar = function() { console.log ('hi again!'); }
 console.log(scene2);
 scene.someFunc(); 	// attach to the class prototype
 scene.foobar();		// attach to the instance prototype
+
+console.log('should be true=>',true===scene2.customSelfProperty);	// test property on self in init
 
