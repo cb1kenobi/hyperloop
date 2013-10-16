@@ -125,6 +125,57 @@ for (size_t c=0;c<len;c++)\
 }\
 return JSObjectMakeArray(ctx,len,array,exception);\
 
+#define GET_JSARRAY(index,varname,sizevarname) \
+JSValueRef varname = NULL;\
+size_t sizevarname = 0;\
+if (argumentCount >= index + 1) \
+{ \
+    JSValueRef arg = arguments[index];\
+    if (JSValueIsObject(ctx, arg)) {\
+        JSObjectRef jsobject = JSValueToObject(ctx, arg, exception);\
+        CHECK_EXCEPTION_UNDEFINED \
+        JSStringRef string = JSStringCreateWithUTF8CString("length");\
+        JSValueRef jslength = JSObjectGetProperty(ctx, jsobject, string, exception);\
+        JSStringRelease(string);\
+        CHECK_EXCEPTION_UNDEFINED \
+        if (JSValueIsNumber(ctx, jslength) && JSValueIsObject(ctx, arguments[index])) {\
+            sizevarname = JSValueToNumber(ctx, jslength, exception);\
+            CHECK_EXCEPTION_UNDEFINED \
+            if (sizevarname >= 0) {\
+                varname = arguments[index];\
+            }\
+        }\
+    }\
+}\
+
+#define SET_JSVALUES_AS_PRIMITIVE(type, index, jsvalues, array_size)\
+JSObjectRef array = JSValueToObject(ctx, jsvalues, exception);\
+CHECK_EXCEPTION_UNDEFINED \
+for (int jsi = 0; jsi < array_size; jsi++) {\
+    JSValueRef jsvalue = JSObjectGetPropertyAtIndex(ctx, array, jsi, exception);\
+    CHECK_EXCEPTION_UNDEFINED \
+    if (JSValueIsNumber(ctx,jsvalue)) { \
+        double value = JSValueToNumber(ctx, jsvalue, exception);\
+        CHECK_EXCEPTION_UNDEFINED \
+        type *p = (type*)buffer->buffer;\
+        p[((int)index)+jsi] = (type)value;\
+    }\
+    else if (JSValueIsBoolean(ctx,jsvalue)) { \
+        type value = (type)JSValueToBoolean(ctx, jsvalue);\
+        CHECK_EXCEPTION_UNDEFINED \
+        type *p = (type*)buffer->buffer;\
+        p[((int)index)+jsi] = (type)value;\
+    }\
+    else if (JSValueIsString(ctx,jsvalue)) { \
+        JSStringRef string = JSValueToStringCopy(ctx, jsvalue, exception);\
+        CHECK_EXCEPTION_UNDEFINED\
+        const JSChar* charBuf = JSStringGetCharactersPtr(string);\
+        type value = (type)charBuf[0];\
+        JSStringRelease(string);\
+        type *p = (type*)buffer->buffer;\
+        p[((int)index)+jsi] = (type)value;\
+    } \
+}\
 
 /**
  * private release that can be shared
@@ -275,10 +326,17 @@ JSValueRef putIntForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectRe
 {
     BUFFER(buffer);
     ARGCOUNTMIN(1);
-    GET_NUMBER(0,value);
-    GET_NUMBER(1,index);
-    CHECK_SIZE_AND_GROW(sizeof(int),index);
-    PRIMITIVE_SET(int,index);
+    GET_JSARRAY(0, values, values_size);
+    if (values != NULL) {
+        GET_NUMBER(1,index);
+        CHECK_SIZE_AND_GROW(sizeof(int),(index + values_size - 1));
+        SET_JSVALUES_AS_PRIMITIVE(int, index, values, values_size);
+    } else {
+        GET_NUMBER(0,value);
+        GET_NUMBER(1,index);
+        CHECK_SIZE_AND_GROW(sizeof(int),index);
+        PRIMITIVE_SET(int,index);
+    }
     return object;
 }
 
@@ -289,10 +347,17 @@ JSValueRef putFloatForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObject
 {
     BUFFER(buffer);
     ARGCOUNTMIN(1);
-    GET_NUMBER(0,value);
-    GET_NUMBER(1,index);
-    CHECK_SIZE_AND_GROW(sizeof(float),index);
-    PRIMITIVE_SET(float,index);
+    GET_JSARRAY(0, values, values_size);
+    if (values != NULL) {
+        GET_NUMBER(1,index);
+        CHECK_SIZE_AND_GROW(sizeof(float),(index + values_size - 1));
+        SET_JSVALUES_AS_PRIMITIVE(float, index, values, values_size);
+    } else {
+        GET_NUMBER(0,value);
+        GET_NUMBER(1,index);
+        CHECK_SIZE_AND_GROW(sizeof(float),index);
+        PRIMITIVE_SET(float,index);
+    }
     return object;
 }
 
@@ -303,10 +368,17 @@ JSValueRef putDoubleForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjec
 {
     BUFFER(buffer);
     ARGCOUNTMIN(1);
-    GET_NUMBER(0,value);
-    GET_NUMBER(1,index);
-    CHECK_SIZE_AND_GROW(sizeof(double),index);
-    PRIMITIVE_SET(double,index);
+    GET_JSARRAY(0, values, values_size);
+    if (values != NULL) {
+        GET_NUMBER(1,index);
+        CHECK_SIZE_AND_GROW(sizeof(double),(index + values_size - 1));
+        SET_JSVALUES_AS_PRIMITIVE(double, index, values, values_size);
+    } else {
+        GET_NUMBER(0,value);
+        GET_NUMBER(1,index);
+        CHECK_SIZE_AND_GROW(sizeof(double),index);
+        PRIMITIVE_SET(double,index);
+    }
     return object;
 }
 
@@ -317,10 +389,17 @@ JSValueRef putShortForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObject
 {
     BUFFER(buffer);
     ARGCOUNTMIN(1);
-    GET_NUMBER(0,value);
-    GET_NUMBER(1,index);
-    CHECK_SIZE_AND_GROW(sizeof(short),index);
-    PRIMITIVE_SET(short,index);
+    GET_JSARRAY(0, values, values_size);
+    if (values != NULL) {
+        GET_NUMBER(1,index);
+        CHECK_SIZE_AND_GROW(sizeof(short),(index + values_size - 1));
+        SET_JSVALUES_AS_PRIMITIVE(short, index, values, values_size);
+    } else {
+        GET_NUMBER(0,value);
+        GET_NUMBER(1,index);
+        CHECK_SIZE_AND_GROW(sizeof(short),index);
+        PRIMITIVE_SET(short,index);
+    }
     return object;
 }
 
@@ -331,10 +410,17 @@ JSValueRef putLongForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectR
 {
     BUFFER(buffer);
     ARGCOUNTMIN(1);
-    GET_NUMBER(0,value);
-    GET_NUMBER(1,index);
-    CHECK_SIZE_AND_GROW(sizeof(long),index);
-    PRIMITIVE_SET(long,index);
+    GET_JSARRAY(0, values, values_size);
+    if (values != NULL) {
+        GET_NUMBER(1,index);
+        CHECK_SIZE_AND_GROW(sizeof(long),(index + values_size - 1));
+        SET_JSVALUES_AS_PRIMITIVE(long, index, values, values_size);
+    } else {
+        GET_NUMBER(0,value);
+        GET_NUMBER(1,index);
+        CHECK_SIZE_AND_GROW(sizeof(long),index);
+        PRIMITIVE_SET(long,index);
+    }
     return object;
 }
 
@@ -345,10 +431,17 @@ JSValueRef putLongLongForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObj
 {
     BUFFER(buffer);
     ARGCOUNTMIN(1);
-    GET_NUMBER(0,value);
-    GET_NUMBER(1,index);
-    CHECK_SIZE_AND_GROW(sizeof(long long),index);
-    PRIMITIVE_SET(long long,index);
+    GET_JSARRAY(0, values, values_size);
+    if (values != NULL) {
+        GET_NUMBER(1,index);
+        CHECK_SIZE_AND_GROW(sizeof(long long),(index + values_size - 1));
+        SET_JSVALUES_AS_PRIMITIVE(long long, index, values, values_size);
+    } else {
+        GET_NUMBER(0,value);
+        GET_NUMBER(1,index);
+        CHECK_SIZE_AND_GROW(sizeof(long long),index);
+        PRIMITIVE_SET(long long,index);
+    }
     return object;
 }
 
@@ -359,10 +452,17 @@ JSValueRef putBoolForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectR
 {
     BUFFER(buffer);
     ARGCOUNTMIN(1);
-    GET_NUMBER(0,value);
-    GET_NUMBER(1,index);
-    CHECK_SIZE_AND_GROW(sizeof(bool),index);
-    PRIMITIVE_SET(bool,index);
+    GET_JSARRAY(0, values, values_size);
+    if (values != NULL) {
+        GET_NUMBER(1,index);
+        CHECK_SIZE_AND_GROW(sizeof(bool),(index + values_size - 1));
+        SET_JSVALUES_AS_PRIMITIVE(bool, index, values, values_size);
+    } else {
+        GET_NUMBER(0,value);
+        GET_NUMBER(1,index);
+        CHECK_SIZE_AND_GROW(sizeof(bool),index);
+        PRIMITIVE_SET(bool,index);
+    }
     return object;
 }
 
@@ -373,10 +473,17 @@ JSValueRef putCharForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectR
 {
     BUFFER(buffer);
     ARGCOUNTMIN(1);
-    GET_NUMBER(0,value);
-    GET_NUMBER(1,index);
-    CHECK_SIZE_AND_GROW(sizeof(char),index);
-    PRIMITIVE_SET(char,index);
+    GET_JSARRAY(0, values, values_size);
+    if (values != NULL) {
+        GET_NUMBER(1,index);
+        CHECK_SIZE_AND_GROW(sizeof(char),(index + values_size - 1));
+        SET_JSVALUES_AS_PRIMITIVE(char, index, values, values_size);
+    } else {
+        GET_NUMBER(0,value);
+        GET_NUMBER(1,index);
+        CHECK_SIZE_AND_GROW(sizeof(char),index);
+        PRIMITIVE_SET(char,index);
+    }
     return object;
 }
 

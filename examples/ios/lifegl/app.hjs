@@ -155,13 +155,11 @@ var cellLoadingStart = +new Date();
 var cellVertexData  = @memory();
 var colorBufferData = @memory();
 
-cellVertexData.growFloat(pointCount * 3);  // Grow size of the buffer
-colorBufferData.growFloat(pointCount * 4); // Grow size of the buffer
-
 var cells = [];
 
-var cellindex  = 0;
-var colorindex = 0;
+var colorDataArray = [];
+var cellDataArray  = [];
+
 for (var x = 0; x < xSize; x++) {
 	cells[x] = [];
 	for (var y = 0; y < ySize; y++) {
@@ -175,20 +173,25 @@ for (var x = 0; x < xSize; x++) {
 
 		var alpha = alive ? 1.0 : 0.0;
 
-		// TODO: need method to put data all at once
-		colorBufferData.putFloat(1.0,   colorindex);
-		colorBufferData.putFloat(1.0,   colorindex + 1);
-		colorBufferData.putFloat(1.0,   colorindex + 2);
-		colorBufferData.putFloat(alpha, colorindex + 3);
+		colorDataArray.push(1.0);
+		colorDataArray.push(1.0);
+		colorDataArray.push(1.0);
+		colorDataArray.push(alpha);
 
-		cellVertexData.putFloat(CELL_START + (x * CELL_SIZE), cellindex);
-		cellVertexData.putFloat(CELL_START + (y * CELL_SIZE), cellindex + 1);
-		cellVertexData.putFloat(0.0, cellindex + 2);
-
-		colorindex += 4;
-		cellindex  += 3;
+		cellDataArray.push(CELL_START + (x * CELL_SIZE));
+		cellDataArray.push(CELL_START + (y * CELL_SIZE));
+		cellDataArray.push(0.0);
 	}
 }
+
+// load the data into memory
+cellVertexData.putFloat(cellDataArray);
+colorBufferData.putFloat(colorDataArray);
+
+// we never need these JS arrays
+cellDataArray = null;
+colorDataArray = null;
+
 NSLog("Finished loading vertices %@ msec", (+new Date() - cellLoadingStart));
 
 // calculate the next state of each cell
