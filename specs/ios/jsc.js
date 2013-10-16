@@ -9,7 +9,7 @@ var should = require('should'),
 	buildlib = require('../../lib/ios/buildlib'),
 	settings;
 
-log.debugLevel = false;
+log.level = 'quiet';
 
 describe("jsc", function(){
 
