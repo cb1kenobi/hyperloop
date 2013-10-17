@@ -6,8 +6,11 @@ var should = require('should'),
 	fs = require('fs'),
 	temp = require('temp'),
 	exec = require('child_process').exec,
+	log = require('../../lib/log'),
 	buildlib = require('../../lib/ios/buildlib'),
 	settings;
+
+log.level = 'quiet';
 
 describe("ios buildlib", function(){
 

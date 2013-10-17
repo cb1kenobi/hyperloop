@@ -16,16 +16,16 @@ var fs = require('fs'),
 Error.stackTraceLimit = Infinity;
 
 /**
- * you're probably asking "why not use commander?".  
+ * you're probably asking "why not use commander?".
  * short answer: if you want to do something like
- * --cflags "-DDEBUG=1", it will try and treat the 
- * value of cflags as another command.  we need to 
+ * --cflags "-DDEBUG=1", it will try and treat the
+ * value of cflags as another command.  we need to
  * handle this specifically and unfortunately, it
  * would have been too much work to fork commander
- * to change it's behavior.  I also couldn't seem to 
+ * to change it's behavior.  I also couldn't seem to
  * override it and subclass it to change this behavior
- * easily either.  So, we have a custom command line 
- * arg parser.  
+ * easily either.  So, we have a custom command line
+ * arg parser.
  */
 function Processor() {
 	this.options = {};
@@ -35,8 +35,8 @@ function Processor() {
 Processor.prototype.__proto__ = EventEmitter.prototype;
 
 /**
- * parse out the command line into a specific set of options and 
- * arguments.  
+ * parse out the command line into a specific set of options and
+ * arguments.
  */
 Processor.prototype.parse = function(callback) {
 	var self = this;
@@ -67,53 +67,58 @@ Processor.prototype.parse = function(callback) {
 }
 
 function banner() {
-	log.console('∞ '.yellow+pkg.name.red.bold.underline+' ∞'.yellow+' by Appcelerator, Inc.'.grey);
-	log.console(('For more information, visit '+pkg.repository.url.replace('.git','')).grey);
+	log.log('∞ '.yellow+pkg.name.red.bold.underline+' ∞'.yellow+' by Appcelerator, Inc.'.grey);
+	log.log(('For more information, visit '+pkg.repository.url.replace('.git','')).grey);
 }
 
 var processor = new Processor();
 
-processor.on('help',function(){ 
+processor.on('help',function(){
 	banner();
-	log.console("");
-	log.console("Usage: "+pkg.name.magenta+" [command] <options>");
-	log.console("");
-	log.console("Commands:");
-	log.console("");
+	log.log("");
+	log.log("Usage: "+pkg.name.magenta+" [command] <options>");
+	log.log("");
+	log.log("Commands:");
+	log.log("");
 
 	hyperloop.getCommands().forEach(function(cmd){
 		var help = cmd.getHelp(),
 			name = cmd.getName();
-		log.console("  "+name.magenta+"                "+help.grey);
+		log.log("  "+name.magenta+"                "+help.grey);
 	});
 
-	log.console("");
-	log.console("Options:");
-	log.console("");
-	log.console("  --help".cyan+"                 usage information (you're looking at it)".grey);
-	log.console("  --version".cyan+"              output version of this program".grey);
-	log.console("  --debug".cyan+"                print debugging information".grey);
-	log.console("  --[no-]colors".cyan+"          turn on/off color output".grey);
-	log.console("  --platform=<p>".cyan+"         target platform (such as ios, win, android)".grey);
-	log.console("  --cflags=<f>".cyan+"           compiler flag to pass to native compiler".grey);
-	log.console("  --includes=<i>".cyan+"         directory where headers can be found".grey);
-	log.console("  --src=<s>".cyan+"              native source file to include in compile".grey);
-	log.console("  --dest=<d>".cyan+"             destination directory to write output".grey);
-	log.console("");
+	log.log("");
+	log.log("Options:");
+	log.log("");
+	log.log("  --help".cyan+"                 usage information (you're looking at it)".grey);
+	log.log("  --version".cyan+"              output version of this program".grey);
+	log.log("  --debug".cyan+"                print debugging information".grey);
+	log.log("  --[no-]colors".cyan+"          turn on/off color output".grey);
+	log.log("  --platform=<p>".cyan+"         target platform (such as ios, win, android)".grey);
+	log.log("  --cflags=<f>".cyan+"           compiler flag to pass to native compiler".grey);
+	log.log("  --includes=<i>".cyan+"         directory where headers can be found".grey);
+	log.log("  --src=<s>".cyan+"              native source file to include in compile".grey);
+	log.log("  --dest=<d>".cyan+"             destination directory to write output".grey);
+	log.log("  --log-level=<l>".cyan+"        set the logging level (default 'info')".grey);
+	log.log("");
 	process.exit(0);
 });
 
-processor.on('version',function(){ 
-	log.console(pkg.version);
+processor.on('version',function(){
+	log.log(pkg.version);
 	process.exit(0);
 });
 
 processor.on('colors',function(v){
-	log.stripColors = !v;
+	log.useColor = v;
 });
 
 processor.on('debug',function(v){
-	log.debugLevel = v;
+	log.level = 'debug';
+});
+
+processor.on('log-level', function(v) {
+	log.level = v;
 });
 
 processor.parse(function(err,options,args){

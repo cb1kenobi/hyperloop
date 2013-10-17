@@ -4,7 +4,6 @@
 var should = require('should'),
     path = require('path'),
     compiler = require('../lib/compiler'),
-    //compiler = require(path.join(__dirname,'..','lib','compiler.js')),
     sf = path.join(__dirname,'..','lib','sourcefile.js'),
     Uglify = require('uglify-js'),
     SourceFile = require(sf).SourceFile;
