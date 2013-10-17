@@ -1,6 +1,7 @@
 var should = require('should'),
     path = require('path'),
     fs = require('fs'),
+    metabase = require(path.join(__dirname,'..','..','lib','ios','metabase.js')),
     buildlib = require(path.join(__dirname,'..','..','lib','ios','buildlib.js')),
     clangparser = require(path.join(__dirname,'..','..','lib','ios','clangparser.js')),
     metadata;
@@ -18,31 +19,37 @@ exports.getMetadata = function(done) {
 	console.log('executing clang, this will take a minute. if you get a timeout error, re-run with --timeout 60s');
 	console.log('writing ast out to ',cached);
 
-	buildlib.clang(headerfile,minversion,nativeargs,arc,function(err,result){
-		if (err) return done(err);
-		should.not.exist(err);
-		should.exist(result);
+	metabase.clang(headerfile, {
+			minVersion: minversion,
+			nativeArgs: nativeargs,
+			arc: arc
+		},
+		function(err,result){
+			if (err) return done(err);
+			should.not.exist(err);
+			should.exist(result);
 
-		if (!fs.existsSync(cached)) {
-			fs.writeFileSync(cached,result);
-		}
+			if (!fs.existsSync(cached)) {
+				fs.writeFileSync(cached,result);
+			}
 
-		if (fs.existsSync(cachedAST)) {
-			var buf = fs.readFileSync(cachedAST);
-			metadata = JSON.parse(buf.toString());
-			should.exist(metadata);
-			done(null,metadata);
-		}
-		else {
-			clangparser.parseBuffer(result,function(err,ast){
-				if (err) return done(err);
-				should.not.exist(err);
-				should.exist(ast);
-				metadata = ast.toJSON();
-				fs.writeFile(cachedAST,JSON.stringify(ast,null,'  '),function(err){
-					done(err,metadata);
+			if (fs.existsSync(cachedAST)) {
+				var buf = fs.readFileSync(cachedAST);
+				metadata = JSON.parse(buf.toString());
+				should.exist(metadata);
+				done(null,metadata);
+			}
+			else {
+				clangparser.parseBuffer(result,function(err,ast){
+					if (err) return done(err);
+					should.not.exist(err);
+					should.exist(ast);
+					metadata = ast.toJSON();
+					fs.writeFile(cachedAST,JSON.stringify(ast,null,'  '),function(err){
+						done(err,metadata);
+					});
 				});
-			});
+			}
 		}
-	});
+	);
 }
