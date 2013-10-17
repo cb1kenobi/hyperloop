@@ -9,7 +9,7 @@ var should = require('should'),
 	buildlib = require('../../lib/ios/buildlib'),
 	settings;
 
-log.debugLevel = false;
+log.level = 'quiet';
 
 describe("jsc", function(){
 
@@ -51,55 +51,55 @@ describe("jsc", function(){
 				// Grow to specific size
 				var m = new JSBuffer();
 				m.grow(10 * size_of_float);
-				assert(m.length===(10 * size_of_float), "@memory.grow(10)", m.length);
+				assert(m.length===(10 * size_of_float), "JSBuffer.grow(10) length was: "+m.length);
 
 				// Grow float test
 				m.putFloat(1.0, 10);
-				assert(m.length===(11 * size_of_float), "@memory.putFloat(1.0, 11)", m.length);
+				assert(m.length===(11 * size_of_float), "JSBuffer.putFloat(1.0, 11) length was: "+m.length);
 
 				// Grow float test
 				m.putFloat(1.0, 15);
-				assert(m.length===(16 * size_of_float), "@memory.putFloat(1.0, 15)", m.length);
+				assert(m.length===(16 * size_of_float), "JSBuffer.putFloat(1.0, 15) length was: "+m.length);
 
 				// Grow int buffer
 				m = new JSBuffer();
 				m.growInt(10);
-				assert(m.length===(10 * size_of_int), "@memory.growInt(10)", m.length);
+				assert(m.length===(10 * size_of_int), "JSBuffer.growInt(10) length was: "+m.length);
 
 				// Grow float buffer
 				m = new JSBuffer();
 				m.growFloat(10);
-				assert(m.length===(10 * size_of_float), "@memory.growFloat(10)", m.length);
+				assert(m.length===(10 * size_of_float), "JSBuffer.growFloat(10) length was: "+m.length);
 
 				// Grow double buffer
 				m = new JSBuffer();
 				m.growDouble(10);
-				assert(m.length===(10 * size_of_double), "@memory.growDouble(10)", m.length);
+				assert(m.length===(10 * size_of_double), "JSBuffer.growDouble(10) length was: "+m.length);
 
 				// Grow short buffer
 				m = new JSBuffer();
 				m.growShort(10);
-				assert(m.length===(10 * size_of_short), "@memory.growShort(10)", m.length);
+				assert(m.length===(10 * size_of_short), "JSBuffer.growShort(10) length was: "+m.length);
 
 				// Grow long buffer
 				m = new JSBuffer();
 				m.growLong(10);
-				assert(m.length===(10 * size_of_long), "@memory.growLong(10)", m.length);
+				assert(m.length===(10 * size_of_long), "JSBuffer.growLong(10) length was: "+m.length);
 
 				// Grow long long buffer
 				m = new JSBuffer();
 				m.growLongLong(10);
-				assert(m.length===(10 * size_of_longlong), "@memory.growLongLong(10)", m.length);
+				assert(m.length===(10 * size_of_longlong), "JSBuffer.growLongLong(10) length was: "+m.length);
 
 				// Grow bool buffer
 				m = new JSBuffer();
 				m.growBool(10);
-				assert(m.length===(10 * size_of_bool), "@memory.growBool(10)", m.length);
+				assert(m.length===(10 * size_of_bool), "JSBuffer.growBool(10) length was: "+m.length);
 
 				// Grow char buffer
 				m = new JSBuffer();
 				m.growChar(10);
-				assert(m.length===(10 * size_of_char), "@memory.growChar(10)", m.length);
+				assert(m.length===(10 * size_of_char), "JSBuffer.growChar(10) length was: "+m.length);
 				assert('function'===typeof(JSBuffer),"JSBuffer should have been an function, was: "+typeof(JSBuffer));
 
 				var emptyBuffer = new JSBuffer();
@@ -220,6 +220,62 @@ describe("jsc", function(){
 				unicode.putString("こんにちは世界");
 				assert(unicode.length===21,"こんにちは世界 length should be 21, was: "+unicode.length);
 
+				// put int array
+				m = new JSBuffer();
+				m.putInt([2, 5, 8]);
+				assert(m.length===(3 * size_of_int), "putInt([]) length was:"+m.length);
+				assert(m.toInt(0) == 2, "JSBuffer.toInt(0) should be 2, was: "+m.toInt(0));
+				assert(m.toInt(1) == 5, "JSBuffer.toInt(1) should be 5, was: "+m.toInt(1));
+				assert(m.toInt(2) == 8, "JSBuffer.toInt(2) should be 8, was: "+m.toInt(2));
+
+				// put float array
+				m = new JSBuffer();
+				m.putFloat([0.5, 1.0, 1.5]);
+				assert(m.length===(3 * size_of_float), "JSBuffer.putFloat([]) was: "+m.length);
+				assert(m.toFloat(0) == 0.5, "JSBuffer.toFloat(0) should be 0.5, was: "+m.toFloat(0));
+				assert(m.toFloat(1) == 1.0, "JSBuffer.toFloat(1) should be 1.0, was: "+m.toFloat(1));
+				assert(m.toFloat(2) == 1.5, "JSBuffer.toFloat(2) should be 1.5, was: "+m.toFloat(2));
+
+				// add float array from given index
+				m.putFloat([20.110000610351562, 20], 3);
+				assert(m.length===(5 * size_of_float), "JSBuffer.putFloat([]) was: "+m.length);
+				assert(m.toFloat(0) == 0.5, "JSBuffer.toFloat(0) "+m.toFloat(0));
+				assert(m.toFloat(1) == 1.0, "JSBuffer.toFloat(1) "+m.toFloat(1));
+				assert(m.toFloat(2) == 1.5, "JSBuffer.toFloat(2) "+m.toFloat(2));
+				assert(m.toFloat(3) == 20.110000610351562, "JSBuffer.toFloat(3) "+m.toFloat(3));
+				assert(m.toFloat(4) == 20, "JSBuffer.toFloat(4) "+m.toFloat(4));
+
+				m = new JSBuffer();
+				m.putDouble([20.110000610351562, Number.MAX_VALUE]);
+				assert(m.length===(2 * size_of_double), "JSBuffer.putDouble([]) length was: "+m.length);
+				assert(m.toDouble(0) == 20.110000610351562, "JSBuffer.toDouble(0) "+m.toFloat(0));
+				assert(m.toDouble(1) == Number.MAX_VALUE, "JSBuffer.toDouble(1) "+m.toFloat(1));
+
+				m = new JSBuffer();
+				m.putShort([1, 2]);
+				assert(m.length===(2 * size_of_short), "JSBuffer.putShort([]) length was: "+m.length);
+				assert(m.toShort(0) == 1, "JSBuffer.toShort(0) "+m.toShort(0));
+				assert(m.toShort(1) == 2, "JSBuffer.toShort(1) "+m.toShort(1));
+
+				m = new JSBuffer();
+				m.putLong([1, 2]);
+				assert(m.length===(2 * size_of_long), "JSBuffer.putLong([]) length was: "+m.length);
+				assert(m.toLong(0) == 1, "JSBuffer.toLong(0) "+m.toLong(0));
+				assert(m.toLong(1) == 2, "JSBuffer.toLong(1) "+m.toLong(1));
+
+				m = new JSBuffer();
+				m.putBool([true, false, false, true]);
+				assert(m.toBool(0) == true, "JSBuffer.toBool(0) "+m.toBool(0));
+				assert(m.toBool(1) == false, "JSBuffer.toBool(1) "+m.toBool(1));
+				assert(m.toBool(2) == false, "JSBuffer.toBool(2) "+m.toBool(2));
+				assert(m.toBool(3) == true, "JSBuffer.toBool(3) "+m.toBool(3));
+
+				m = new JSBuffer();
+				m.putChar(['a', 'z', '1', 'c']);
+				assert(m.toChar(0) == 'a', "JSBuffer.toChar(0) "+m.toChar(0));
+				assert(m.toChar(1) == 'z', "JSBuffer.toChar(1) "+m.toChar(1));
+				assert(m.toChar(2) == '1', "JSBuffer.toChar(2) "+m.toChar(2));
+				assert(m.toChar(3) == 'c', "JSBuffer.toChar(3) "+m.toChar(3));
 
 			}).toString().trim().replace(/^function \(\){/,'').replace(/}$/,'').replace(/[\n]/g,'\\n').replace(/"/g,'\\"').trim();
 

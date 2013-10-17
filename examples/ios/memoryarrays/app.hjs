@@ -129,4 +129,69 @@ m = @memory();
 m.growChar(10);
 assert(m.length===(10 * size_of_char), "@memory.growChar(10)", m.length);
 
+// put int array
+m = @memory();
+m.putInt([2, 5, 8]);
+assert(m.length===(3 * size_of_int), "@memory.putInt([])", m.length);
+assert(m.toInt(0) == 2, "@memory.toInt(0)==2", m.toInt(0));
+assert(m.toInt(1) == 5, "@memory.toInt(1)==5", m.toInt(1));
+assert(m.toInt(2) == 8, "@memory.toInt(2)==8", m.toInt(2));
+
+// put float array
+m = @memory();
+m.putFloat([0.5, 1.0, 1.5]);
+assert(m.length===(3 * size_of_float), "@memory.putFloat([])", m.length);
+assert(m.toFloat(0) == 0.5, "@memory.toFloat(0)==0.5", m.toFloat(0));
+assert(m.toFloat(1) == 1.0, "@memory.toFloat(1)==1.0", m.toFloat(1));
+assert(m.toFloat(2) == 1.5, "@memory.toFloat(2)==1.5", m.toFloat(2));
+
+// add float array from given index
+m.putFloat([20.110000610351562, 20], 3);
+assert(m.length===(5 * size_of_float), "@memory.putFloat([])", m.length);
+assert(m.toFloat(0) == 0.5, "@memory.toFloat(0)", m.toFloat(0));
+assert(m.toFloat(1) == 1.0, "@memory.toFloat(1)", m.toFloat(1));
+assert(m.toFloat(2) == 1.5, "@memory.toFloat(2)", m.toFloat(2));
+assert(m.toFloat(3) == 20.110000610351562, "@memory.toFloat(3)", m.toFloat(3));
+assert(m.toFloat(4) == 20, "@memory.toFloat(4)", m.toFloat(4));
+
+m = @memory();
+m.putDouble([20.110000610351562, Number.MAX_VALUE]);
+assert(m.length===(2 * size_of_double), "@memory.putDouble([])", m.length);
+assert(m.toDouble(0) == 20.110000610351562, "@memory.toDouble(0)", m.toFloat(0));
+assert(m.toDouble(1) == Number.MAX_VALUE, "@memory.toDouble(1)", m.toFloat(1));
+
+m = @memory();
+m.putShort([1, 2]);
+assert(m.length===(2 * size_of_short), "@memory.putShort([])", m.length);
+assert(m.toShort(0) == 1, "@memory.toShort(0)", m.toShort(0));
+assert(m.toShort(1) == 2, "@memory.toShort(1)", m.toShort(1));
+
+m = @memory();
+m.putLong([1, 2]);
+assert(m.length===(2 * size_of_long), "@memory.putLong([])", m.length);
+assert(m.toLong(0) == 1, "@memory.toLong(0)", m.toLong(0));
+assert(m.toLong(1) == 2, "@memory.toLong(1)", m.toLong(1));
+
+m = @memory();
+m.putBool([true, false, false, true]);
+assert(m.toBool(0) == true, "@memory.toBool(0)", m.toBool(0));
+assert(m.toBool(1) == false, "@memory.toBool(1)", m.toBool(1));
+assert(m.toBool(2) == false, "@memory.toBool(2)", m.toBool(2));
+assert(m.toBool(3) == true, "@memory.toBool(3)", m.toBool(3));
+
+m = @memory();
+m.putChar(['a', 'z', 'u', 'c']);
+assert(m.toChar(0) == 'a', "@memory.toChar(0)", m.toChar(0));
+assert(m.toChar(1) == 'z', "@memory.toChar(1)", m.toChar(1));
+assert(m.toChar(2) == 'u', "@memory.toChar(2)", m.toChar(2));
+assert(m.toChar(3) == 'c', "@memory.toChar(3)", m.toChar(3));
+
+
+
+
+
+
+
+
+
 

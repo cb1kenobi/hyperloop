@@ -394,7 +394,7 @@
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>\.(warn|info|log|error|time|timeEnd|assert)\b</string>
+			<string>\.(warn|info|log|error|fatal|time|timeEnd|assert)\b</string>
 			<key>name</key>
 			<string>support.function.js.firebug</string>
 		</dict>
