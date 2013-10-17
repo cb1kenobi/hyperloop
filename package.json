@@ -41,7 +41,10 @@
     "wrench": "~1.5.1",
     "ios-sim": "~1.8.2",
     "colors": "~0.6.0-1",
-    "semver": "~2.1.0"
+    "semver": "~2.1.0",
+    "node-uuid": "~1.4.1",
+    "progress": "~1.1.0",
+    "adm-zip": "~0.4.3"
   },
   "devDependencies": {
     "mocha": "~1.12.0",

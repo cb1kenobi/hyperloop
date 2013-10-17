@@ -1,19 +1,8 @@
-@import("Windows::UI::Colors");
-@import("Windows::UI::Xaml::Controls::Grid");
-@import("Windows::UI::Xaml::Controls::TextBlock");
-@import("Windows::UI::Xaml::Media::SolidBrushColor");
-@import("Windows::UI::Xaml::Application");
-@import("Windows::UI::Xaml::TextAlignment");
-@import("Windows::UI::Xaml::VerticalAlignment");
-@import("Windows::UI::Xaml::HorizontalAlignment");
-@import("Windows::UI::Xaml::Window");
-@import("Windows::ApplicationModel::Activation::LaunchActivatedEventArgs");
-@import("Windows::Globalization::Calendar");
+@import("Windows");
 
-@native({
+@compiler({
 	application: 'MyApp'
 });
-
 
 var grid,
 	window,
@@ -24,7 +13,7 @@ var grid,
 	{
 		name: 'OnLaunched',
 		returnType: 'void',
-		arguments: [ { name: 'args', type: 'LaunchActivatedEventArgs^' } ],
+		arguments: [ { name: 'args', type: 'LaunchActivatedEventArgs' } ],
 		action: function(params) {
 			
 			window = Window.Current;
@@ -42,10 +31,8 @@ var grid,
 			text.FontSize = 60;
 			grid.Children.Append(text);
 
-			// TODO: grid->Tapped += ref new TappedEventHandler(this, &MyApp::PointerPressed);
-			// Option 1: grid.Tapped.add(new TappedEventHandler(this, &MyApp::PointerPressed));
-			// Option 2: @delegateAdd(grid.Tapped, new TappedEventHandler(this, &MyApp::PointerPressed));
-			// Either would still need to turn in to grid->Tapped += etc.
+			var eventHandler = new TappedEventHandler(this,'PointerPressed');
+			grid.Tapped.add(eventHandler);
 
 			window.Content = grid;
 			window.Activate();
@@ -55,7 +42,7 @@ var grid,
 	{
 		name: 'PointerPressed',
 		returnType: 'void',
-		arguments: [ { name: 'sender', type: 'Object^' }, { name:'e', type: 'TappedRoutedEventArgs^' } ],
+		arguments: [ { name: 'sender', type: 'Object' }, { name:'e', type: 'TappedRoutedEventArgs' } ],
 		action: function(params) {
 			var green = new SolidColorBrush();
 			green.Color = Colors.DarkGreen;
