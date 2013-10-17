@@ -21,7 +21,7 @@ extern JSObjectRef MakeObjectForNSStringConstructor (JSContextRef ctx);
     JSStringRef property = JSStringCreateWithUTF8CString("NSString");
     JSObjectSetProperty(globalContext, globalObject, property, stringObjectRef, 0, 0);
     JSStringRelease(property);
-    
+
     JSStringRef script = JSStringCreateWithUTF8CString("NSString.stringWithFormat('%@','hello')");
     JSValueRef result = JSEvaluateScript(globalContext, script, globalObject, NULL, 0, 0);
     JSStringRef stringRef = JSValueToStringCopy(globalContext, result, 0);
@@ -32,8 +32,10 @@ extern JSObjectRef MakeObjectForNSStringConstructor (JSContextRef ctx);
     NSString *resultStr = [NSString stringWithUTF8String:buf];
     JSStringRelease(stringRef);
     JSStringRelease(script);
-    
-    XCTAssertTrue([resultStr isEqualToString:@"hello"], @"result was not correct");
+
+    NSString *expected = @"hello";
+    XCTAssertTrue([resultStr isEqualToString:expected],
+        @"expected '%@', got '%@'", expected, resultStr);
 }
 
 - (void)testStringWithFormatAndPrimitiveInt
@@ -42,7 +44,7 @@ extern JSObjectRef MakeObjectForNSStringConstructor (JSContextRef ctx);
     JSStringRef property = JSStringCreateWithUTF8CString("NSString");
     JSObjectSetProperty(globalContext, globalObject, property, stringObjectRef, 0, 0);
     JSStringRelease(property);
-    
+
     JSStringRef script = JSStringCreateWithUTF8CString("NSString.stringWithFormat('%@,%d','hello',1)");
     JSValueRef result = JSEvaluateScript(globalContext, script, globalObject, NULL, 0, 0);
     JSStringRef stringRef = JSValueToStringCopy(globalContext, result, 0);
@@ -53,8 +55,10 @@ extern JSObjectRef MakeObjectForNSStringConstructor (JSContextRef ctx);
     NSString *resultStr = [NSString stringWithUTF8String:buf];
     JSStringRelease(stringRef);
     JSStringRelease(script);
-    
-    XCTAssertTrue([resultStr isEqualToString:@"hello,1"], @"result was not correct");
+
+    NSString *expected = @"hello,1";
+    XCTAssertTrue([resultStr isEqualToString:expected],
+        @"expected '%@', got '%@'", expected, resultStr);
 }
 
 - (void)testStringWithFormatAndPrimitiveBool
@@ -63,7 +67,7 @@ extern JSObjectRef MakeObjectForNSStringConstructor (JSContextRef ctx);
     JSStringRef property = JSStringCreateWithUTF8CString("NSString");
     JSObjectSetProperty(globalContext, globalObject, property, stringObjectRef, 0, 0);
     JSStringRelease(property);
-    
+
     JSStringRef script = JSStringCreateWithUTF8CString("NSString.stringWithFormat('%@,%d','hello',false)");
     JSValueRef result = JSEvaluateScript(globalContext, script, globalObject, NULL, 0, 0);
     JSStringRef stringRef = JSValueToStringCopy(globalContext, result, 0);
@@ -74,8 +78,10 @@ extern JSObjectRef MakeObjectForNSStringConstructor (JSContextRef ctx);
     NSString *resultStr = [NSString stringWithUTF8String:buf];
     JSStringRelease(stringRef);
     JSStringRelease(script);
-    
-    XCTAssertTrue([resultStr isEqualToString:@"hello,0"], @"result was not correct");
+
+    NSString *expected = @"hello,0";
+    XCTAssertTrue([resultStr isEqualToString:expected],
+        @"expected '%@', got '%@'", expected, resultStr);
 }
 
 - (void)testStringWithFormatAndPrimitiveChar
@@ -84,7 +90,7 @@ extern JSObjectRef MakeObjectForNSStringConstructor (JSContextRef ctx);
     JSStringRef property = JSStringCreateWithUTF8CString("NSString");
     JSObjectSetProperty(globalContext, globalObject, property, stringObjectRef, 0, 0);
     JSStringRelease(property);
-    
+
     JSStringRef script = JSStringCreateWithUTF8CString("NSString.stringWithFormat('%@,%@','hello','0')");
     JSValueRef result = JSEvaluateScript(globalContext, script, globalObject, NULL, 0, 0);
     JSStringRef stringRef = JSValueToStringCopy(globalContext, result, 0);
@@ -95,8 +101,10 @@ extern JSObjectRef MakeObjectForNSStringConstructor (JSContextRef ctx);
     NSString *resultStr = [NSString stringWithUTF8String:buf];
     JSStringRelease(stringRef);
     JSStringRelease(script);
-    
-    XCTAssertTrue([resultStr isEqualToString:@"hello,0"], @"result was not correct");
+
+    NSString *expected = @"hello,0";
+    XCTAssertTrue([resultStr isEqualToString:expected],
+        @"expected '%@', got '%@'", expected, resultStr);
 }
 
 @end
