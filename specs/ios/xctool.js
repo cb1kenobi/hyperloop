@@ -46,8 +46,7 @@ describe("ios xctool", function(){
 			completed = false,
 			failure = false;
 
-		//genmetadata.getMetadata(function(err,m){
-		metabase.generateMetabase(
+		metabase.loadMetabase(
 			headerfile,
 			{
 				arc: false,
