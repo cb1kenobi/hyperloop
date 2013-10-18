@@ -2,6 +2,7 @@ build
 node_modules
 out
 dist
+coverage
 *.sublime-workspace
 *.sublime-project
 *.xcuserdatad
