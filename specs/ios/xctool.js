@@ -41,8 +41,7 @@ describe("ios xctool", function(){
 			args = ['-project',project,'-scheme', 'testsuite', '-sdk', 'iphonesimulator', '-reporter', 'pretty', 'clean', 'test'],
 			env = {cwd:dir, env:process.env},
 			headerfile = path.join(__dirname, 'src', 'header.h'),
-			TMPDIR = process.env.TMPDIR || '/tmp/',
-			cachedAST = path.join(TMPDIR,'clangout_false.ast'),
+			cachedAST = path.join((process.env['TMPDIR'] || '/tmp'), 'hyperloop_ios_metabase_test.json.gz'),
 			completed = false,
 			failure = false;
 
