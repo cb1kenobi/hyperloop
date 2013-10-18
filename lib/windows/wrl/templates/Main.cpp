@@ -25,7 +25,7 @@ using namespace Platform::Details;
 /*
  * When tapped, color the Grid, and update the TextBlock to show the current time.
  */
-ref class TapHandler sealed
+ref class TapHandler
 {
 internal:
 	TapHandler(JSContextRef ctx, TextBlock^ text, Grid^ grid);
