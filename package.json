@@ -15,7 +15,7 @@
     "hyperloop": "./bin/hyperloop"
   },
   "scripts": {
-    "test": "mocha --recursive --reporter list ./specs --timeout 60s"
+    "test": "export HYPERLOOP_TEST=1 && mocha --recursive --reporter list ./specs --timeout 60s"
   },
   "main": "./lib/hyperloop",
   "repository": {
