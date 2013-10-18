@@ -1,0 +1,25 @@
+@import("Foundation/NSLog");
+@import("Foundation/NSString");
+@import("Foundation/NSURLSession");
+
+// Coordinates of Appcelerator HQ.
+var latitude  = "37.389587";
+var longitude = "-122.05037";
+    
+var weatherUrl = NSString.stringWithFormat("http://api.openweathermap.org/data/2.5/weather?lat=%@&lon=%@", latitude, longitude);
+NSLog("Weather URL = %@", weatherUrl);
+
+var session = NSURLSession.sharedSession();
+
+// session.dataTaskWithURL:[NSURL URLWithString:weatherUrl] completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+//     // handle response
+//     NSError* jsonError;
+//     NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&jsonError];
+//
+//     NSString* name = json[@"name"];
+//     NSLog(@"name: %@", name);
+//
+//     NSDictionary* main = json[@"main"];
+//     NSLog(@"temp: %@", main[@"temp"]);
+//
+// }] resume];
