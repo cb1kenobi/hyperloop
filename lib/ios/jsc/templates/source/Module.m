@@ -371,7 +371,8 @@ HyperloopJS* HyperloopLoadJS (JSContextRef ctx, HyperloopJS *parent, NSString *p
             JSStringRef body = JSStringCreateWithUTF8CString([wrapper UTF8String]);
 
             JSValueRef exception = NULL;
-            JSStringRef filename = JSStringCreateWithUTF8CString([path UTF8String]);
+            JSStringRef filename = JSStringCreateWithUTF8CString(
+                [[path stringByAppendingPathExtension:@"js"] UTF8String]);
             JSObjectRef requireFn = JSObjectMakeFunction(ctx, fnName, 1, parameterNames, body, filename, 1, &exception);
             JSStringRelease(filename);
             CHECK_EXCEPTION(ctx,exception);
