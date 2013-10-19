@@ -151,3 +151,7 @@ NSString* HyperloopToNSStringFromString(JSContextRef ctx, JSStringRef value);
  */
 id HyperloopDynamicInvoke (JSContextRef ctx, const JSValueRef *arguments, size_t argumentCount, id target, SEL selector, bool instance);
 
+/**
+ * invoke a dynamic argument using a sentinel
+ */
+id HyperloopDynamicInvokeWithSentinel(JSContextRef ctx, const JSValueRef *arguments, size_t argumentCount, id target, SEL selector, bool instance);
