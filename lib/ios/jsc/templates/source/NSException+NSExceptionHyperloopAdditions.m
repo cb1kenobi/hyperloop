@@ -42,7 +42,7 @@
 				JSStringRelease(keyString);
 			}
 
-		// if it's now an object, try our best to stringify it
+		// if it's not an object, try our best to stringify it
 		} else {
 			[fields setObject:HyperloopToNSString(context, exception) forKey:@"message"];
 		}
