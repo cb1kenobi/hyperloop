@@ -554,6 +554,89 @@ void HyperloopDestroyVM (JSGlobalContextRef ctx)
     }
 }
 
+id HyperloopDynamicInvokeWithSentinel(JSContextRef ctx, const JSValueRef *arguments, size_t argumentCount, id target, SEL selector, bool instance)
+{
+    Method method = instance ? class_getInstanceMethod(target,selector) : class_getClassMethod(target,selector);
+    IMP imp = method_getImplementation(method);
+    id args[argumentCount];
+    for (size_t c=0;c<argumentCount;c++)
+    {
+        JSValueRef value = arguments[c];
+        id arg = NULL;
+        if (JSValueIsObject(ctx,value))
+        {
+            JSObjectRef objectRef = JSValueToObject(ctx, value, 0);
+            if (HyperloopPrivateObjectIsType(objectRef,JSPrivateObjectTypeID))
+            {
+                arg = HyperloopGetPrivateObjectAsID(objectRef);
+            }
+            else if (HyperloopPrivateObjectIsType(objectRef,JSPrivateObjectTypeClass))
+            {
+                arg = (id)HyperloopGetPrivateObjectAsClass(objectRef);
+            }
+            else if (HyperloopPrivateObjectIsType(objectRef,JSPrivateObjectTypePointer))
+            {
+                arg = (id)HyperloopGetPrivateObjectAsPointer(objectRef);
+            }
+        }
+        else if (JSValueIsBoolean(ctx,value))
+        {
+            arg = [NSNumber numberWithBool:JSValueToBoolean(ctx,value)];
+        }
+        else if (JSValueIsNumber(ctx,value))
+        {
+            arg = [NSNumber numberWithDouble:JSValueToNumber(ctx,value,0)];
+        }
+        else if (JSValueIsString(ctx,value))
+        {
+            JSStringRef stringRef = JSValueToStringCopy(ctx, value, 0);
+            size_t buflen = JSStringGetMaximumUTF8CStringSize(stringRef);
+            char buf[buflen];
+            buflen = JSStringGetUTF8CString(stringRef, buf, buflen);
+            buf[buflen] = '\0';
+            arg = (id)[NSString stringWithUTF8String:buf];
+            JSStringRelease(stringRef);
+        }
+        args[c]=arg;
+    }
+
+    // hack, how else can you invoke a vararg IMP. i can't find any other way
+    switch(argumentCount) {
+        case 1: {
+            return imp(target,selector,args[0],nil);
+        }
+        case 2: {
+            return imp(target,selector,args[0],args[1],nil);
+        }
+        case 3: {
+            return imp(target,selector,args[0],args[1],args[2],nil);
+        }
+        case 4: {
+            return imp(target,selector,args[0],args[1],args[2],args[3],nil);
+        }
+        case 5: {
+            return imp(target,selector,args[0],args[1],args[2],args[3],args[4],nil);
+        }
+        case 6: {
+            return imp(target,selector,args[0],args[1],args[2],args[3],args[4],args[5],nil);
+        }
+        case 7: {
+            return imp(target,selector,args[0],args[1],args[2],args[3],args[4],args[5],args[6],nil);
+        }
+        case 8: {
+            return imp(target,selector,args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],nil);
+        }
+        case 9: {
+            return imp(target,selector,args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],nil);
+        }
+        case 10: {
+            return imp(target,selector,args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],nil);
+        }
+    }
+    [NSException raise:@"HyperloopDynamicInvokeWithSentinel" format:@"too many arguments passed",nil];
+    return nil;
+}
+
 /**
  * invoke a dynamic argument
  */
