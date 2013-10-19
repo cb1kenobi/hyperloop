@@ -146,7 +146,7 @@ static JSStaticFunction StaticFunctionArrayForJS [] = {
     { 0, 0, 0 }
 };
 
-Class HyperloopPathToClass (NSString *path, NSString *prefix) 
+Class HyperloopPathToClass (NSString *path, NSString *prefix)
 {
     NSString *modulename = [path stringByReplacingOccurrencesOfString:@".js" withString:@""];
     modulename = [modulename stringByReplacingOccurrencesOfString:@"/" withString:@"_"];
@@ -160,7 +160,7 @@ static JSClassRef classRef;
 JSObjectRef HyperloopMakeJSObject (JSContextRef ctx, HyperloopJS *module)
 {
     static BOOL init;
-    if (!init) 
+    if (!init)
     {
         init = YES;
         JSClassDefinition classDef = kJSClassDefinitionEmpty;
@@ -174,7 +174,7 @@ JSObjectRef HyperloopMakeJSObject (JSContextRef ctx, HyperloopJS *module)
     return JSObjectMake(ctx, classRef, (void*)module);
 }
 
-HyperloopJS* HyperloopLoadJS (JSContextRef ctx, HyperloopJS *parent, NSString *path, NSString *prefix) 
+HyperloopJS* HyperloopLoadJS (JSContextRef ctx, HyperloopJS *parent, NSString *path, NSString *prefix)
 {
 	if (!modules)
 	{
@@ -182,7 +182,7 @@ HyperloopJS* HyperloopLoadJS (JSContextRef ctx, HyperloopJS *parent, NSString *p
 	}
 
     // For the logic, we follow node.js logic here: http://nodejs.org/api/modules.html#modules_module_filename
-    
+
     NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSString *filepath = path;
@@ -191,18 +191,20 @@ HyperloopJS* HyperloopLoadJS (JSContextRef ctx, HyperloopJS *parent, NSString *p
 	if ([path hasPrefix:@"./"] || [path hasPrefix:@"/"] || [path hasPrefix:@"../"])
 	{
 		filepath = path;
-		if (parent!=nil) 
+		if (parent!=nil)
 		{
             NSString *dir = [[parent filename] stringByDeletingLastPathComponent];
-			filepath = [dir stringByAppendingPathComponent:path]; 
+			filepath = [dir stringByAppendingPathComponent:path];
 		}
 		filepath = [[resourcePath stringByAppendingPathComponent:filepath] stringByStandardizingPath];
+
         if ([filepath length] <= [resourcePath length])
         {
             // they have tried to ../ passed top of the root, just return nil
             return nil;
         }
         filepath = [filepath substringFromIndex:[resourcePath length]+1];
+
         if ((module=[modules objectForKey:[filepath stringByDeletingPathExtension]]))
         {
             return module;
@@ -218,10 +220,10 @@ HyperloopJS* HyperloopLoadJS (JSContextRef ctx, HyperloopJS *parent, NSString *p
         }
         return HyperloopLoadJS(ctx,parent,filepath,prefix);
     }
-    
+
     Class cls = HyperloopPathToClass(filepath,prefix);
 
-    if (cls == nil) 
+    if (cls == nil)
     {
         // check to see if a directory with package.json
         NSString *subpath = [path stringByAppendingPathComponent:@"/package.json"];
@@ -233,7 +235,7 @@ HyperloopJS* HyperloopLoadJS (JSContextRef ctx, HyperloopJS *parent, NSString *p
             NSString *fileContents = [NSString stringWithContentsOfFile:packagePath encoding:NSUTF8StringEncoding error:&error];
             NSData *fileData = [fileContents dataUsingEncoding:NSUTF8StringEncoding];
             NSDictionary *json = [NSJSONSerialization JSONObjectWithData:fileData options:0 error:&error];
-            if (error==nil) 
+            if (error==nil)
             {
                 // look for main field in JSON
                 NSString *main = [json objectForKey:@"main"];
@@ -268,7 +270,7 @@ HyperloopJS* HyperloopLoadJS (JSContextRef ctx, HyperloopJS *parent, NSString *p
         {
             // check node modules, by walking up from the current directory to the top of the directory
             NSString *top = parent ? [parent.filename stringByDeletingLastPathComponent] : @"";
-            while (top!=nil) 
+            while (top!=nil)
             {
                 NSString *fp = [top stringByAppendingPathComponent:[NSString stringWithFormat:@"node_modules/%@",path]];
                 if ((module=[modules objectForKey:[fp stringByDeletingPathExtension]]))
@@ -280,7 +282,7 @@ HyperloopJS* HyperloopLoadJS (JSContextRef ctx, HyperloopJS *parent, NSString *p
                 {
                     return module;
                 }
-                if ([top length]==0) 
+                if ([top length]==0)
                 {
                     // already at the end, now break
                     break;
@@ -322,7 +324,7 @@ HyperloopJS* HyperloopLoadJS (JSContextRef ctx, HyperloopJS *parent, NSString *p
         // if empty, just skip the JS invocation
         if ([compressedBuf length]>1)
         {
-      
+
             // load up our properties that we want to expose
             JSPropertyNameArrayRef properties = JSObjectCopyPropertyNames(ctx, moduleObjectRef);
             NSMutableArray *propertyNames = [NSMutableArray array];
@@ -333,7 +335,7 @@ HyperloopJS* HyperloopLoadJS (JSContextRef ctx, HyperloopJS *parent, NSString *p
 
             parameterNames[0] = JSStringCreateWithUTF8CString("module");
             arguments[0]=moduleObjectRef;
-            
+
             // loop through and put module related variables in a wrapper scope
             for (size_t c = 0;c<count;c++)
             {
@@ -348,7 +350,7 @@ HyperloopJS* HyperloopLoadJS (JSContextRef ctx, HyperloopJS *parent, NSString *p
                 {
                     JSStringRef script = JSStringCreateWithUTF8CString([[NSString stringWithFormat:@"(typeof(this.%s)==='function')",buf] UTF8String]);
                     JSValueRef result = JSEvaluateScript(ctx,script,moduleObjectRef,NULL,0,0);
-                    if (JSValueToBoolean(ctx,result)) 
+                    if (JSValueToBoolean(ctx,result))
                     {
                         // make sure that the right scope (this object) is set for the function
                         [propertyNames addObject:[NSString stringWithFormat:@"%s=function %s(){return $self.%s.apply($self,arguments)}",buf,buf,buf]];
