@@ -3,6 +3,6 @@
 	${1:// options...}
 });]]></content>
   <tabTrigger>@compiler</tabTrigger>
-  <scope>hyperloop.js</scope>
+  <scope>source.hyperloop</scope>
   <description>@compiler</description>
 </snippet>
