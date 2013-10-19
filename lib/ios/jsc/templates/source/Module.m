@@ -380,8 +380,6 @@ HyperloopJS* HyperloopLoadJS (JSContextRef ctx, HyperloopJS *parent, NSString *p
 
             JSStringRelease(fnName);
             JSStringRelease(body);
-
-            CHECK_EXCEPTION(ctx,exception);
             JSStringRelease(parameterNames[0]);
         }
 
