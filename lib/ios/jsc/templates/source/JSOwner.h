@@ -6,9 +6,13 @@
  * This generated code and related technologies are covered by patents
  * or patents pending by Appcelerator, Inc.
  */
-
-@import Foundation;
+#ifndef USE_TIJSCORE
 @import JavaScriptCore;
+#else
+#include <TiCore/TiCore.h>
+#include "ticurrent.h"
+#endif
+@import Foundation;
 
 /**
  * JSOwner manages the relationship between a JS object and a native object

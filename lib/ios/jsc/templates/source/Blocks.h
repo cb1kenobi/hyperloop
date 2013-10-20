@@ -6,7 +6,7 @@
  * This generated code and related technologies are covered by patents
  * or patents pending by Appcelerator, Inc.
  */
-@import JavaScriptCore;
+#import <hyperloop.h>
 
 struct HLBlockLiteral {
     void *isa; // initialized to &_NSConcreteStackBlock or &_NSConcreteGlobalBlock

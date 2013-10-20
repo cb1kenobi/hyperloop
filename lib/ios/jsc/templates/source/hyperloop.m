@@ -11,18 +11,40 @@
 //#define LOG_ALLOC_DEALLOC
 
 /**
+ * implementation of JSPrivateObject
+ */
+@implementation JSPrivateObject 
+
+@synthesize object=object;
+@synthesize value=value;
+@synthesize buffer=buffer;
+@synthesize type=type;
+@synthesize context=context;
+
+-(void)dealloc
+{
+    [self.object release];
+    if (self.buffer && type==JSPrivateObjectTypeJSBuffer)
+    {
+        JSBuffer *b = (JSBuffer*)self.buffer;
+        DestroyJSBuffer(b);
+        self.buffer = NULL;
+    }
+    [super dealloc];
+}
+@end
+
+/**
  * create a JSPrivateObject for storage in a JSObjectRef
  */
 JSPrivateObject* HyperloopMakePrivateObjectForID(JSContextRef ctx, id object)
 {
-	JSPrivateObject *p = (JSPrivateObject*)malloc(sizeof(JSPrivateObject));
-	p->object = (void *)object;
-    p->value = NAN;
-	p->type = JSPrivateObjectTypeID;
-	p->map = nil;
-	p->context = ctx;
-	[object retain];
-	return p;
+    JSPrivateObject *p = [JSPrivateObject new];
+    p.object = object;
+    p.value = NAN;
+    p.type = JSPrivateObjectTypeID;
+    p.context = ctx;
+	return [p autorelease];
 }
 
 /**
@@ -30,13 +52,11 @@ JSPrivateObject* HyperloopMakePrivateObjectForID(JSContextRef ctx, id object)
  */
 JSPrivateObject* HyperloopMakePrivateObjectForJSBuffer(JSBuffer *buffer)
 {
-	JSPrivateObject *p = (JSPrivateObject*)malloc(sizeof(JSPrivateObject));
-	p->object = (void *)buffer;
-    p->value = NAN;
-	p->type = JSPrivateObjectTypeJSBuffer;
-	p->map = nil;
-	p->context = NULL;
-	return p;
+    JSPrivateObject *p = [JSPrivateObject new];
+    p.buffer = buffer;
+    p.value = NAN;
+    p.type = JSPrivateObjectTypeJSBuffer;
+	return [p autorelease];
 }
 
 /**
@@ -44,13 +64,11 @@ JSPrivateObject* HyperloopMakePrivateObjectForJSBuffer(JSBuffer *buffer)
  */
 JSPrivateObject* HyperloopMakePrivateObjectForClass(Class cls)
 {
-	JSPrivateObject *p = (JSPrivateObject*)malloc(sizeof(JSPrivateObject));
-	p->object = (void *)cls;
-    p->value = NAN;
-	p->type = JSPrivateObjectTypeClass;
-	p->map = nil;
-	p->context = NULL;
-	return p;
+    JSPrivateObject *p = [JSPrivateObject new];
+    p.object = cls;
+    p.value = NAN;
+    p.type = JSPrivateObjectTypeClass;
+	return [p autorelease];
 }
 
 /**
@@ -58,13 +76,11 @@ JSPrivateObject* HyperloopMakePrivateObjectForClass(Class cls)
  */
 JSPrivateObject* HyperloopMakePrivateObjectForPointer(void *pointer)
 {
-    JSPrivateObject *p = (JSPrivateObject*)malloc(sizeof(JSPrivateObject));
-    p->object = pointer;
-    p->value = NAN;
-    p->type = JSPrivateObjectTypePointer;
-    p->map = nil;
-    p->context = NULL;
-    return p;
+    JSPrivateObject *p = [JSPrivateObject new];
+    p.buffer = pointer;
+    p.type = JSPrivateObjectTypePointer;
+    p.value = NAN;
+    return [p autorelease];
 }
 
 /**
@@ -72,15 +88,11 @@ JSPrivateObject* HyperloopMakePrivateObjectForPointer(void *pointer)
  */
 JSPrivateObject* HyperloopMakePrivateObjectForNumber(double value)
 {
-    JSPrivateObject *p = (JSPrivateObject*)malloc(sizeof(JSPrivateObject));
-    p->value = value;
-    p->object = NULL;
-    p->type = JSPrivateObjectTypeNumber;
-    p->map = nil;
-    p->context = NULL;
-    return p;
+    JSPrivateObject *p = [JSPrivateObject new];
+    p.value = value;
+    p.type = JSPrivateObjectTypeNumber;
+    return [p autorelease];
 }
-
 
 /**
  * destroy a JSPrivateObject stored in a JSObjectRef
@@ -90,46 +102,7 @@ void HyperloopDestroyPrivateObject(JSObjectRef object)
 	JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
 	if (p!=NULL)
 	{
-#ifdef LOG_ALLOC_DEALLOC
-		NSLog(@"HyperloopDestroyPrivateObject %p",p->context);
-#endif
-		if (p->type == JSPrivateObjectTypeID)
-		{
-			id object = (id)p->object;
-			[object release];
-		}
-		else if (p->type == JSPrivateObjectTypeJSBuffer)
-		{
-			JSBuffer *buffer = (JSBuffer*)p->object;
-			DestroyJSBuffer(buffer);
-			buffer = NULL;
-		}
-		else if (p->type == JSPrivateObjectTypeClass)
-		{
-			Class cls = (Class)p->object;
-			[cls release];
-		}
-        else if (p->type == JSPrivateObjectTypePointer)
-        {
-            p->object = NULL;
-        }
-        else if (p->type == JSPrivateObjectTypeNumber)
-        {
-            p->value = NAN;
-        }
-		if (p->map)
-		{
-			[p->map removeAllObjects];
-			[p->map release];
-			p->map=nil;
-			JSValueUnprotect(p->context,object);
-		}
-		if (p->context!=NULL)
-		{
-			p->context = NULL;
-		}
-		free(p);
-		p = NULL;
+        [p release];
 		JSObjectSetPrivate(object,0);
 	}
 }
@@ -142,11 +115,11 @@ id HyperloopGetPrivateObjectAsID(JSObjectRef object)
     if (object!=NULL)
     {
         JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
-        if (p!=NULL)
+        if (p!=nil)
         {
-            if (p->type == JSPrivateObjectTypeID)
+            if (p.type == JSPrivateObjectTypeID)
             {
-                return (id)p->object;
+                return p.object;
             }
         }
     }
@@ -161,11 +134,11 @@ Class HyperloopGetPrivateObjectAsClass(JSObjectRef object)
     if (object!=NULL)
     {
         JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
-        if (p!=NULL)
+        if (p!=nil)
         {
-            if (p->type == JSPrivateObjectTypeClass)
+            if (p.type == JSPrivateObjectTypeClass)
             {
-                return (Class)p->object;
+                return (Class)p.object;
             }
         }
     }
@@ -180,11 +153,11 @@ JSBuffer* HyperloopGetPrivateObjectAsJSBuffer(JSObjectRef object)
     if (object!=NULL)
     {
         JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
-        if (p!=NULL)
+        if (p!=nil)
         {
-            if (p->type == JSPrivateObjectTypeJSBuffer)
+            if (p.type == JSPrivateObjectTypeJSBuffer)
             {
-                return (JSBuffer*)p->object;
+                return (JSBuffer*)p.buffer;
             }
         }
     }
@@ -199,11 +172,11 @@ void* HyperloopGetPrivateObjectAsPointer(JSObjectRef object)
     if (object!=NULL)
     {
         JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
-        if (p!=NULL)
+        if (p!=nil)
         {
-            if (p->type == JSPrivateObjectTypePointer)
+            if (p.type == JSPrivateObjectTypePointer)
             {
-                return p->object;
+                return p.buffer;
             }
         }
     }
@@ -218,11 +191,11 @@ double HyperloopGetPrivateObjectAsNumber(JSObjectRef object)
     if (object!=NULL)
     {
         JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
-        if (p!=NULL)
+        if (p!=nil)
         {
-            if (p->type == JSPrivateObjectTypeNumber)
+            if (p.type == JSPrivateObjectTypeNumber)
             {
-                return p->value;
+                return p.value;
             }
         }
     }
@@ -238,9 +211,9 @@ bool HyperloopPrivateObjectIsType(JSObjectRef object, JSPrivateObjectType type)
     if (object!=NULL)
     {
         JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
-        if (p!=NULL)
+        if (p!=nil)
         {
-            return p->type == type;
+            return p.type == type;
         }
     }
 	return false;
@@ -279,51 +252,6 @@ JSValueRef HyperloopToString(JSContextRef ctx, id object)
     JSValueRef result = JSValueMakeString(ctx, descriptionStr);
     JSStringRelease(descriptionStr);
     return result;
-}
-
-/**
- * set the owner for an object
- */
-void HyperloopSetOwner(JSObjectRef object, id owner)
-{
-	JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
-	if (p!=NULL)
-	{
-		BOOL protect = YES;
-		if (p->map==nil)
-		{
-			p->map = [[NSMapTable alloc] init];
-		}
-		else
-		{
-			[p->map removeAllObjects];
-			protect = NO; // already held
-		}
-		[p->map setObject:owner forKey:@"o"];
-		if (protect)
-		{
-			JSValueProtect(p->context,object);
-		}
-	}
-}
-
-/**
- * get the owner for an object or nil if no owner or it's been released
- */
-id HyperloopGetOwner(JSObjectRef object)
-{
-	JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
-	if (p!=NULL && p->map)
-	{
-		id owner = [p->map objectForKey:@"o"];
-		if (owner==nil)
-		{
-			[p->map removeAllObjects];
-			p->map = nil;
-			JSValueUnprotect(p->context,object);
-		}
-	}
-	return nil;
 }
 
 NSData* HyperloopDecompressBuffer (NSData*  _data)
@@ -473,6 +401,66 @@ JSValueRef HyperloopLogger (JSContextRef ctx, JSObjectRef function, JSObjectRef 
     }
 
     return JSValueMakeUndefined(ctx);
+}
+
+/**
+ * run module in an existing global context
+ */
+void HyperloopRunInVM (JSGlobalContextRef globalContextRef, NSString *name, NSString *prefix, void(^completionHandler)(HyperloopJS*))
+{
+    __block NSString *bprefix = prefix;
+
+    if (bprefix == nil)
+    {
+        // use the default if nil is specified, pass an empty string to not use one
+        bprefix = @"hl$";
+    }
+
+    void (^Block)(void) = ^{
+
+        JSObjectRef globalObjectref = JSContextGetGlobalObject(globalContextRef);
+        JSStringRef prop = JSStringCreateWithUTF8CString("hyperloop$global");
+        if (!JSObjectHasProperty(globalContextRef,globalObjectref,prop))
+        {
+            JSClassDefinition def = kJSClassDefinitionEmpty;
+            JSClassRef classDef = JSClassCreate(&def);
+            JSObjectRef wrapper = JSObjectMake(globalContextRef, classDef, globalContextRef);
+            JSStringRef prop = JSStringCreateWithUTF8CString("hyperloop$global");
+            JSObjectSetProperty(globalContextRef, globalObjectref, prop, wrapper, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum | kJSPropertyAttributeDontDelete, 0);
+        }
+        JSStringRelease(prop);
+
+        // setup our globals object
+        JSStringRef globalProperty = JSStringCreateWithUTF8CString("globals");
+        if (!JSObjectHasProperty(globalContextRef,globalObjectref,globalProperty))
+        {
+            JSObjectSetProperty(globalContextRef, globalObjectref, globalProperty, globalObjectref, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete, 0);
+        }
+        JSStringRelease(globalProperty);
+
+        // load the app into the module's context and use it over the global one
+        JSObjectRef consoleObject = JSObjectMake(globalContextRef, 0, 0);
+        JSStringRef logProperty = JSStringCreateWithUTF8CString("log");
+        JSObjectRef logFunction = JSObjectMakeFunctionWithCallback(globalContextRef, logProperty, HyperloopLogger);
+        JSObjectSetProperty(globalContextRef, consoleObject, logProperty, logFunction, kJSPropertyAttributeNone, 0);
+        JSStringRelease(logProperty);
+
+        HyperloopJS *result = HyperloopLoadJSWithLogger(globalContextRef,nil,name,bprefix,consoleObject);
+
+        if (completionHandler!=nil)
+        {
+            completionHandler(result);
+        }
+    };
+
+    if ([NSThread isMainThread]) 
+    {
+        Block();
+    }
+    else 
+    {
+        dispatch_async(dispatch_get_main_queue(), Block);
+    }
 }
 
 /**
