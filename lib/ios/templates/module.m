@@ -2,7 +2,7 @@
  * Appcelerator Titanium is Copyright (c) 2009-2013 by Appcelerator, Inc.
  * and licensed under the Apache Public License (version 2)
  *
- * This is a generated file
+ * This is a generated file and any changes will be overwritten.
  */
 #import "<%=modulename%>.h"
 #import "TiBase.h"
@@ -25,13 +25,11 @@ extern void HyperloopRunInVM (TiGlobalContextRef globalContextRef, NSString *nam
 
 #pragma mark Internal
 
-// this is generated for your module, please do not change it
 -(id)moduleGUID
 {
 	return @"<%=guid%>";
 }
 
-// this is generated for your module, please do not change it
 -(NSString*)moduleId
 {
 	return @"<%=moduleid%>";
@@ -41,34 +39,20 @@ extern void HyperloopRunInVM (TiGlobalContextRef globalContextRef, NSString *nam
 
 -(void)startup
 {
-	// this method is called when the module is first loaded
-	// you *must* call the superclass
 	[super startup];
-    
-    KrollContext *kroll = [[self executionContext] krollContext];
-    TiGlobalContextRef globalContext = [kroll context];
-    HyperloopRunInVM(globalContext,@"./<%=app%>",@"<%=prefix%>",^(HyperloopJS* module){
-        NSLog(@"[DEBUG] module <%=app%> loaded = %@",module);
-    });
+
+	KrollContext *kroll = [[self executionContext] krollContext];
+	TiGlobalContextRef globalContext = [kroll context];
+
+	// run the hyperloop module in the global context of kroll
+	HyperloopRunInVM(globalContext,@"./<%=app%>",@"<%=prefix%>",^(HyperloopJS* module){
+		NSLog(@"[DEBUG] module <%=app%> loaded = %@",module);
+	});
 }
 
 -(void)shutdown:(id)sender
 {
-	// this method is called when the module is being unloaded
-	// typically this is during shutdown. make sure you don't do too
-	// much processing here or the app will be quit forceably
-	
-	// you *must* call the superclass
 	[super shutdown:sender];
 }
-
-#pragma mark Cleanup 
-
--(void)dealloc
-{
-	// release any resources that have been retained by the module
-	[super dealloc];
-}
-
 
 @end
