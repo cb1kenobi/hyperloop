@@ -6,7 +6,12 @@
  * This generated code and related technologies are covered by patents
  * or patents pending by Appcelerator, Inc.
  */
+#ifndef USE_TIJSCORE
 @import JavaScriptCore;
+#else
+#include <TiCore/TiCore.h>
+#include "ticurrent.h"
+#endif
 #import <objc/runtime.h>
 #import <malloc/malloc.h>
 #import <zlib.h>
@@ -24,13 +29,13 @@ typedef enum JSPrivateObjectType {
 	JSPrivateObjectTypeNumber = 4
 } JSPrivateObjectType;
 
-typedef struct JSPrivateObject {
-    void *object;
-    double value; // this would be good to turn into a union at some point
-   	JSPrivateObjectType type;
-   	NSMapTable *map;
-   	JSContextRef context;
-} JSPrivateObject;
+@interface JSPrivateObject : NSObject
+@property (nonatomic,retain) id object;
+@property (nonatomic,assign) void *buffer;
+@property (nonatomic,assign) double value;
+@property (nonatomic,assign) JSPrivateObjectType type;
+@property (nonatomic,assign) JSContextRef context;
+@end
 
 @protocol HyperloopFactory
 +(JSObjectRef)make:(JSContextRef)ctx instance:(id)instance;
@@ -102,16 +107,6 @@ bool HyperloopPrivateObjectIsType(JSObjectRef objectRef, JSPrivateObjectType typ
 void HyperloopDestroyPrivateObject(JSObjectRef object);
 
 /**
- * set the owner for an object
- */
-void HyperloopSetOwner(JSObjectRef object, id owner);
-
-/**
- * get the owner for an object or nil if no owner or it's been released
- */
-id HyperloopGetOwner(JSObjectRef object);
-
-/**
  * raise an exception
  */
 JSValueRef HyperloopMakeException(JSContextRef ctx, const char *message, JSValueRef *exception);
@@ -125,6 +120,11 @@ JSValueRef HyperloopToString(JSContextRef ctx, id object);
  * attempt to convert a JSValueRef to a NSString
  */
 NSString* HyperloopToNSString(JSContextRef ctx, JSValueRef value);
+
+/**
+ * run module in an existing global context
+ */
+void HyperloopRunInVM (JSGlobalContextRef ctx, NSString *name, NSString *prefix, void(^completionHandler)(HyperloopJS*));
 
 /**
  * create a hyperloop VM

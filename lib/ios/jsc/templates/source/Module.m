@@ -10,6 +10,12 @@
 #import <hyperloop.h>
 #import "NSException+NSExceptionHyperloopAdditions.h"
 
+#ifdef DEBUG_LOGGING
+    #define DEBUGLOG(...) NSLog(__VA_ARGS__)
+#else 
+    #define DEBUGLOG(...)
+#endif
+
 static NSMutableDictionary *modules;
 
 extern NSData* HyperloopDecompressBuffer (NSData*);
@@ -174,12 +180,14 @@ JSObjectRef HyperloopMakeJSObject (JSContextRef ctx, HyperloopJS *module)
     return JSObjectMake(ctx, classRef, (void*)module);
 }
 
-HyperloopJS* HyperloopLoadJS (JSContextRef ctx, HyperloopJS *parent, NSString *path, NSString *prefix) 
+HyperloopJS* HyperloopLoadJSWithLogger (JSContextRef ctx, HyperloopJS *parent, NSString *path, NSString *prefix, JSObjectRef logger)
 {
-	if (!modules)
-	{
-		modules = [[NSMutableDictionary alloc] init];
-	}
+    DEBUGLOG(@"HyperloopLoadJS called with ctx=%p, parent=%p, path=%@, prefix=%@",ctx,parent,path,prefix);
+
+    if (!modules)
+    {
+        modules = [[NSMutableDictionary alloc] init];
+    }
 
     // For the logic, we follow node.js logic here: http://nodejs.org/api/modules.html#modules_module_filename
     
@@ -188,15 +196,15 @@ HyperloopJS* HyperloopLoadJS (JSContextRef ctx, HyperloopJS *parent, NSString *p
     NSString *filepath = path;
     HyperloopJS *module = nil;
 
-	if ([path hasPrefix:@"./"] || [path hasPrefix:@"/"] || [path hasPrefix:@"../"])
-	{
-		filepath = path;
-		if (parent!=nil) 
-		{
+    if ([path hasPrefix:@"./"] || [path hasPrefix:@"/"] || [path hasPrefix:@"../"])
+    {
+        filepath = path;
+        if (parent!=nil) 
+        {
             NSString *dir = [[parent filename] stringByDeletingLastPathComponent];
-			filepath = [dir stringByAppendingPathComponent:path]; 
-		}
-		filepath = [[resourcePath stringByAppendingPathComponent:filepath] stringByStandardizingPath];
+            filepath = [dir stringByAppendingPathComponent:path]; 
+        }
+        filepath = [[resourcePath stringByAppendingPathComponent:filepath] stringByStandardizingPath];
         if ([filepath length] <= [resourcePath length])
         {
             // they have tried to ../ passed top of the root, just return nil
@@ -207,7 +215,7 @@ HyperloopJS* HyperloopLoadJS (JSContextRef ctx, HyperloopJS *parent, NSString *p
         {
             return module;
         }
-	}
+    }
     else if (parent==nil)
     {
         // not a specific path, must look at node_modules according to node spec (step 3)
@@ -220,6 +228,8 @@ HyperloopJS* HyperloopLoadJS (JSContextRef ctx, HyperloopJS *parent, NSString *p
     }
     
     Class cls = HyperloopPathToClass(filepath,prefix);
+
+    DEBUGLOG(@"HyperloopLoadJS::HyperloopPathToClass filepath=%@, prefix=%@, cls=%@",filepath,prefix,cls);
 
     if (cls == nil) 
     {
@@ -294,6 +304,8 @@ HyperloopJS* HyperloopLoadJS (JSContextRef ctx, HyperloopJS *parent, NSString *p
     {
         // make sure we strip it, since we're going to add it below
         filepath = [filepath stringByDeletingPathExtension];
+        
+        DEBUGLOG(@"HyperloopLoadJS::cls!=nil filepath=%@",filepath);
 
         HyperloopJS *module = [HyperloopJS new];
         module.id = [path hasPrefix:@"./"] ? [path substringFromIndex:2] : path;
@@ -311,8 +323,17 @@ HyperloopJS* HyperloopLoadJS (JSContextRef ctx, HyperloopJS *parent, NSString *p
         JSObjectSetProperty(ctx, moduleObjectRef, exportsProperty, module.exports, 0, 0);
         JSStringRelease(exportsProperty);
 
+        // install our own logger
+        if (logger!=NULL) 
+        {
+            JSStringRef consoleProperty = JSStringCreateWithUTF8CString("console");
+            JSObjectSetProperty(ctx, moduleObjectRef, consoleProperty, logger, 0, 0);
+            JSStringRelease(consoleProperty);
+        }
+
         // load up our JS
         Class <HyperloopModule> mcls = (Class<HyperloopModule>)cls;
+        DEBUGLOG(@"HyperloopLoadJS::mcls %@",mcls);
 
         // load up our context
         [mcls load:ctx withObject:JSContextGetGlobalObject(ctx)];
@@ -397,5 +418,10 @@ HyperloopJS* HyperloopLoadJS (JSContextRef ctx, HyperloopJS *parent, NSString *p
         return [module autorelease];
     }
 
-	return nil;
+    return nil;
+}
+
+HyperloopJS* HyperloopLoadJS (JSContextRef ctx, HyperloopJS *parent, NSString *path, NSString *prefix) 
+{
+    return HyperloopLoadJSWithLogger(ctx,parent,path,prefix,NULL);
 }

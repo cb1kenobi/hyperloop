@@ -1006,6 +1006,14 @@ static JSStaticFunction StaticFunctionArrayForJSBuffer [] = {
     { 0, 0, 0 }
 };
 
+/**
+ * called when a new JS object is created for this class
+ */
+void InitializerForJSBuffer (JSContextRef ctx, JSObjectRef object)
+{
+    JSPrivateObject *po = (JSPrivateObject *)JSObjectGetPrivate(object);
+    [po retain];
+}
 
 /**
  * called when the JS object is ready to be garbage collected
@@ -1014,7 +1022,6 @@ void FinalizerForJSBuffer (JSObjectRef object)
 {
     ReleaseBuffer(object);
 }
-
 
 /**
  * called to get the JSClassRef for JSBuffer class
@@ -1053,6 +1060,7 @@ JSClassRef CreateClassForJSBuffer ()
         ClassDefinitionForJSBuffer = kJSClassDefinitionEmpty;
         ClassDefinitionForJSBuffer.staticValues = StaticValueArrayForJSBuffer;
         ClassDefinitionForJSBuffer.staticFunctions = StaticFunctionArrayForJSBuffer;
+        ClassDefinitionForJSBuffer.initialize = InitializerForJSBuffer;
         ClassDefinitionForJSBuffer.finalize = FinalizerForJSBuffer;
         ClassDefinitionForJSBuffer.className = "JSBuffer";
 

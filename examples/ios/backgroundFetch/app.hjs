@@ -25,9 +25,7 @@ label.textAlignment = NSTextAlignmentCenter;
 label.lineBreakMode = NSLineBreakByWordWrapping;
 label.numberOfLines = 0;
 label.text = 'Loading weather...'.toUTF8();
-
 win.addSubview(label);
-
 
 var weatherUrl = NSString.stringWithFormat("http://api.openweathermap.org/data/2.5/weather?lat=%@&lon=%@", latitude, longitude);
 NSLog("Weather URL = %@", weatherUrl);
