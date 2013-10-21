@@ -6,12 +6,17 @@
  * This generated code and related technologies are covered by patents
  * or patents pending by Appcelerator, Inc.
  */
+#ifndef USE_TIJSCORE
+@import JavaScriptCore;
+#else
+#include <TiCore/TiCore.h>
+#include "ticurrent.h"
+#endif
 
 
 #ifndef JSCBuffer_JSBuffer_h
 #define JSCBuffer_JSBuffer_h
 
-#include <JavaScriptCore/JavaScriptCore.h>
 
 typedef enum JSBufferType {
 	JSBufferTypePointer, 		// default type

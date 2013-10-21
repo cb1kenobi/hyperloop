@@ -6,7 +6,12 @@
  * This generated code and related technologies are covered by patents
  * or patents pending by Appcelerator, Inc.
  */
+#ifndef USE_TIJSCORE
 @import JavaScriptCore;
+#else
+#include <TiCore/TiCore.h>
+#include "ticurrent.h"
+#endif
 
 
 @interface HyperloopJS : NSObject 
@@ -23,3 +28,4 @@
 
 JSObjectRef HyperloopMakeJSObject (JSContextRef ctx, HyperloopJS *module);
 HyperloopJS* HyperloopLoadJS (JSContextRef ctx, HyperloopJS *parent, NSString *path, NSString *prefix);
+HyperloopJS* HyperloopLoadJSWithLogger (JSContextRef ctx, HyperloopJS *parent, NSString *path, NSString *prefix, JSObjectRef logger);
