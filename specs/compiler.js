@@ -50,7 +50,7 @@ describe("compiler", function() {
 		var source = "@import('UIKit/UIButton')",
 			sourcefile = new MockSourceFile(),
 			ast = compiler.compile(source, 'test', sourcefile),
-			code = compiler.compress(ast,{},'test');
+			code = compiler.compress(ast,{},'test').code;
 		code.should.be.empty;
 		sourcefile.name.should.be.eql('test');
 		sourcefile.filename.should.be.eql('/test');
@@ -78,7 +78,7 @@ describe("compiler", function() {
 		var source = "@compiler({})",
 			sourcefile = new MockSourceFile(),
 			ast = compiler.compile(source, 'test', sourcefile),
-			code = compiler.compress(ast,{},'test');
+			code = compiler.compress(ast,{},'test').code;
 		code.should.be.empty;
 		sourcefile.name.should.be.eql('test');
 		sourcefile.filename.should.be.eql('/test');
@@ -97,7 +97,7 @@ describe("compiler", function() {
 			source = "@compiler(" + JSON.stringify(obj) + ")",
 			sourcefile = new MockSourceFile(),
 			ast = compiler.compile(source, 'test', sourcefile),
-			code = compiler.compress(ast,{},'test');
+			code = compiler.compress(ast,{},'test').code;
 		sourcefile.name.should.be.eql('test');
 		sourcefile.filename.should.be.eql('/test');
 		sourcefile.dirname.should.be.eql('/');
@@ -113,7 +113,7 @@ describe("compiler", function() {
 		var source = "var mem=@memory(1024);",
 			sourcefile = new MockSourceFile(),
 			ast = compiler.compile(source, 'test', sourcefile),
-			code = compiler.compress(ast,{},'test');
+			code = compiler.compress(ast,{},'test').code;
 		code.should.eql('var mem=JSBuffer0;');
 		sourcefile.name.should.be.eql('test');
 		sourcefile.filename.should.be.eql('/test');
@@ -124,7 +124,7 @@ describe("compiler", function() {
 		var source = "var mem=@memory();",
 			sourcefile = new MockSourceFile(),
 			ast = compiler.compile(source, 'test', sourcefile),
-			code = compiler.compress(ast,{},'test');
+			code = compiler.compress(ast,{},'test').code;
 		code.should.eql('var mem=JSBuffer1;');
 		sourcefile.name.should.be.eql('test');
 		sourcefile.filename.should.be.eql('/test');
@@ -143,7 +143,7 @@ describe("compiler", function() {
 		var source = "var obj1,obj2;@owner(obj1,obj2);",
 			sourcefile = new MockSourceFile(),
 			ast = compiler.compile(source, 'test', sourcefile),
-			code = compiler.compress(ast,{},'test');
+			code = compiler.compress(ast,{},'test').code;
 		code.should.eql('var obj1,obj2;HL$TrackOwner(obj1,obj2);');
 		sourcefile.name.should.be.eql('test');
 		sourcefile.filename.should.be.eql('/test');
@@ -154,7 +154,7 @@ describe("compiler", function() {
 		var source = "@import('UIKit/UIButton'); var Class = @class(UIButton,[Foo],{callback:function(){}})",
 			sourcefile = new MockSourceFile(),
 			ast = compiler.compile(source, 'test', sourcefile),
-			code = compiler.compress(ast,{},'test');
+			code = compiler.compress(ast,{},'test').code;
 		sourcefile.name.should.be.eql('test');
 		sourcefile.filename.should.be.eql('/test');
 		sourcefile.dirname.should.be.eql('/');
