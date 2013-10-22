@@ -1,0 +1,14 @@
+@class('MyObject', NSObject, [], [
+	{
+		name: 'doSomething',
+		returnType: 'void',
+		arguments: [],
+		action: function(params) {
+			console.log('do something');
+			throw new Error('I\'m the exception. There\'s no avoiding me.');
+		}
+	}
+]);
+
+var o = new MyObject();
+o.doSomething();
