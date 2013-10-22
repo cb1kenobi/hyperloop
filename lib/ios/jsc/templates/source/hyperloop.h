@@ -124,7 +124,7 @@ NSString* HyperloopToNSString(JSContextRef ctx, JSValueRef value);
 /**
  * run module in an existing global context
  */
-void HyperloopRunInVM (JSGlobalContextRef ctx, NSString *name, NSString *prefix, void(^completionHandler)(HyperloopJS*));
+HyperloopJS* HyperloopRunInVM (JSGlobalContextRef ctx, NSString *name, NSString *prefix, void(^initializer)(TiContextRef,TiObjectRef));
 
 /**
  * create a hyperloop VM

@@ -115,6 +115,44 @@ JSValueRef JSRequire (JSContextRef ctx, JSObjectRef function, JSObjectRef object
 }
 
 /**
+ * called to do an async dispatch on the main thread
+ */
+JSValueRef JSDispatchAsync (JSContextRef ctx, JSObjectRef function, JSObjectRef object, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
+{
+    HyperloopJS *module = (HyperloopJS*)JSObjectGetPrivate(object);
+
+    if (argumentCount!=1)
+    {
+        return HyperloopMakeException(ctx,"function takes a callback as function to invoke on main thread",exception);
+    }
+
+    JSObjectRef callback = JSValueToObject(ctx,arguments[0],exception);
+    if (!JSObjectIsFunction(ctx,callback))
+    {
+        return HyperloopMakeException(ctx,"callback must be a function",exception);
+    }
+    CHECK_EXCEPTION(ctx,*exception);
+    
+#ifdef USE_TIJSCORE
+    //NOTE: this is probably a little unsafe since we are executing JS context code on a different thread.
+    //However, it's about the best we can do for making it work on Ti.Current ATM
+    JSContextRef gctx = HyperloopGetGlobalContext(ctx);
+    JSValueProtect(gctx,object);
+    JSValueProtect(gctx,callback);
+    dispatch_async(dispatch_get_main_queue(),^{
+        JSObjectCallAsFunction(gctx, callback, object, 0, NULL, NULL);
+        JSValueUnprotect(gctx,object);
+        JSValueUnprotect(gctx,callback);
+    });
+#else
+    // for Ti.Next, we are already on the right UI main thread so just execute the function
+    JSObjectCallAsFunction(gctx, callback, object, 0, NULL, NULL);
+#endif
+
+    return JSValueMakeUndefined(ctx);
+}
+
+/**
  * called when a new JS object is created for this class
  */
 void JSInitialize (JSContextRef ctx, JSObjectRef object)
@@ -148,8 +186,9 @@ static JSStaticValue StaticValueArrayForJS [] = {
 };
 
 static JSStaticFunction StaticFunctionArrayForJS [] = {
-	{ "require", JSRequire, kJSPropertyAttributeReadOnly },
-	{ 0, 0, 0 }
+    { "require", JSRequire, kJSPropertyAttributeReadOnly },
+    { "dispatch_async", JSDispatchAsync, kJSPropertyAttributeReadOnly },
+    { 0, 0, 0 }
 };
 
 Class HyperloopPathToClass (NSString *path, NSString *prefix)
