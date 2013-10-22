@@ -146,7 +146,7 @@ JSValueRef JSDispatchAsync (JSContextRef ctx, JSObjectRef function, JSObjectRef 
     });
 #else
     // for Ti.Next, we are already on the right UI main thread so just execute the function
-    JSObjectCallAsFunction(gctx, callback, object, 0, NULL, NULL);
+    JSObjectCallAsFunction(ctx, callback, object, 0, NULL, NULL);
 #endif
 
     return JSValueMakeUndefined(ctx);
