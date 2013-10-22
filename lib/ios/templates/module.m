@@ -19,7 +19,12 @@
 @property (nonatomic, copy) NSString *prefix;
 @end
 
-extern void HyperloopRunInVM (TiGlobalContextRef globalContextRef, NSString *name, NSString *prefix, void(^completionHandler)(HyperloopJS*));
+// in Hyperloop
+extern HyperloopJS* HyperloopRunInVM (TiGlobalContextRef globalContextRef, NSString *name, NSString *prefix, void(^initializer)(TiContextRef,TiObjectRef));
+extern NSString* HyperloopToNSStringFromString(TiStringRef);
+
+// in KrollObject
+extern id TiValueToId(KrollContext* context, TiValueRef v);
 
 @implementation <%=modulename%>
 
@@ -42,11 +47,38 @@ extern void HyperloopRunInVM (TiGlobalContextRef globalContextRef, NSString *nam
 	[super startup];
 
 	KrollContext *kroll = [[self executionContext] krollContext];
-	TiGlobalContextRef globalContext = [kroll context];
+	TiGlobalContextRef ctx = [kroll context];
+
+	<%=modulename%> *me = self;
 
 	// run the hyperloop module in the global context of kroll
-	HyperloopRunInVM(globalContext,@"./<%=app%>",@"<%=prefix%>",^(HyperloopJS* module){
-		NSLog(@"[DEBUG] module <%=app%> loaded = %@",module);
+	HyperloopJS* module = HyperloopRunInVM(ctx,@"./<%=app%>",@"<%=prefix%>",^(TiContextRef context, TiObjectRef exports){
+
+		// copy all the exported properties from module into this module
+		TiPropertyNameArrayRef properties = TiObjectCopyPropertyNames(context,exports);
+		size_t count = TiPropertyNameArrayGetCount(properties);
+		for (size_t c = 0; c < count; c++)
+		{
+			TiStringRef propertyName = TiPropertyNameArrayGetNameAtIndex(properties,c);
+			TiValueRef exception = NULL;
+			TiValueRef propertyValue = TiObjectGetProperty(context,exports,propertyName,&exception);
+			if (exception!=NULL)
+			{
+				NSLog(@"[ERROR] exception attempting to load properties");
+				break;
+			}
+			size_t buflen = TiStringGetMaximumUTF8CStringSize(propertyName);
+			if (buflen)
+			{
+				char buf[buflen];
+				buflen = TiStringGetUTF8CString(propertyName, buf, buflen);
+				buf[buflen] = '\0';
+				NSString *property = [NSString stringWithUTF8String:buf];
+				id value = TiValueToId(kroll,propertyValue);
+				[me replaceValue:value forKey:property notification:NO];
+			}
+		}
+		TiPropertyNameArrayRelease(properties);
 	});
 }
 

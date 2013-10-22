@@ -406,61 +406,49 @@ JSValueRef HyperloopLogger (JSContextRef ctx, JSObjectRef function, JSObjectRef 
 /**
  * run module in an existing global context
  */
-void HyperloopRunInVM (JSGlobalContextRef globalContextRef, NSString *name, NSString *prefix, void(^completionHandler)(HyperloopJS*))
+HyperloopJS* HyperloopRunInVM (JSGlobalContextRef globalContextRef, NSString *name, NSString *prefix, void(^initializer)(TiContextRef,TiObjectRef))
 {
-    __block NSString *bprefix = prefix;
-
-    if (bprefix == nil)
+    if (prefix == nil)
     {
         // use the default if nil is specified, pass an empty string to not use one
-        bprefix = @"hl$";
+        prefix = @"hl$";
     }
 
-    void (^Block)(void) = ^{
-
-        JSObjectRef globalObjectref = JSContextGetGlobalObject(globalContextRef);
+    JSObjectRef globalObjectref = JSContextGetGlobalObject(globalContextRef);
+    JSStringRef prop = JSStringCreateWithUTF8CString("hyperloop$global");
+    if (!JSObjectHasProperty(globalContextRef,globalObjectref,prop))
+    {
+        JSClassDefinition def = kJSClassDefinitionEmpty;
+        JSClassRef classDef = JSClassCreate(&def);
+        JSObjectRef wrapper = JSObjectMake(globalContextRef, classDef, globalContextRef);
         JSStringRef prop = JSStringCreateWithUTF8CString("hyperloop$global");
-        if (!JSObjectHasProperty(globalContextRef,globalObjectref,prop))
-        {
-            JSClassDefinition def = kJSClassDefinitionEmpty;
-            JSClassRef classDef = JSClassCreate(&def);
-            JSObjectRef wrapper = JSObjectMake(globalContextRef, classDef, globalContextRef);
-            JSStringRef prop = JSStringCreateWithUTF8CString("hyperloop$global");
-            JSObjectSetProperty(globalContextRef, globalObjectref, prop, wrapper, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum | kJSPropertyAttributeDontDelete, 0);
-        }
-        JSStringRelease(prop);
-
-        // setup our globals object
-        JSStringRef globalProperty = JSStringCreateWithUTF8CString("globals");
-        if (!JSObjectHasProperty(globalContextRef,globalObjectref,globalProperty))
-        {
-            JSObjectSetProperty(globalContextRef, globalObjectref, globalProperty, globalObjectref, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete, 0);
-        }
-        JSStringRelease(globalProperty);
-
-        // load the app into the module's context and use it over the global one
-        JSObjectRef consoleObject = JSObjectMake(globalContextRef, 0, 0);
-        JSStringRef logProperty = JSStringCreateWithUTF8CString("log");
-        JSObjectRef logFunction = JSObjectMakeFunctionWithCallback(globalContextRef, logProperty, HyperloopLogger);
-        JSObjectSetProperty(globalContextRef, consoleObject, logProperty, logFunction, kJSPropertyAttributeNone, 0);
-        JSStringRelease(logProperty);
-
-        HyperloopJS *result = HyperloopLoadJSWithLogger(globalContextRef,nil,name,bprefix,consoleObject);
-
-        if (completionHandler!=nil)
-        {
-            completionHandler(result);
-        }
-    };
-
-    if ([NSThread isMainThread]) 
-    {
-        Block();
+        JSObjectSetProperty(globalContextRef, globalObjectref, prop, wrapper, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum | kJSPropertyAttributeDontDelete, 0);
     }
-    else 
+    JSStringRelease(prop);
+
+    // setup our globals object
+    JSStringRef globalProperty = JSStringCreateWithUTF8CString("globals");
+    if (!JSObjectHasProperty(globalContextRef,globalObjectref,globalProperty))
     {
-        dispatch_async(dispatch_get_main_queue(), Block);
+        JSObjectSetProperty(globalContextRef, globalObjectref, globalProperty, globalObjectref, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete, 0);
     }
+    JSStringRelease(globalProperty);
+
+    // load the app into the module's context and use it over the global one
+    JSObjectRef consoleObject = JSObjectMake(globalContextRef, 0, 0);
+    JSStringRef logProperty = JSStringCreateWithUTF8CString("log");
+    JSObjectRef logFunction = JSObjectMakeFunctionWithCallback(globalContextRef, logProperty, HyperloopLogger);
+    JSObjectSetProperty(globalContextRef, consoleObject, logProperty, logFunction, kJSPropertyAttributeNone, 0);
+    JSStringRelease(logProperty);
+
+    HyperloopJS *result = HyperloopLoadJSWithLogger(globalContextRef,nil,name,prefix,consoleObject);
+
+    if (initializer) 
+    {
+        initializer(globalContextRef,result.exports);
+    }
+
+    return result;
 }
 
 /**
@@ -714,11 +702,14 @@ id HyperloopDynamicInvoke (JSContextRef ctx, const JSValueRef *arguments, size_t
 NSString* HyperloopToNSStringFromString(JSContextRef ctx, JSStringRef stringRef)
 {
     size_t buflen = JSStringGetMaximumUTF8CStringSize(stringRef);
-    char buf[buflen];
-    buflen = JSStringGetUTF8CString(stringRef, buf, buflen);
-    buf[buflen] = '\0';
-    NSString *result = [NSString stringWithUTF8String:buf];
-    JSStringRelease(stringRef);
-    return result;
+    if (buflen)
+    {
+        char buf[buflen];
+        buflen = JSStringGetUTF8CString(stringRef, buf, buflen);
+        buf[buflen] = '\0';
+        NSString *result = [NSString stringWithUTF8String:buf];
+        return result;
+    }
+    return nil;
 }
 
