@@ -25,7 +25,7 @@ extern id HyperloopGetPrivateObjectAsID(JSObjectRef objectRef);
 @synthesize window=window;
 @synthesize mydelegate=mydelegate;
 
--(id)init 
+-(id)init
 {
 	if (self = [super init])
 	{
@@ -69,7 +69,7 @@ extern id HyperloopGetPrivateObjectAsID(JSObjectRef objectRef);
 {
 	// this happens because of the main setup of the AppDelegate
 	// in which case, we override and install our own here
-	// this is only compiled in code when we have a special app delegate 
+	// this is only compiled in code when we have a special app delegate
 	// that overrides the default
 	if ([delegate isKindOfClass:[AppDelegate class]])
 	{
