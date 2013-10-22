@@ -26,6 +26,33 @@ extern NSString* HyperloopToNSStringFromString(TiStringRef);
 // in KrollObject
 extern id TiValueToId(KrollContext* context, TiValueRef v);
 
+void TiObjectPropertyIterator(TiContextRef context, TiObjectRef object, void(^visitor)(NSString *property, TiStringRef propertyName, TiValueRef propertyValue))
+{
+	TiPropertyNameArrayRef properties = TiObjectCopyPropertyNames(context,object);
+	size_t count = TiPropertyNameArrayGetCount(properties);
+	for (size_t c = 0; c < count; c++)
+	{
+		TiStringRef propertyName = TiPropertyNameArrayGetNameAtIndex(properties,c);
+		TiValueRef exception = NULL;
+		TiValueRef propertyValue = TiObjectGetProperty(context,object,propertyName,&exception);
+		if (exception!=NULL)
+		{
+			NSLog(@"[ERROR] exception attempting to iterate properties");
+			break;
+		}
+		size_t buflen = TiStringGetMaximumUTF8CStringSize(propertyName);
+		if (buflen)
+		{
+			char buf[buflen];
+			buflen = TiStringGetUTF8CString(propertyName, buf, buflen);
+			buf[buflen] = '\0';
+			NSString *property = [NSString stringWithUTF8String:buf];
+			visitor(property,propertyName,propertyValue);
+		}
+	}
+	TiPropertyNameArrayRelease(properties);
+}
+
 @implementation <%=modulename%>
 
 #pragma mark Internal
@@ -46,8 +73,8 @@ extern id TiValueToId(KrollContext* context, TiValueRef v);
 {
 	[super startup];
 
-	KrollContext *kroll = [[self executionContext] krollContext];
-	TiGlobalContextRef ctx = [kroll context];
+	__block KrollContext *kroll = [[self executionContext] krollContext];
+	__block TiGlobalContextRef ctx = [kroll context];
 
 	<%=modulename%> *me = self;
 
@@ -55,30 +82,10 @@ extern id TiValueToId(KrollContext* context, TiValueRef v);
 	HyperloopJS* module = HyperloopRunInVM(ctx,@"./<%=app%>",@"<%=prefix%>",^(TiContextRef context, TiObjectRef exports){
 
 		// copy all the exported properties from module into this module
-		TiPropertyNameArrayRef properties = TiObjectCopyPropertyNames(context,exports);
-		size_t count = TiPropertyNameArrayGetCount(properties);
-		for (size_t c = 0; c < count; c++)
-		{
-			TiStringRef propertyName = TiPropertyNameArrayGetNameAtIndex(properties,c);
-			TiValueRef exception = NULL;
-			TiValueRef propertyValue = TiObjectGetProperty(context,exports,propertyName,&exception);
-			if (exception!=NULL)
-			{
-				NSLog(@"[ERROR] exception attempting to load properties");
-				break;
-			}
-			size_t buflen = TiStringGetMaximumUTF8CStringSize(propertyName);
-			if (buflen)
-			{
-				char buf[buflen];
-				buflen = TiStringGetUTF8CString(propertyName, buf, buflen);
-				buf[buflen] = '\0';
-				NSString *property = [NSString stringWithUTF8String:buf];
-				id value = TiValueToId(kroll,propertyValue);
-				[me replaceValue:value forKey:property notification:NO];
-			}
-		}
-		TiPropertyNameArrayRelease(properties);
+		TiObjectPropertyIterator(context,exports,^(NSString *property, TiStringRef propertyName, TiValueRef propertyValue){
+			id value = TiValueToId(kroll,propertyValue);
+			[me replaceValue:value forKey:property notification:NO];
+		});		
 	});
 }
 
