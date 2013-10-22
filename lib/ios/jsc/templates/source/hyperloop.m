@@ -406,7 +406,7 @@ JSValueRef HyperloopLogger (JSContextRef ctx, JSObjectRef function, JSObjectRef 
 /**
  * run module in an existing global context
  */
-HyperloopJS* HyperloopRunInVM (JSGlobalContextRef globalContextRef, NSString *name, NSString *prefix, void(^initializer)(TiContextRef,TiObjectRef))
+HyperloopJS* HyperloopRunInVM (JSGlobalContextRef globalContextRef, NSString *name, NSString *prefix, void(^initializer)(JSContextRef,JSObjectRef))
 {
     if (prefix == nil)
     {
