@@ -100,6 +100,12 @@ JSPrivateObject* HyperloopMakePrivateObjectForNumber(double value)
 void HyperloopDestroyPrivateObject(JSObjectRef object)
 {
 	JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
+#ifdef USE_TIJSCORE        
+    if (![p isKindOfClass:[JSPrivateObject class]])
+    {
+        return;
+    }
+#endif
 	if (p!=NULL)
 	{
         [p release];
@@ -115,6 +121,12 @@ id HyperloopGetPrivateObjectAsID(JSObjectRef object)
     if (object!=NULL)
     {
         JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
+#ifdef USE_TIJSCORE        
+        if (![p isKindOfClass:[JSPrivateObject class]])
+        {
+            return nil;
+        }
+#endif
         if (p!=nil)
         {
             if (p.type == JSPrivateObjectTypeID)
@@ -134,6 +146,12 @@ Class HyperloopGetPrivateObjectAsClass(JSObjectRef object)
     if (object!=NULL)
     {
         JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
+#ifdef USE_TIJSCORE        
+        if (![p isKindOfClass:[JSPrivateObject class]])
+        {
+            return nil;
+        }
+#endif
         if (p!=nil)
         {
             if (p.type == JSPrivateObjectTypeClass)
@@ -153,6 +171,12 @@ JSBuffer* HyperloopGetPrivateObjectAsJSBuffer(JSObjectRef object)
     if (object!=NULL)
     {
         JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
+#ifdef USE_TIJSCORE        
+        if (![p isKindOfClass:[JSPrivateObject class]])
+        {
+            return NULL;
+        }
+#endif
         if (p!=nil)
         {
             if (p.type == JSPrivateObjectTypeJSBuffer)
@@ -172,6 +196,12 @@ void* HyperloopGetPrivateObjectAsPointer(JSObjectRef object)
     if (object!=NULL)
     {
         JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
+#ifdef USE_TIJSCORE        
+        if (![p isKindOfClass:[JSPrivateObject class]])
+        {
+            return NULL;
+        }
+#endif
         if (p!=nil)
         {
             if (p.type == JSPrivateObjectTypePointer)
@@ -191,6 +221,12 @@ double HyperloopGetPrivateObjectAsNumber(JSObjectRef object)
     if (object!=NULL)
     {
         JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
+#ifdef USE_TIJSCORE        
+        if (![p isKindOfClass:[JSPrivateObject class]])
+        {
+            return NAN;
+        }
+#endif
         if (p!=nil)
         {
             if (p.type == JSPrivateObjectTypeNumber)
@@ -211,6 +247,12 @@ bool HyperloopPrivateObjectIsType(JSObjectRef object, JSPrivateObjectType type)
     if (object!=NULL)
     {
         JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
+#ifdef USE_TIJSCORE        
+        if (![p isKindOfClass:[JSPrivateObject class]])
+        {
+            return false;
+        }
+#endif
         if (p!=nil)
         {
             return p.type == type;
