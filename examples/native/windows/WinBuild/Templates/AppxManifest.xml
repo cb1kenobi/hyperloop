@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:build="http://schemas.microsoft.com/developer/appx/2012/build" IgnorableNamespaces="build">
+  <Identity Name="${tapp_name}" Publisher="CN=${tpublisher_name}" Version="${tversion}" ProcessorArchitecture="${tplatform}" />
+  <Properties>
+    <DisplayName>${tapp_display_name}</DisplayName>
+    <PublisherDisplayName>Appcelerator</PublisherDisplayName>
+    <Logo>Resources\StoreLogo.png</Logo>
+  </Properties>
+  <Prerequisites>
+    <OSMinVersion>6.2.1</OSMinVersion>
+    <OSMaxVersionTested>6.2.1</OSMaxVersionTested>
+  </Prerequisites>
+  <Resources>
+    <Resource Language="EN-US" />
+  </Resources>
+  <Applications>
+    <Application Id="App" Executable="${tapp_name}.exe" EntryPoint="${tapp_name}.App">
+      <VisualElements DisplayName="${tapp_name}" Logo="Resources\Logo.png" SmallLogo="Resources\SmallLogo.png" Description="${tapp_name}" ForegroundText="light" BackgroundColor="#464646">
+        <DefaultTile ShowName="allLogos" />
+        <SplashScreen Image="Resources\SplashScreen.png" />
+      </VisualElements>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <Capability Name="internetClient" />
+  </Capabilities>
+  <Dependencies>
+    <PackageDependency Name="Microsoft.VCLibs.110.00" MinVersion="11.0.50727.1" />
+  </Dependencies>
+</Package>
