@@ -12,27 +12,23 @@ describe("java metabase", function() {
 
 	before(function(done){
 		var p = process.env.PATH.split(path.delimiter),
-			found;
+			versions = [ '8', '17' ];
 
 		// try and find android
-		for (var c=0;c<p.length;c++) {
-			var f = p[c],
-				ad = path.join(f,'..','platforms','android-8','android.jar');
-			if (fs.existsSync(ad)) {
-				found = ad;
-				break;
-			}
-			ad = path.join(f,'..','platforms','android-17','android.jar');
-			if (fs.existsSync(ad)) {
-				found = ad;
-				break;
+		for (var c = 0; c < p.length; c++) {
+			var f = p[c];
+			for (var d = 0, dL = versions.length; d < dL; d++) {
+				var ad = path.join(f, '..', 'platforms', 'android-' + versions[d], 'android.jar');
+				if (fs.existsSync(ad)) {
+					should.exist(androidPath = ad);
+					return done();
+				}
 			}
 		}
 
-		should.exist(found);
-		androidPath = found;
+		// android was not found
+		should.exist(null, 'Android SDK with version ' + (versions.join(' or ')) + ' not found in PATH.');
 		done();
-
 	});
 
 	it("should load",function(done) {
@@ -70,7 +66,7 @@ describe("java metabase", function() {
 
 	it("should parse into file",function(done) {
 
-		var f = path.join(process.env.TMPDIR,'metabase.out');
+		var f = path.join(process.env.TMPDIR || process.env.TEMP || '/tmp','metabase.out');
 		if (fs.existsSync(f)){
 			fs.unlinkSync(f);
 		}
