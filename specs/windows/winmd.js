@@ -2,12 +2,33 @@
  * winmd test case
  */
 var should = require('should'),
-    path = require('path'),
-    fs = require('fs'),
-    ilparser = require('../../lib/windows/ilparser'),
-    templates_dir = path.join(__dirname,'winmd');
+	path = require('path'),
+	fs = require('fs'),
+	ilparser = require('../../lib/windows/ilparser'),
+	winmd = require('../../lib/windows/winmd'),
+	templates_dir = path.join(__dirname, 'winmd');
 
 describe("ilparser", function() {
+
+	it("should parse Windows.winmd", function(done) {
+		this.timeout(30000);
+		winmd.find('Windows.winmd', function(ref) {
+			should.exist(ref, 'Windows.winmd not found at ' + ref);
+			winmd.ildasm(ref, 'windows.il', function(ref) {
+				should.exist(ref, 'windows.il does not exist at ' + ref);
+				ilparser.parseFile(ref, function(err, ast) {
+					if (err) return done(err);
+					ast.should.not.be.null;
+					ast.should.have.property('metatype','toplevel');
+					ast.should.have.property('children');
+					var json = ast.toJSON();
+					json.should.not.be.null;
+					json.should.have.property('classes');
+					done();
+				});
+			});
+		});
+	});
 
 	it("should parse complex class type", function(done) {
 
