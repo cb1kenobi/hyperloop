@@ -1,3 +1,7 @@
+if (process.platform.match(/^win/)) {
+	return; // Skip these on Windows.
+}
+
 /**
  * ios xctool tests
  */

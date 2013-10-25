@@ -1,3 +1,7 @@
+if (process.platform.match(/^win/)) {
+	return; // Skip these on Windows.
+}
+
 var _ = require('underscore'),
 	fs = require('fs'),
 	log = require('../../lib/log'),
@@ -10,6 +14,7 @@ var headerFile = path.join(__dirname, 'src', 'header.h'),
 
 // turn off logging during testing
 log.level = 'quiet';
+
 
 // make sure testing it set, in case this is run directly
 process.env['HYPERLOOP_TEST'] = 1;
