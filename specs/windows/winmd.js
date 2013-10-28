@@ -10,6 +10,8 @@ var should = require('should'),
 
 describe("ilparser", function() {
 
+	// Only run this particular test on Windows.
+	if (process.platform.match(/^win/))
 	it("should parse Windows.winmd", function(done) {
 		this.timeout(30000);
 		winmd.find('Windows.winmd', function(ref) {
