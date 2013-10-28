@@ -37,6 +37,7 @@ describe("java metabase", function() {
 	});
 
 	it("should parse into buffer",function(done) {
+		this.timeout(10000);
 
 		metabase.generate(androidPath, function(err,buf){
 			should.not.exist(err);
