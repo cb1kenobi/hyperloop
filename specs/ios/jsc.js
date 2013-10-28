@@ -1,6 +1,4 @@
-if (process.platform.match(/^win/)) {
-	return; // Skip these on Windows.
-}
+if (process.platform !== 'darwin') return;
 
 /**
  * ios buildlib tests
