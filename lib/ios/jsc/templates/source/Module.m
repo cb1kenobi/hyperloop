@@ -132,7 +132,7 @@ JSValueRef JSDispatchAsync (JSContextRef ctx, JSObjectRef function, JSObjectRef 
         return HyperloopMakeException(ctx,"callback must be a function",exception);
     }
     CHECK_EXCEPTION(ctx,*exception);
-    
+
 #ifdef USE_TIJSCORE
     //NOTE: this is probably a little unsafe since we are executing JS context code on a different thread.
     //However, it's about the best we can do for making it work on Ti.Current ATM
@@ -439,7 +439,7 @@ HyperloopJS* HyperloopLoadJSWithLogger (JSContextRef ctx, HyperloopJS *parent, N
 			CHECK_EXCEPTION(ctx,exception);
 
 			JSObjectCallAsFunction(ctx, requireFn, moduleObjectRef, 1, arguments, &exception);
-
+			CHECK_EXCEPTION(ctx,exception);
 			JSStringRelease(fnName);
 			JSStringRelease(body);
 			JSStringRelease(parameterNames[0]);
