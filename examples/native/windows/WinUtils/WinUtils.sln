@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinUtils", "WinUtils\WinUtils.vcxproj", "{F1A0F0AF-03F5-45E5-B3A9-4A1A3D64060E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinUtilsTestApp", "WinUtilsTestApp\WinUtilsTestApp.vcxproj", "{62DFF49C-F391-4681-95E5-3CDA9EF9C766}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F1A0F0AF-03F5-45E5-B3A9-4A1A3D64060E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F1A0F0AF-03F5-45E5-B3A9-4A1A3D64060E}.Debug|Win32.Build.0 = Debug|Win32
+		{F1A0F0AF-03F5-45E5-B3A9-4A1A3D64060E}.Release|Win32.ActiveCfg = Release|Win32
+		{F1A0F0AF-03F5-45E5-B3A9-4A1A3D64060E}.Release|Win32.Build.0 = Release|Win32
+		{62DFF49C-F391-4681-95E5-3CDA9EF9C766}.Debug|Win32.ActiveCfg = Debug|Win32
+		{62DFF49C-F391-4681-95E5-3CDA9EF9C766}.Debug|Win32.Build.0 = Debug|Win32
+		{62DFF49C-F391-4681-95E5-3CDA9EF9C766}.Release|Win32.ActiveCfg = Release|Win32
+		{62DFF49C-F391-4681-95E5-3CDA9EF9C766}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
