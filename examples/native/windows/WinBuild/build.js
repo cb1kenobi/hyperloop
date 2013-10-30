@@ -7,7 +7,7 @@
 var exec = require('child_process').exec,
     os = require('os'),
     path = require('path'),
-    util = require('util'),
+    util = require('util/utils'),
     fs = require('fs'),
     wrench = require('wrench'),
     default_vs_bin_dir = '"C:\\Program Files (x86)\\Microsoft Visual Studio 11.0\\VC\\bin"',

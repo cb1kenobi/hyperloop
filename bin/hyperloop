@@ -6,7 +6,7 @@
 var fs = require('fs'),
 	colors = require('colors'),
 	hyperloop = require('../lib/hyperloop'),
-	log = require('../lib/log'),
+	log = require('util/log'),
 	EventEmitter = require('events').EventEmitter,
 	pkg = JSON.parse(fs.readFileSync(__dirname + '/../package.json', 'utf8')),
 	noColors = false,
