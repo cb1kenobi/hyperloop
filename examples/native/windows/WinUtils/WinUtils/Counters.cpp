@@ -1,4 +1,3 @@
-
 #include <Windows.h>
 #include <Psapi.h>
 #include "Counters.h"
@@ -24,17 +23,17 @@ namespace WinUtils
 
 	void GetGlobalMemoryCounters(COUNTERS_GLOBAL_MEMORY* pcgm)
     {
-    MEMORYSTATUSEX msx;
-    ZeroMemory(&msx,sizeof(msx));
-    msx.dwLength = sizeof(msx);
-    GlobalMemoryStatusEx(&msx);
-    pcgm->dwMemoryLoad = msx.dwMemoryLoad;
-    pcgm->ullTotalPhys = msx.ullTotalPhys;
-    pcgm->ullAvailPhys = msx.ullAvailPhys;
-    pcgm->ullTotalPageFile = msx.ullTotalPageFile;
-    pcgm->ullAvailPageFile = msx.ullAvailPageFile;
-    pcgm->ullTotalVirtual = msx.ullTotalVirtual;
-    pcgm->ullAvailVirtual =  msx.ullAvailVirtual;
-    pcgm->ullAvailExtendedVirtual = msx.ullAvailExtendedVirtual;
+		MEMORYSTATUSEX msx;
+		ZeroMemory(&msx,sizeof(msx));
+		msx.dwLength = sizeof(msx);
+		GlobalMemoryStatusEx(&msx);
+		pcgm->dwMemoryLoad = msx.dwMemoryLoad;
+		pcgm->ullTotalPhys = msx.ullTotalPhys;
+		pcgm->ullAvailPhys = msx.ullAvailPhys;
+		pcgm->ullTotalPageFile = msx.ullTotalPageFile;
+		pcgm->ullAvailPageFile = msx.ullAvailPageFile;
+		pcgm->ullTotalVirtual = msx.ullTotalVirtual;
+		pcgm->ullAvailVirtual =  msx.ullAvailVirtual;
+		pcgm->ullAvailExtendedVirtual = msx.ullAvailExtendedVirtual;
 	}
 }

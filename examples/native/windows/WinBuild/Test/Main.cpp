@@ -77,7 +77,7 @@ void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 	grid->Background = red;
 
 	TextBlock^ text = ref new TextBlock();
-	text->Text = "Touch me to find out\nwhat time it is!";
+	text->Text = "Tap me to find out\nwhat time it is!";
 	text->TextAlignment = TextAlignment::Center;
 	text->VerticalAlignment = VerticalAlignment::Center;
 	text->HorizontalAlignment = HorizontalAlignment::Center;
