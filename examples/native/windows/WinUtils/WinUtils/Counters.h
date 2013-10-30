@@ -1,3 +1,9 @@
+/*
+* WinUtils.lib is a wrapper library to allow Windows Store apps to get low level process and debugger info.
+*
+* Russ
+*/
+
 typedef struct _COUNTERS_PROCESS_MEMORY {
     DWORD PageFaultCount;
     SIZE_T PeakWorkingSetSize;
@@ -21,15 +27,13 @@ typedef struct _COUNTERS_GLOBAL_MEMORY {
     DWORDLONG ullAvailExtendedVirtual;
 } COUNTERS_GLOBAL_MEMORY;
 
-
-
 namespace WinUtils
 {
     class Counters
     {
     public:
-        static void GetProcessMemoryCounters(COUNTERS_PROCESS_MEMORY* pcpm);
-		static void GetGlobalMemoryCounters(COUNTERS_GLOBAL_MEMORY* pcgm);
+        static void GetProcessMemoryCounters(/*out*/COUNTERS_PROCESS_MEMORY* pcpm);
+		static void GetGlobalMemoryCounters(/*out*/COUNTERS_GLOBAL_MEMORY* pcgm);
     };
 }
 

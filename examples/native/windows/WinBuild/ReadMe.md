@@ -1,11 +1,11 @@
 
-How to Build C++/CX Application From Command-Line
-=================================================
+Build C++/CX Application from Command-Line
+------------------------------------------
 
 This sample shows how to build and deploy a Windows Store (Metro) Application using Microsoft command-line tools. A Node.JS script wraps several tools that will compile, link, sign and and deploy the generate APPX package.
 
-Prerequisites Before Running Build
-----------------------------------
+Prerequisites Prior to Running Build
+------------------------------------
 
 - Download and install VisualStudio Professional 2013. The download page is at  http://www.microsoft.com/visualstudio/eng/products/2013-editions#d-professional. VisualStudio Professional 2012 will also work.
 
@@ -42,13 +42,56 @@ Once the prerequisites have been taken care you can build and deploy by running 
 
 	node build --thumbprint <THUMB_PRINT> --src_dir <SOURCE_FILE_DIR>
 
+Commands in Node Script
+-----------------------
 
-Current Sample Limitations
---------------------------
+To use MS command-line tools the build environment must be setup correctly. By running the appropriate vcvars bat file the platform specific version of cl.exe (Compiler) and link.exe (Linker) will be run. The follow scripts are in the default location from a Visual Studio 2012 installation.
+
+- Target x86 (32 bit)
+
+		C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\vcvars32.bat
+
+- Target Arm
+
+		C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_arm\vcvarsx86_arm.bat
+
+- Target x64
+
+		C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\vcvarsx86_amd64.bat
+
+- Compile
+
+		cl.exe /c /ZW /ZI /EHsc Main.cpp
+
+- Link
+		
+		link.exe Main.obj vccorlib.lib runtimeobject.lib ole32.lib /APPCONTAINER  /SUBSYSTEM:WINDOWS
+
+- Package. The minimal APPX file will contain the executable, a AppxManifest file and the assets listed in the manifest.
+
+		makeappx.exe pack /d . /p <APP_NAME>.appx
+
+- Sign APPX Package
+
+		signtool.exe sign /sm /fd sha256 /sha1 <THUMBPRINT> <APP_NAME>.appx
+
+- Install Package:
+
+		powershell Remove-AppxPackage <APP_FULL_NAME>
+		powershell Add-AppxPackage <APP_NAME>.appx
+
+- To start app:
+
+		powershell -command "AppLauncher.ps1; Get-MetroApp |? entrypoint -match <APP_NAME> |Start-MetroApp"
+
+
+
+Current Limitations
+-------------------
 
 - Only compiling Main.cpp
 
 - Incremental building has not been enable
 
-- Need to process Include and Library path 
+- Need to process Include and Library path
 
