@@ -21,3 +21,4 @@ Debug
 *.opensdf
 .idea
 Thumbs.db
+*.user
