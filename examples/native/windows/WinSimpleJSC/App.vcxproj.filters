@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Utils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Headers.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h" />
+    <ClInclude Include="TestCreateObject.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="TestCreateTextBlock.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="TestToBoolean.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="TestToNumber.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="TestToObject.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="TestToString.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="TestCallFunction.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="TestCreateClass.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\Logo.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SmallLogo.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SplashScreen.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\StoreLogo.png">
+      <Filter>Assets</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App_Key.pfx" />
+    <None Include="App_TemporaryKey.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{ee410bef-81b8-4c83-ad90-9133990b7280}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tests">
+      <UniqueIdentifier>{319c959a-2fa0-47a6-a056-8785d3081c25}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

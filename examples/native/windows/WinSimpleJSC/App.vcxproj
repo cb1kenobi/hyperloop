@@ -134,10 +134,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="TapHandler.cpp" />
+    <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="TapHandler.h" />
+    <ClInclude Include="Headers.h" />
+    <ClInclude Include="TestCallFunction.h" />
+    <ClInclude Include="TestCreateClass.h" />
+    <ClInclude Include="TestCreateObject.h" />
+    <ClInclude Include="TestCreateTextBlock.h" />
+    <ClInclude Include="TestToBoolean.h" />
+    <ClInclude Include="TestToNumber.h" />
+    <ClInclude Include="TestToObject.h" />
+    <ClInclude Include="TestToString.h" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
