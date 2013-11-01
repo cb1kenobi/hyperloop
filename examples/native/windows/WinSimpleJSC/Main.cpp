@@ -44,10 +44,6 @@ void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 {
 	String^ out = "Results:";
 	JSObjectRef global = JSContextGetGlobalObject(context);
-	JSStringRef string;
-	JSValueRef result;
-	JSStringRef params;
-	JSStringRef className;
 
 	TestToString::run(out, context, global);
 	TestToBoolean::run(out, context, global);
