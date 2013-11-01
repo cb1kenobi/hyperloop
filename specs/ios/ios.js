@@ -8,7 +8,7 @@ var should = require('should'),
 	fs = require('fs'),
 	temp = require('temp'),
 	exec = require('child_process').exec,
-	log = require('util/log'),
+	log = require('../../lib/log'),
 	buildlib = require('../../lib/ios/buildlib'),
 	settings;
 
