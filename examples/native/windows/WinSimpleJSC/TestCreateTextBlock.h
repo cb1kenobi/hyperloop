@@ -17,19 +17,20 @@ public:
 	}
 };
 
-JSClassRef textBlockClass;
+// TODO: Question: I put this out here so I could access it from the static constructor to create the new object. It works, but is this good form?
+JSClassRef TextBlockClass;
 
 class TestCreateTextBlock
 {
 public:
-
+	// TODO: Question: All of this is static; is that necessary? Am I blindly missing an easier / better way?
 	static void run(String^ &out, JSContextRef ctx, JSObjectRef global) {
-		// Create our class.
+		// Define our text block class and constructor.
 		JSClassDefinition textBlockClassDefinition = kJSClassDefinitionEmpty;
-		textBlockClass = JSClassCreate(&textBlockClassDefinition);
+		TextBlockClass = JSClassCreate(&textBlockClassDefinition);
 		textBlockClassDefinition.callAsConstructor = TextBlockConstructor;
 		textBlockClassDefinition.finalize = TextBlockDestructor;
-		JSObjectRef textBlock = JSObjectMakeConstructor(ctx, textBlockClass, TextBlockConstructor);
+		JSObjectRef textBlock = JSObjectMakeConstructor(ctx, TextBlockClass, TextBlockConstructor);
 
 		// Add to its prototype...
 		JSObjectRef prototype = JSValueToObject(ctx, JSObjectGetPrototype(ctx, textBlock), NULL);
@@ -62,15 +63,16 @@ public:
 		JSObjectSetProperty(ctx, global, className, textBlock, kJSPropertyAttributeNone, NULL);
 		JSStringRelease(className);
 
-		// Call Object.defineProperty.
+		// Call Object.defineProperty on our prototype.
+		// TODO: Question: Is eval'ing a script too heavy? Is there a better way to expose property get;set; on the prototype without having a catch-all?
+		// TODO: Benchmark: How heavy is using a catch-all vs using the following?
 		JSStringRef defineProperty = JSStringCreateWithUTF8CString("Object.defineProperty(TextBlock.prototype, 'text', { get: TextBlock.prototype.getText, set: TextBlock.prototype.setText });");
 		JSEvaluateScript(ctx, defineProperty, global, NULL, 0, NULL);
 		JSStringRelease(defineProperty);
 
-		// Add a global "Window { Current: { Content: get; set; } }" object.
+		// Add a global "Window { Current: { Content: set; } }" object.
 		JSStringRef sWindow = JSStringCreateWithUTF8CString("Window"),
-			sCurrent = JSStringCreateWithUTF8CString("Current"),
-			sContent = JSStringCreateWithUTF8CString("Content");
+			sCurrent = JSStringCreateWithUTF8CString("Current");
 		JSClassDefinition currentDefinition = kJSClassDefinitionEmpty;
 		JSStaticValue currentValues[] = {
 			{ "Content", 0, SetCurrentContent, kJSPropertyAttributeNone },
@@ -85,8 +87,8 @@ public:
 		JSObjectSetProperty(ctx, global, sWindow, window, kJSPropertyAttributeNone, NULL);
 		JSStringRelease(sWindow);
 		JSStringRelease(sCurrent);
-		JSStringRelease(sContent);
 
+		// Test out our new class.
 		JSStringRef string = JSStringCreateWithUTF8CString("var textBlock = new TextBlock();\ntextBlock.text = 'Hello, world!';\nWindow.Current.Content = textBlock;");
 		JSValueRef result = JSEvaluateScript(ctx, string, global, NULL, 0, NULL);
 		JSStringRef sValue = JSValueToStringCopy(ctx, result, NULL);
@@ -103,7 +105,7 @@ public:
 		text->HorizontalAlignment = HorizontalAlignment::Center;
 		text->FontSize = 36;
 		poc->set(text);
-		return JSObjectMake(ctx, textBlockClass, poc);
+		return JSObjectMake(ctx, TextBlockClass, poc);
 	}
 
 	static JSValueRef TextBlockSetText(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
