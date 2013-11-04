@@ -6,6 +6,9 @@ using namespace Platform;
 class Utils
 {
 public:
-	static Platform::String^ convertJSString(JSStringRef sValue);
+	static Platform::String^ getPlatformString(JSStringRef sValue);
+	static JSStringRef getJSStringRef(Platform::String^ string);
+private:
+	Utils();
 };
 

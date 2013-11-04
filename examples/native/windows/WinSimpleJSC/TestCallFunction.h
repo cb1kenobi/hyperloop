@@ -10,7 +10,7 @@ public:
 		JSValueRef arguments = JSValueMakeNumber(context, 1337);
 		JSObjectRef print = JSObjectMakeFunction(context, NULL, 1, &params, string, NULL, 1, NULL);
 		JSValueRef result = JSObjectCallAsFunction(context, print, global, 1, &arguments, NULL);
-		out += "\n func " + Utils::convertJSString(string) + " = " + JSValueToNumber(context, result, NULL);
+		out += "\n func " + Utils::getPlatformString(string) + " = " + JSValueToNumber(context, result, NULL);
 		JSStringRelease(params);
 		JSStringRelease(string);
 	}

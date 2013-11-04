@@ -8,7 +8,7 @@ public:
 		JSStringRef string = JSStringCreateWithUTF8CString("{ \"eat\": \"cheese\" }");
 		JSValueRef oValue = JSValueMakeFromJSONString(context, string);
 		JSStringRef soValue = JSValueCreateJSONString(context, oValue, 4, NULL);
-		out += "\n" + Utils::convertJSString(string) + " = " + Utils::convertJSString(soValue);
+		out += "\n" + Utils::getPlatformString(string) + " = " + Utils::getPlatformString(soValue);
 		JSStringRelease(soValue);
 		JSStringRelease(string);
 	}

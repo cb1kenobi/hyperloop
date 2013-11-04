@@ -15,12 +15,12 @@ public:
 		string = JSStringCreateWithUTF8CString("var tree = new Tree('Redwood');\ntree.name");
 		JSValueRef result = JSEvaluateScript(context, string, global, NULL, 0, NULL);
 		JSStringRef sValue = JSValueToStringCopy(context, result, NULL);
-		out += "\n" + Utils::convertJSString(string) + " = " + Utils::convertJSString(sValue);
+		out += "\n" + Utils::getPlatformString(string) + " = " + Utils::getPlatformString(sValue);
 		JSStringRelease(string);
 		string = JSStringCreateWithUTF8CString("var tree = new Tree('Aspen');\ntree.constructor");
 		result = JSEvaluateScript(context, string, global, NULL, 0, NULL);
 		sValue = JSValueToStringCopy(context, result, NULL);
-		out += "\n" + Utils::convertJSString(string) + " = " + Utils::convertJSString(sValue);
+		out += "\n" + Utils::getPlatformString(string) + " = " + Utils::getPlatformString(sValue);
 		JSStringRelease(string);
 	}
 };
