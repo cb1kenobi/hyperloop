@@ -2,7 +2,7 @@ if (process.platform !== 'darwin') return;
 
 var _ = require('underscore'),
 	fs = require('fs'),
-	log = require('util/log'),
+	log = require('../../lib/log'),
 	metabase = require('../../lib/ios/metabase'),
 	path = require('path'),
 	should = require('should');

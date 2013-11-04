@@ -7,7 +7,7 @@ var should = require('should'),
 	path = require('path'),
 	fs = require('fs'),
 	temp = require('temp'),
-	log = require('util/log'),
+	log = require('../../lib/log'),
 	buildlib = require('../../lib/ios/buildlib'),
 	settings;
 
