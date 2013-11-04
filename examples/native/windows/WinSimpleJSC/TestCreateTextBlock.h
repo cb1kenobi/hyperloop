@@ -12,6 +12,9 @@ public:
 	DependencyObject^ get() {
 		return obj;
 	}
+	void clean() {
+		obj = nullptr;
+	}
 };
 
 JSClassRef textBlockClass;
@@ -61,13 +64,30 @@ public:
 
 		// Call Object.defineProperty.
 		JSStringRef defineProperty = JSStringCreateWithUTF8CString("Object.defineProperty(TextBlock.prototype, 'text', { get: TextBlock.prototype.getText, set: TextBlock.prototype.setText });");
-		JSEvaluateScript(ctx, defineProperty, JSContextGetGlobalObject(ctx), NULL, 0, NULL);
+		JSEvaluateScript(ctx, defineProperty, global, NULL, 0, NULL);
 		JSStringRelease(defineProperty);
 
-		// TODO: Expose read-only "Window" object with property "Current", and sub-property "content" (which sets Window::Current->Content).
-		// TODO: If we comment out "window->Content = text;" in Main.cpp, we should be able to see the TextBlock created below.
+		// Add a global "Window { Current: { Content: get; set; } }" object.
+		JSStringRef sWindow = JSStringCreateWithUTF8CString("Window"),
+			sCurrent = JSStringCreateWithUTF8CString("Current"),
+			sContent = JSStringCreateWithUTF8CString("Content");
+		JSClassDefinition currentDefinition = kJSClassDefinitionEmpty;
+		JSStaticValue currentValues[] = {
+			{ "Content", 0, SetCurrentContent, kJSPropertyAttributeNone },
+			{ 0, 0, 0, 0 }
+		};
+		currentDefinition.staticValues = currentValues;
+		JSClassRef windowClass = JSClassCreate(&kJSClassDefinitionEmpty),
+			currentClass = JSClassCreate(&currentDefinition);
+		JSObjectRef window = JSObjectMake(ctx, windowClass, NULL),
+			current = JSObjectMake(ctx, currentClass, NULL);
+		JSObjectSetProperty(ctx, window, sCurrent, current, kJSPropertyAttributeNone, NULL);
+		JSObjectSetProperty(ctx, global, sWindow, window, kJSPropertyAttributeNone, NULL);
+		JSStringRelease(sWindow);
+		JSStringRelease(sCurrent);
+		JSStringRelease(sContent);
 
-		JSStringRef string = JSStringCreateWithUTF8CString("var textBlock = new TextBlock();\ntextBlock.text = 'Hi!';\ntextBlock.text");
+		JSStringRef string = JSStringCreateWithUTF8CString("var textBlock = new TextBlock();\ntextBlock.text = 'Hello, world!';\nWindow.Current.Content = textBlock;");
 		JSValueRef result = JSEvaluateScript(ctx, string, global, NULL, 0, NULL);
 		JSStringRef sValue = JSValueToStringCopy(ctx, result, NULL);
 		out += "\n" + Utils::getPlatformString(string) + " = " + Utils::getPlatformString(sValue);
@@ -77,7 +97,12 @@ public:
 
 	static JSObjectRef TextBlockConstructor(JSContextRef ctx, JSObjectRef constructor, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
 		PrivateObjectContainer* poc = new PrivateObjectContainer();
-		poc->set(ref new TextBlock());
+		TextBlock^ text = ref new TextBlock();
+		text->TextAlignment = TextAlignment::Center;
+		text->VerticalAlignment = VerticalAlignment::Center;
+		text->HorizontalAlignment = HorizontalAlignment::Center;
+		text->FontSize = 36;
+		poc->set(text);
 		return JSObjectMake(ctx, textBlockClass, poc);
 	}
 
@@ -101,6 +126,17 @@ public:
 	}
 
 	static void TextBlockDestructor(JSObjectRef object) {
+		void* raw = JSObjectGetPrivate(object);
+		reinterpret_cast<PrivateObjectContainer*>(raw)->clean();
+	}
+
+	static bool SetCurrentContent(JSContextRef ctx, JSObjectRef object, JSStringRef propertyName, JSValueRef value, JSValueRef* exception) {
+		// TODO: Validate args.
+		JSObjectRef obj = JSValueToObject(ctx, value, NULL);
+		void* raw = JSObjectGetPrivate(obj);
+		UIElement^ ui = (UIElement^)reinterpret_cast<PrivateObjectContainer*>(raw)->get();
+		Window::Current->Content = ui;
+		return true;
 	}
 
 };

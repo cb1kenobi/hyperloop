@@ -63,7 +63,8 @@ void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 	text->FontSize = 36;
 
 	Window^ window = Window::Current;
-	window->Content = text;
+	// Note: To see the results of TestCreateTextBlock, comment out the following line.
+	//window->Content = text;
 	window->Activate();
 }
 
