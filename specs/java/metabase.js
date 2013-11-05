@@ -52,11 +52,11 @@ describe("java metabase", function() {
 		metabase.generateJSON(androidPath, function(err,json){
 			should.not.exist(err);
 			should.exist(json);
-			json.should.be.a('object');
-			json.classes.should.be.a('object');
+			json.should.be.an.Object;
+			json.classes.should.be.an.Object;
 			should.exist(json.classes['android.app.Activity']);
-			json.classes['android.app.Activity'].properties.should.be.a('object');
-			json.classes['android.app.Activity'].methods.should.be.a('object');
+			json.classes['android.app.Activity'].properties.should.be.an.Object;
+			json.classes['android.app.Activity'].methods.should.be.an.Object;
 			json.classes['android.app.Activity'].superClass.should.eql('android.view.ContextThemeWrapper');
 			json.classes['android.app.Activity'].metatype.should.eql('class');
 			json.classes['android.app.Activity'].package.should.eql('android.app');
@@ -77,8 +77,8 @@ describe("java metabase", function() {
 			should.exist(f);
 			should.exist(fs.existsSync(f));
 			var json = JSON.parse(fs.readFileSync(f).toString());
-			json.should.be.a('object');
-			json.classes.should.be.a('object');
+			json.should.be.an.Object;
+			json.classes.should.be.an.Object;
 			should.exist(json.classes['android.app.Activity']);
 			fs.unlinkSync(f);
 			done();
