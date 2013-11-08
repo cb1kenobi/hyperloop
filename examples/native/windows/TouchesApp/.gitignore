@@ -1,0 +1,26 @@
+*.mode*
+*.pbxuser
+*.perspective*
+*.pyc
+.DS_Store
+.directory
+build/
+/WebKitBuild/
+autoinstall.cache.d
+project.xcworkspace
+xcuserdata
+
+# Ignore auto-generated files by VS2005 and VS2010.
+bin/
+obj/
+Debug/
+Release/
+ipch/
+*.vcproj.*.user
+*.suo
+*.ncb
+*.vcxproj.user
+*.log
+
+# Ignore generated Windows files
+Thumbs.db
