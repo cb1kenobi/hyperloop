@@ -26,9 +26,7 @@ ref class ManipulationHandler sealed
 {
 public:
 	 ManipulationHandler();
-	 void ManipulationHandler::ManipulationStarted(Object^ sender, ManipulationStartedRoutedEventArgs^ e);
-	 void ManipulationHandler::ManipulationDelta(Object^ sender, ManipulationDeltaRoutedEventArgs^ e);
-	 void ManipulationHandler::ManipulationCompleted(Object^ sender, ManipulationCompletedRoutedEventArgs^ e);
+	 void ManipulationDelta(Object^ sender, ManipulationDeltaRoutedEventArgs^ e);
 
 private:
 	float angle_;
@@ -73,11 +71,10 @@ public:
 private:
 	ManipulationHandler^ manipulationHandler1;
 	ManipulationHandler^ manipulationHandler2;
+	ManipulationHandler^ manipulationHandler3;
 };
 
-MyApp::MyApp()
-{
-}
+MyApp::MyApp(){}
 
 void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 {
@@ -98,6 +95,10 @@ void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 	this->manipulationHandler2 = ref new ManipulationHandler();
 	ManipulationDeltaEventHandler^ manipulationDelta2 = 
 		ref new ManipulationDeltaEventHandler(manipulationHandler2, &ManipulationHandler::ManipulationDelta);
+
+	this->manipulationHandler3 = ref new ManipulationHandler();
+	ManipulationDeltaEventHandler^ manipulationDelta3 = 
+		ref new ManipulationDeltaEventHandler(manipulationHandler3, &ManipulationHandler::ManipulationDelta);
 
 	Canvas^ view = ref new Canvas();
 	Canvas::SetTop(view, 50);
@@ -122,6 +123,18 @@ void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 	view2->ManipulationMode =  ManipulationModes::All;
 	view2->ManipulationDelta::add(manipulationDelta2);
 	canvas->Children->Append(view2);
+
+	Canvas^ view3 = ref new Canvas();
+	Canvas::SetTop(view3, 50);
+	Canvas::SetLeft(view3, 650);
+	view3->Width = 200;
+	view3->Height = 300;
+	SolidColorBrush^ green = ref new SolidColorBrush();
+	green->Color = Colors::Green;
+	view3->Background = green;
+	view3->ManipulationMode =  ManipulationModes::All;
+	view3->ManipulationDelta::add(manipulationDelta3);
+	canvas->Children->Append(view3);
 
 	window->Content = canvas;
 	window->Activate();
