@@ -58,7 +58,8 @@ module.exports = function(grunt) {
       src: TEST_SRC
     },
     clean: {
-      cov: ['coverage']
+      cov: ['coverage'],
+      test: ['_tmp']
     }
   });
 
