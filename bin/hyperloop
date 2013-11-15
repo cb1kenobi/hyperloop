@@ -122,7 +122,7 @@ processor.on('log-level', function(v) {
 });
 
 processor.parse(function(err,options,args){
-	if (args.length < 1) {
+	if (args.length < 1 || args[0] === 'help') {
 		return processor.emit('help');
 	}
 	var command = args[0],

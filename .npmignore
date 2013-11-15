@@ -12,3 +12,4 @@ coverage
 npm-debug.log
 examples
 specs
+_tmp
