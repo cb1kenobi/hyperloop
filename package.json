@@ -51,7 +51,8 @@
     "istanbul": "~0.1.44",
     "grunt-mocha-test": "~0.7.0",
     "grunt-contrib-clean": "~0.5.0",
-    "grunt-contrib-jshint": "~0.7.1"
+    "grunt-contrib-jshint": "~0.7.1",
+    "nock": "~0.23.0"
   },
   "engines": {
     "node": ">=0.10.15"
