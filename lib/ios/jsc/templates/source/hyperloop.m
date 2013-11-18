@@ -7,6 +7,8 @@
  * or patents pending by Appcelerator, Inc.
  */
 #import "hyperloop.h"
+#import "JSBuffer.h"
+#import "NSException+NSExceptionHyperloopAdditions.h"
 
 //#define LOG_ALLOC_DEALLOC
 
@@ -417,6 +419,19 @@ NSString* HyperloopToNSString(JSContextRef ctx, JSValueRef value)
             void *pointer = HyperloopGetPrivateObjectAsPointer(objectRef);
             return [NSString stringWithFormat:@"%p",pointer];
         }
+        // see if we have a defined toString function and if so, use it
+        JSStringRef toStringProp = JSStringCreateWithUTF8CString("toString");
+        if (JSObjectHasProperty(ctx,objectRef,toStringProp)) {
+            JSValueRef resultRef = JSObjectGetProperty(ctx,objectRef,toStringProp,0);
+            JSStringRelease(toStringProp);
+            if (JSValueIsObject(ctx,resultRef)) 
+            {
+                JSObjectRef functionRef = JSValueToObject(ctx,resultRef,0);
+                resultRef = JSObjectCallAsFunction(ctx,functionRef,objectRef,0,0,0);
+                return HyperloopToNSString(ctx,resultRef);
+            }
+        }
+        JSStringRelease(toStringProp);
     }
     JSStringRef stringRef = JSValueCreateJSONString(ctx, value, 0, 0);
     size_t buflen = JSStringGetMaximumUTF8CStringSize(stringRef);
@@ -523,6 +538,33 @@ JSGlobalContextRef HyperloopCreateVM (NSString *name, NSString *prefix)
     JSStringRef globalProperty = JSStringCreateWithUTF8CString("globals");
     JSObjectSetProperty(globalContextRef, globalObjectref, globalProperty, globalObjectref, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete, 0);
     JSStringRelease(globalProperty);
+
+    // see if we need to load any custom js (these are JS files that are common across platform)
+    id customJS =  NSClassFromString([NSString stringWithFormat:@"%@CustomJS",prefix]);
+    if (customJS) 
+    {
+        // will be nil in cases we didn't load any of the classes, which is perfectly OK
+        NSData* compressedBuf = [customJS performSelector:@selector(buffer)];
+        if (compressedBuf && [compressedBuf length] > 0) 
+        {
+            BOOL usesArrayBuffer = (BOOL) [customJS performSelector:@selector(useArrayBuffer)];
+            if (usesArrayBuffer) 
+            {
+                JSStringRef bufProperty = JSStringCreateWithUTF8CString("JSBuffer");
+                JSObjectRef jsobject = MakeObjectForJSBufferConstructor (globalContextRef);
+                JSObjectSetProperty(globalContextRef, globalObjectref, bufProperty, jsobject, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum | kJSPropertyAttributeDontDelete, 0);
+                JSStringRelease(bufProperty);
+            }
+            // load up the buffer
+            NSData *buffer = HyperloopDecompressBuffer(compressedBuf);
+            NSString *jscode = [[[NSString alloc] initWithData:buffer encoding:NSUTF8StringEncoding] autorelease];
+            JSStringRef script = JSStringCreateWithUTF8CString([jscode UTF8String]);
+            JSValueRef exception = NULL;
+            JSEvaluateScript(globalContextRef,script,globalObjectref,NULL,0,&exception);
+            JSStringRelease(script);
+            CHECK_EXCEPTION(globalContextRef,exception);
+        }
+    }
 
     // retain it
     JSGlobalContextRetain(globalContextRef);

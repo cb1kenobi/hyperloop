@@ -186,12 +186,217 @@ assert(m.toChar(1) == 'z', "@memory.toChar(1)", m.toChar(1));
 assert(m.toChar(2) == 'u', "@memory.toChar(2)", m.toChar(2));
 assert(m.toChar(3) == 'c', "@memory.toChar(3)", m.toChar(3));
 
+//Typed Arrays tests
+
+var buf = new Int8Array(1);
+buf[0] = 1;
+buf[1] = 2; // should be ignored
+assert(buf.length === 1, "new Int8Array(1).length", buf.length);
+assert(buf.byteLength === 1, "new Int8Array(1).byteLength", buf.byteLength);
+assert(buf.byteOffset === 0, "new Int8Array(1).byteOffset", buf.byteOffset);
+assert(buf.toString() === '[object Int8Array]', "new Int8Array(1).toString()", buf.toString());
+assert(buf.buffer.toString() === '[object ArrayBuffer]', "new Int8Array(1).buffer.toString()", buf.buffer.toString());
+assert(buf[0] === 1, "new Int8Array(1)[0]", buf[0]);
+assert(buf[1] === undefined, "new Int8Array(1)[1]", buf[1]);
+assert(buf.buffer.byteLength === 1, "new Int8Array(1).buffer.byteLength", buf.buffer.byteLength);
+assert(buf.buffer.length === 1, "new Int8Array(1).buffer.length", buf.buffer.length);
+assert(ArrayBuffer.isView(buf), "ArrayBuffer.isView(buf)", ArrayBuffer.isView(buf));
+assert(!ArrayBuffer.isView({}), "ArrayBuffer.isView({})", ArrayBuffer.isView({}));
+assert(Int8Array.BYTES_PER_ELEMENT===1,"Int8Array.BYTES_PER_ELEMENT",Int8Array.BYTES_PER_ELEMENT);
+
+buf = new Int8Array();
+assert(buf.length === 0, "new Int8Array(1).length", buf.length);
+assert(buf.byteLength === 0, "new Int8Array(1).byteLength", buf.byteLength);
+assert(buf.byteOffset === 0, "new Int8Array(1).byteOffset", buf.byteOffset);
+assert(buf.toString() === '[object Int8Array]', "new Int8Array(1).toString()", buf.toString());
+assert(buf.buffer.toString() === '[object ArrayBuffer]', "new Int8Array(1).buffer.toString()", buf.buffer.toString());
+assert(buf[0] === undefined, "new Int8Array(1)[0]", buf[0]);
+assert(buf[1] === undefined, "new Int8Array(1)[1]", buf[1]);
+assert(buf.buffer.byteLength === 0, "new Int8Array(1).buffer.byteLength", buf.buffer.byteLength);
+
+buf = new Int8Array(2);
+buf[0]=1;
+buf[1]=2;
+assert(buf.length === 2, "new Int8Array(1).length", buf.length);
+assert(buf.byteLength === 2, "new Int8Array(1).byteLength", buf.byteLength);
+assert(buf.byteOffset === 0, "new Int8Array(1).byteOffset", buf.byteOffset);
+assert(buf.toString() === '[object Int8Array]', "new Int8Array(1).toString()", buf.toString());
+assert(buf.buffer.toString() === '[object ArrayBuffer]', "new Int8Array(1).buffer.toString()", buf.buffer.toString());
+assert(buf[0] === 1, "new Int8Array(1)[0]", buf[0]);
+assert(buf[1] === 2, "new Int8Array(1)[1]", buf[1]);
+assert(buf.buffer.byteLength === 2, "new Int8Array(1).buffer.byteLength", buf.buffer.byteLength);
+
+buf = new Int8Array(10);
+var buf2 = buf.buffer.slice(0,1);
+assert(buf2.byteLength === 1, "Int8Array(10).byteLength", buf2.byteLength);
+
+buf = new Int8Array(10);
+buf2 = buf.buffer.slice(0,10);
+assert(buf2.byteLength === 10, "Int8Array(10).byteLength", buf2.byteLength);
+
+buf2 = buf.buffer.slice(0,20);
+// should clamp to the length
+assert(buf2.byteLength === 10, "buf.buffer.slice(0,20).byteLength", buf2.byteLength);
+
+// test a basic array buffer
+buf = new ArrayBuffer(16);
+assert(buf.byteLength === 16, "new ArrayBuffer(16).byteLength", buf.byteLength);
+
+buf = new Int8Array(2);
+buf[0] = 1;
+buf[1] = 2;
+
+buf2 = new Int8Array(buf);
+assert(buf.byteLength === buf2.byteLength, "Int8Array(buf) buf.byteLength === buf2.byteLength", buf.byteLength === buf2.byteLength);
+assert(buf2[0] === 1, "Int8Array(buf) buf2[0] === 1", buf2[0]);
+assert(buf2[1] === 2, "Int8Array(buf)  buf2[1] === 2", buf2[1]);
+
+buf2 = new Int8Array(buf.buffer.slice(0));
+assert(buf.byteLength === buf2.byteLength, "Int8Array(buf.buffer.slice(0)) buf.byteLength === buf2.byteLength", buf.byteLength === buf2.byteLength);
+assert(buf2[0] === 1, "Int8Array(buf.buffer.slice(0)) buf2[0] === 1", buf2[0]);
+assert(buf2[1] === 2, "Int8Array(buf.buffer.slice(0)) buf2[1] === 2", buf2[1]);
+
+buf2 = new Int8Array(buf.buffer.slice(0),0,1);
+assert(buf2.byteLength === 1, "Int8Array(buf.buffer.slice(0),0,1) buf2.byteLength === 1", buf2.byteLength);
+assert(buf2[0] === 1, "Int8Array(buf.buffer.slice(0),0,1) buf2[0] === 1", buf2[0]);
+
+buf2 = new Int8Array([1,2,3]);
+assert(buf2.byteLength === 3, "Int8Array([1,2,3]) buf2.byteLength === 3", buf2.byteLength);
+assert(buf2[0] === 1, "Int8Array([1,2,3]) buf2[0] === 1", buf2[0]);
+assert(buf2[1] === 2, "Int8Array([1,2,3]) buf2[0] === 2", buf2[1]);
+assert(buf2[2] === 3, "Int8Array([1,2,3]) buf2[0] === 3", buf2[2]);
+
+buf = new Int16Array(1);
+buf[0] = 1;
+assert(buf.length === 1, "new Int16Array(1).length", buf.length);
+assert(buf.byteLength === 2, "new Int16Array(1).byteLength", buf.byteLength);
+assert(buf.byteOffset === 0, "new Int16Array(1).byteOffset", buf.byteOffset);
+assert(buf.toString() === '[object Int16Array]', "new Int16Array(1).toString()", buf.toString());
+assert(buf.buffer.toString() === '[object ArrayBuffer]', "new Int16Array(1).buffer.toString()", buf.buffer.toString());
+assert(buf[0] === 1, "new Int16Array(1)[0]", buf[0]);
+assert(buf[1] === undefined, "new Int16Array(1)[1]", buf[1]);
+assert(buf.buffer.byteLength === 2, "new Int16Array(1).buffer.byteLength", buf.buffer.byteLength);
+assert(buf.buffer.length === 1, "new Int16Array(1).buffer.length", buf.buffer.length);
+assert(Int16Array.BYTES_PER_ELEMENT===2,"Int16Array.BYTES_PER_ELEMENT",Int16Array.BYTES_PER_ELEMENT);
+
+buf = new Int32Array(1);
+buf[0] = 1;
+assert(buf.length === 1, "new Int32Array(1).length", buf.length);
+assert(buf.byteLength === 4, "new Int32Array(1).byteLength", buf.byteLength);
+assert(buf.byteOffset === 0, "new Int32Array(1).byteOffset", buf.byteOffset);
+assert(buf.toString() === '[object Int32Array]', "new Int32Array(1).toString()", buf.toString());
+assert(buf.buffer.toString() === '[object ArrayBuffer]', "new Int32Array(1).buffer.toString()", buf.buffer.toString());
+assert(buf[0] === 1, "new Int32Array(1)[0]", buf[0]);
+assert(buf[1] === undefined, "new Int32Array(1)[1]", buf[1]);
+assert(buf.buffer.byteLength === 4, "new Int32Array(1).buffer.byteLength", buf.buffer.byteLength);
+assert(buf.buffer.length === 1, "new Int32Array(1).buffer.length", buf.buffer.length);
+assert(Int32Array.BYTES_PER_ELEMENT===4,"Int32Array.BYTES_PER_ELEMENT",Int32Array.BYTES_PER_ELEMENT);
+
+buf = new Uint16Array(1);
+buf[0] = 1;
+assert(buf.length === 1, "new Uint16Array(1).length", buf.length);
+assert(buf.byteLength === 2, "new Uint16Array(1).byteLength", buf.byteLength);
+assert(buf.byteOffset === 0, "new Uint16Array(1).byteOffset", buf.byteOffset);
+assert(buf.toString() === '[object Uint16Array]', "new Uint16Array(1).toString()", buf.toString());
+assert(buf.buffer.toString() === '[object ArrayBuffer]', "new Uint16Array(1).buffer.toString()", buf.buffer.toString());
+assert(buf[0] === 1, "new Uint16Array(1)[0]", buf[0]);
+assert(buf[1] === undefined, "new Uint16Array(1)[1]", buf[1]);
+assert(buf.buffer.byteLength === 2, "new Uint16Array(1).buffer.byteLength", buf.buffer.byteLength);
+assert(buf.buffer.length === 1, "new Uint16Array(1).buffer.length", buf.buffer.length);
+assert(Uint16Array.BYTES_PER_ELEMENT===2,"Uint16Array.BYTES_PER_ELEMENT",Uint16Array.BYTES_PER_ELEMENT);
+
+buf = new Uint32Array(1);
+buf[0] = 1;
+assert(buf.length === 1, "new Uint32Array(1).length", buf.length);
+assert(buf.byteLength === 4, "new Uint32Array(1).byteLength", buf.byteLength);
+assert(buf.byteOffset === 0, "new Uint32Array(1).byteOffset", buf.byteOffset);
+assert(buf.toString() === '[object Uint32Array]', "new Uint32Array(1).toString()", buf.toString());
+assert(buf.buffer.toString() === '[object ArrayBuffer]', "new Uint32Array(1).buffer.toString()", buf.buffer.toString());
+assert(buf[0] === 1, "new Uint32Array(1)[0]", buf[0]);
+assert(buf[1] === undefined, "new Uint32Array(1)[1]", buf[1]);
+assert(buf.buffer.byteLength === 4, "new Uint32Array(1).buffer.byteLength", buf.buffer.byteLength);
+assert(buf.buffer.length === 1, "new Uint32Array(1).buffer.length", buf.buffer.length);
+assert(Uint32Array.BYTES_PER_ELEMENT===4,"Uint32Array.BYTES_PER_ELEMENT",Uint32Array.BYTES_PER_ELEMENT);
+
+buf = new Float32Array(1);
+buf[0] = 1;
+assert(buf.length === 1, "new Float32Array(1).length", buf.length);
+assert(buf.byteLength === 4, "new Float32Array(1).byteLength", buf.byteLength);
+assert(buf.byteOffset === 0, "new Float32Array(1).byteOffset", buf.byteOffset);
+assert(buf.toString() === '[object Float32Array]', "new Float32Array(1).toString()", buf.toString());
+assert(buf.buffer.toString() === '[object ArrayBuffer]', "new Float32Array(1).buffer.toString()", buf.buffer.toString());
+assert(buf[0] === 1, "new Float32Array(1)[0]", buf[0]);
+assert(buf[1] === undefined, "new Float32Array(1)[1]", buf[1]);
+assert(buf.buffer.byteLength === 4, "new Float32Array(1).buffer.byteLength", buf.buffer.byteLength);
+assert(buf.buffer.length === 1, "new Float32Array(1).buffer.length", buf.buffer.length);
+assert(Float32Array.BYTES_PER_ELEMENT===4,"Float32Array.BYTES_PER_ELEMENT",Float32Array.BYTES_PER_ELEMENT);
+
+buf = new Float64Array(1);
+buf[0] = 1;
+assert(buf.length === 1, "new Float64Array(1).length", buf.length);
+assert(buf.byteLength === 8, "new Float64Array(1).byteLength", buf.byteLength);
+assert(buf.byteOffset === 0, "new Float64Array(1).byteOffset", buf.byteOffset);
+assert(buf.toString() === '[object Float64Array]', "new Float64Array(1).toString()", buf.toString());
+assert(buf.buffer.toString() === '[object ArrayBuffer]', "new Float64Array(1).buffer.toString()", buf.buffer.toString());
+assert(buf[0] === 1, "new Float64Array(1)[0]", buf[0]);
+assert(buf[1] === undefined, "new Float64Array(1)[1]", buf[1]);
+assert(buf.buffer.byteLength === 8, "new Float64Array(1).buffer.byteLength", buf.buffer.byteLength);
+assert(buf.buffer.length === 1, "new Float64Array(1).buffer.length", buf.buffer.length);
+assert(Float64Array.BYTES_PER_ELEMENT===8,"Float64Array.BYTES_PER_ELEMENT",Float64Array.BYTES_PER_ELEMENT);
+
+buf = new Uint8ClampedArray(1);
+buf[0] = 1;
+assert(buf.length === 1, "new Uint8ClampedArray(1).length", buf.length);
+assert(buf.byteLength === 1, "new Uint8ClampedArray(1).byteLength", buf.byteLength);
+assert(buf.byteOffset === 0, "new Uint8ClampedArray(1).byteOffset", buf.byteOffset);
+assert(buf.toString() === '[object Uint8ClampedArray]', "new Uint8ClampedArray(1).toString()", buf.toString());
+assert(buf.buffer.toString() === '[object ArrayBuffer]', "new Uint8ClampedArray(1).buffer.toString()", buf.buffer.toString());
+assert(buf[0] === 1, "new Uint8ClampedArray(1)[0]", buf[0]);
+assert(buf[1] === undefined, "new Uint8ClampedArray(1)[1]", buf[1]);
+assert(buf.buffer.byteLength === 1, "new Uint8ClampedArray(1).buffer.byteLength", buf.buffer.byteLength);
+assert(buf.buffer.length === 1, "new Uint8ClampedArray(1).buffer.length", buf.buffer.length);
+assert(Uint8ClampedArray.BYTES_PER_ELEMENT===1,"Uint8ClampedArray.BYTES_PER_ELEMENT",Uint8ClampedArray.BYTES_PER_ELEMENT);
 
 
+buf = new Uint8ClampedArray(1);
+buf[0] = -1;
+assert(buf[0] === 0, "new Uint8ClampedArray(1)[0]", buf[0]);
+buf[0] = 256;
+assert(buf[0] === 255, "new Uint8ClampedArray(1)[0]", buf[0]);
+
+var littleEndian = (function() {
+  var buffer = new ArrayBuffer(2);
+  new DataView(buffer).setInt16(0, 256, true);
+  return new Int16Array(buffer)[0] === 256;
+})();
+assert(littleEndian,"littleEndian",littleEndian);
 
 
+buf = new ArrayBuffer(2);
+var dataview = new DataView(buf);
+dataview.setInt8(0,1);
+assert(dataview.getInt8(0)===1,"dataview.getInt8(0)",dataview.getInt8(0));
+assert(dataview.getUint8(0)===1,"dataview.getUint8(0)",dataview.getUint8(0));
+assert(dataview.getInt16(0)===1,"dataview.getInt16(0)",dataview.getInt16(0));
+assert(dataview.getUint16(0)===1,"dataview.getUint16(0)",dataview.getUint16(0));
+assert(dataview.getInt8()===1,"dataview.getInt8()",dataview.getInt8());
+assert(dataview.getUint8()===1,"dataview.getUint8()",dataview.getUint8());
+assert(dataview.getInt16()===1,"dataview.getInt16()",dataview.getInt16());
+assert(dataview.getUint16()===1,"dataview.getUint16()",dataview.getUint16());
 
+dataview.setInt32(0,1);
 
+assert(dataview.getInt32(0)===1,"dataview.getInt32(0)",dataview.getInt32(0));
+assert(dataview.getUint32(0)===1,"dataview.getUint32(0)",dataview.getUint32(0));
+assert(dataview.getInt32()===1,"dataview.getInt32()",dataview.getInt32());
+assert(dataview.getUint32()===1,"dataview.getUint32()",dataview.getUint32());
 
+dataview.setFloat32(0,2.32);
 
+assert(dataview.getFloat32(0)===2.319999933242798,"dataview.getFloat32(0)",dataview.getFloat32(0));
+assert(dataview.getFloat32()===2.319999933242798,"dataview.getFloat32()",dataview.getFloat32());
 
+dataview.setFloat64(0,2.32);
+
+assert(dataview.getFloat64(0)===2.32,"dataview.getFloat64(0)",dataview.getFloat64(0));
+assert(dataview.getFloat64()===2.32,"dataview.getFloat64()",dataview.getFloat64());
