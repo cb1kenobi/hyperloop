@@ -251,6 +251,7 @@ describe('util.js', function() {
 		it('executes without error when given valid parameters', function(done) {
 			util.downloadResourceIfNecessary(NAME, VERSION, URL, CHECKSUM, DIR, function(err) {
 				should.not.exist(err);
+				done();
 			});
 		});
 
