@@ -11,6 +11,7 @@
 #import <hyperloop.h>
 #import <malloc/malloc.h>
 
+
 static JSClassDefinition ClassDefinitionForJSBufferConstructor;
 static JSClassDefinition ClassDefinitionForJSBuffer;
 static JSClassRef JSBufferClassDefForConstructor;
@@ -104,14 +105,42 @@ if (argumentCount >= index + 1) \
     else if (JSValueIsString(ctx,arg)) { \
         JSStringRef string = JSValueToStringCopy(ctx, arg, exception);\
         CHECK_EXCEPTION_UNDEFINED\
-        const JSChar* charBuf = JSStringGetCharactersPtr(string);\
-        varname = (double)charBuf[0];\
-        JSStringRelease(string);\
+        size_t buflen = JSStringGetMaximumUTF8CStringSize(string);\
+        char buf[buflen];\
+        buflen = JSStringGetUTF8CString(string, buf, buflen);\
+        buf[buflen] = '\0';\
+        NSString *result = [NSString stringWithUTF8String:buf];\
+        varname = [result doubleValue];\
     } \
     else {\
         varname = NAN; \
     }\
 }\
+
+#define GET_CHAR(index,varname) \
+char varname = 0;\
+if (argumentCount >= index + 1) \
+{ \
+    JSValueRef arg = arguments[index];\
+    if (JSValueIsNumber(ctx,arg)) { \
+        varname = JSValueToNumber(ctx, arg, exception);\
+        CHECK_EXCEPTION_UNDEFINED \
+    }\
+    else if (JSValueIsBoolean(ctx,arg)) { \
+        varname = (double)JSValueToBoolean(ctx, arg);\
+        CHECK_EXCEPTION_UNDEFINED \
+    }\
+    else if (JSValueIsString(ctx,arg)) { \
+        JSStringRef string = JSValueToStringCopy(ctx, arg, exception);\
+        CHECK_EXCEPTION_UNDEFINED\
+        const JSChar* charBuf = JSStringGetCharactersPtr(string);\
+        varname = (char)charBuf[0];\
+    } \
+    else {\
+        varname = NAN; \
+    }\
+}\
+
 
 
 #define GET_ARRAY(type) \
@@ -479,7 +508,7 @@ JSValueRef putCharForJSBuffer (JSContextRef ctx, JSObjectRef function, JSObjectR
         CHECK_SIZE_AND_GROW(sizeof(char),(index + values_size - 1));
         SET_JSVALUES_AS_PRIMITIVE(char, index, values, values_size);
     } else {
-        GET_NUMBER(0,value);
+        GET_CHAR(0,value);
         GET_NUMBER(1,index);
         CHECK_SIZE_AND_GROW(sizeof(char),index);
         PRIMITIVE_SET(char,index);
@@ -1034,6 +1063,7 @@ JSClassRef CreateClassForJSBufferConstructor ()
         init = true;
 
         ClassDefinitionForJSBufferConstructor = kJSClassDefinitionEmpty;
+        ClassDefinitionForJSBufferConstructor.staticValues = StaticValueArrayForJSBuffer;
         ClassDefinitionForJSBufferConstructor.callAsConstructor = MakeInstanceForJSBuffer;
         ClassDefinitionForJSBufferConstructor.callAsFunction = MakeInstanceFromFunctionForJSBuffer;
         ClassDefinitionForJSBufferConstructor.className = "JSBufferConstructor";
