@@ -91,7 +91,7 @@ module.exports = function(grunt) {
 
   // run tests
   grunt.registerTask('test', 'run tests', function(type) {
-    grunt.task.run('mochaTest' + (type ? ':' + type : ''));
+    grunt.task.run('mochaTest' + (type ? ':' + type : ''), 'clean:test');
   });
 
   // Register tasks
