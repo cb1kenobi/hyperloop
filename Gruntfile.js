@@ -1,5 +1,7 @@
-var exec = require('child_process').exec,
-  path = require('path');
+var child = require('child_process'),
+  path = require('path'),
+  exec = child.exec,
+  spawn = child.spawn;
 
 var BIN = './node_modules/.bin/',
   TEST_SRC = ['test/bin/*_test.js', 'test/lib/**/*.js'];
@@ -91,10 +93,38 @@ module.exports = function(grunt) {
 
   // run tests
   grunt.registerTask('test', 'run tests', function(type) {
-    grunt.task.run('mochaTest' + (type ? ':' + type : ''), 'clean:test');
+
+    // run the original test suite, not currently tied to travis or coverage reports
+    // TODO: remove this option once new testing covers the same cases
+    if (type === 'old') {
+      var done = this.async(),
+        cmd = BIN + '_mocha',
+        args = ['--require', 'lib/test', '--recursive', '--reporter', 'list', './specs', '--timeout', '60s'];
+
+      grunt.log.debug(cmd + ' ' + args.join(' '));
+
+      var _mocha = spawn(cmd, args);
+      _mocha.stdout.on('data', function(data) {
+        if (!(/^[\s\r\n\t]*$/.test(data)) && !(/: \x1b\x5b\x30\x6d$/.test(data))) {
+          process.stdout.write(data);
+        }
+      });
+      _mocha.stderr.on('data', function(data) {
+        process.stdout.write(data);
+      });
+      _mocha.on('close', function(code) {
+        if (code !== 0) {
+          console.error('return code: ' + code);
+        }
+      });
+
+    // run the new mocha tests used with travis and coverage reports
+    } else {
+      grunt.task.run('mochaTest' + (type ? ':' + type : ''));
+    }
   });
 
   // Register tasks
-  grunt.registerTask('default', ['clean:cov', 'jshint', 'test', 'coverage']);
+  grunt.registerTask('default', ['test', 'clean:test']);
 
 };

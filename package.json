@@ -15,7 +15,7 @@
     "hyperloop": "./bin/hyperloop"
   },
   "scripts": {
-    "test": "mocha --require lib/test --recursive --reporter list ./specs --timeout 60s"
+    "test": "grunt test"
   },
   "main": "./lib/hyperloop",
   "repository": {
