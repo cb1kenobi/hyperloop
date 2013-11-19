@@ -12,7 +12,7 @@ var TMP = path.join('.', '_tmp'),
 	RX_NO_SUCH_FILE = /no such file/,
 	RX_BAD_ARGUMENT = /Bad argument/;
 
-describe('util.js', function() {
+describe('lib/util.js', function() {
 
 	describe('#copyAndFilterEJS', function() {
 		var ejsObj = { key1: 'this is key 1', key2: 'another key' },

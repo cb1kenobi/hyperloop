@@ -13,8 +13,7 @@ var headerFile = path.join(__dirname, 'src', 'header.h'),
 // turn off logging during testing
 log.level = 'quiet';
 
-
-// make sure testing it set, in case this is run directly
+// make sure testing is set, in case this is run directly
 process.env['HYPERLOOP_TEST'] = 1;
 
 describe('ios metabase', function() {
