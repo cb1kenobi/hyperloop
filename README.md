@@ -1,4 +1,4 @@
-# Hyperloop ∞
+# Hyperloop ∞ [![Build Status](https://travis-ci.org/appcelerator/hyperloop.png)](https://travis-ci.org/appcelerator/hyperloop)
 
 Hyperloop is a next-generation compiler that converts JavaScript source code into native code for targeting different native OS platforms.
 
@@ -9,7 +9,7 @@ Hyperloop is a next-generation compiler that converts JavaScript source code int
 Hyperloop currently only builds for iOS. It requires the following:
 
 * [Node.js](http://nodejs.org/) >= 0.10.5
-* iOS SDK 7.0.  
+* iOS SDK 7.0.
 
 > Currently, hyperloop is only being developed and tested on OSX. Windows and Linux will eventually be supported officially.
 
@@ -103,7 +103,7 @@ project  : hyperloop
  commits  : 325
  active   : 46 days
  files    : 259
- authors  : 
+ authors  :
    198	Jeff Haynie             60.9%
     68	Tony Lukasavage         20.9%
     22	matt-langston           6.8%
