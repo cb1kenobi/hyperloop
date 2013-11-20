@@ -4,8 +4,6 @@ var log = require('../../lib/log'),
 var DUMMY = 'dummy message',
 	RESET = '\x1b[39m';
 
-// TODO: Additional testing when log functions are called with multiple arguments
-
 describe('lib/log.js', function() {
 
 	[
@@ -14,8 +12,7 @@ describe('lib/log.js', function() {
 		{ name: 'info', color: '\x1B[32m'},
 		{ name: 'log', color: '\x1B[37m'},
 		{ name: 'warn', color: '\x1B[33m'},
-		{ name: 'error', color: '\x1B[31m'},
-		//{ name: 'fatal', color: '\x1B[90m'}
+		{ name: 'error', color: '\x1B[31m'}
 	].forEach(function(level) {
 
 		describe('#' + level.name, function() {
@@ -103,6 +100,12 @@ describe('lib/log.js', function() {
 			});
 
 		});
+
+	});
+
+	describe('#fatal', function() {
+
+		it('prints error message then aborts application');
 
 	});
 
