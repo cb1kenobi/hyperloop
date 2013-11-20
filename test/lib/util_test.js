@@ -288,7 +288,7 @@ describe('lib/util.js', function() {
 			util.escapePaths('/`path`/to/something').should.equal('/\\`path\\`/to/something');
 			util.escapePaths('/path\\/to\\/something').should.equal('/path\\\\/to\\\\/something');
 			util.escapePaths('/"path"/\'to\'/$`something` else').should.equal('/\\"path\\"/\\\'to\\\'/\\$\\`something\\`\\ else');
-		})
+		});
 
 	});
 
