@@ -114,7 +114,7 @@ function initBuffers() {
         -1.0,  1.0,  0.0,
          1.0,  1.0,  0.0
     ];
-    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
     starVertexPositionBuffer.itemSize = 3;
     starVertexPositionBuffer.numItems = 4;
 
@@ -126,7 +126,7 @@ function initBuffers() {
         0.0, 1.0,
         1.0, 1.0
     ];
-    gl.bufferData(gl.ARRAY_BUFFER, textureCoords, gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW);
     starVertexTextureCoordBuffer.itemSize = 2;
     starVertexTextureCoordBuffer.numItems = 4;
 }
