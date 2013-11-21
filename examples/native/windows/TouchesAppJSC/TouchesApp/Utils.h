@@ -17,16 +17,15 @@ private:
 class PrivateObjectContainer
 {
 private:
-	DependencyObject^ obj;
+	Object^ obj;
 public:
-	void set(DependencyObject^ obj) {
+	void set(Object^ obj) {
 		this->obj = obj;
 	}
-	DependencyObject^ get() {
+	Object^ get() {
 		return obj;
 	}
 	void clean() {
 		obj = nullptr;
 	}
 };
-

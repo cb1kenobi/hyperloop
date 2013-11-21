@@ -1,9 +1,7 @@
 /*
- * Simple Windows Store (Metro) C++/CX app that runs on ARM and x86 Windows. 
- * 
- * (Note that this will not yet run on Windows Phone.)
+ * Simple app to demonstrate native control hookup using JavaScript. 
  *
- * Russ + Dawsonish
+ * Russ + Dawson
  *
  */
 #include <Windows.h>
@@ -12,6 +10,7 @@
 #include <Windows_UI_Xaml_Controls_Canvas.hpp>
 #include <Windows_UI_Xaml_Media_SolidColorBrush.hpp>
 #include <Windows_UI_Xaml_Window.hpp>
+#include <ManipulationHandler.hpp>
 
 using namespace Windows::UI;
 using namespace Windows::UI::Core;
@@ -27,59 +26,12 @@ using namespace Windows::ApplicationModel::Activation;
 using namespace Windows::Globalization;
 using namespace Platform::Details;
 
-//using namespace std;
-
-ref class ManipulationHandler sealed
-{
-public:
-	 ManipulationHandler();
-	 void ManipulationDelta(Object^ sender, ManipulationDeltaRoutedEventArgs^ e);
-
-private:
-	float angle_;
-	Point translation_;
-};
-
-ManipulationHandler::ManipulationHandler()
-	: angle_(0.0), translation_(0.0, 0.0) {}
-
-void ManipulationHandler::ManipulationDelta(Object^ sender, ManipulationDeltaRoutedEventArgs^ e)
-{
-    Canvas^ view = (Canvas^)e->OriginalSource;
-
-	view->RenderTransformOrigin = Point(.5, .5);
-	RotateTransform^ rotateTransform = ref new RotateTransform();
-	//((ManipulationHandler^)sender)->angle_ +=  e->Delta.Rotation;
-	angle_ +=  e->Delta.Rotation;
-	rotateTransform->Angle = angle_;
-	
-	TranslateTransform^ translateTransform = ref new TranslateTransform();
-	translation_.X += e->Delta.Translation.X;
-	translation_.Y += e->Delta.Translation.Y;
-	translateTransform->X = translation_.X;
-	translateTransform->Y = translation_.Y;
-
-	// Scale easier to set size properties directly
-	view->Width += e->Delta.Expansion;
-	view->Height += e->Delta.Expansion;
-
-	TransformGroup^ transformGroup = ref new TransformGroup(); 
-	transformGroup->Children->Append(rotateTransform);  
-	transformGroup->Children->Append(translateTransform);
-	view->RenderTransform = transformGroup;
-
-	e->Handled = true;
-}
-
 ref class MyApp sealed : public ::Application
 {
 public:
 	MyApp();
 	virtual void OnLaunched(LaunchActivatedEventArgs^ args) override;
 private:
-	ManipulationHandler^ manipulationHandler1;
-	ManipulationHandler^ manipulationHandler2;
-	ManipulationHandler^ manipulationHandler3;
 
 	JSContextRef context;
 };
@@ -94,77 +46,43 @@ void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 	JSObjectRef global = JSContextGetGlobalObject(context);
 
 	// ToDo use AddRef on object to keep it around rather then add to App
+	/*
 	this->manipulationHandler1 = ref new ManipulationHandler();
 	ManipulationDeltaEventHandler^ manipulationDelta1 = 
 		ref new ManipulationDeltaEventHandler(manipulationHandler1, &ManipulationHandler::ManipulationDelta);
-
-	this->manipulationHandler2 = ref new ManipulationHandler();
-	ManipulationDeltaEventHandler^ manipulationDelta2 = 
-		ref new ManipulationDeltaEventHandler(manipulationHandler2, &ManipulationHandler::ManipulationDelta);
-
-	this->manipulationHandler3 = ref new ManipulationHandler();
-	ManipulationDeltaEventHandler^ manipulationDelta3 = 
-		ref new ManipulationDeltaEventHandler(manipulationHandler3, &ManipulationHandler::ManipulationDelta);
-
-	/*
-	Canvas^ view = ref new Canvas();
-	Canvas::SetTop(view, 50);
-	Canvas::SetLeft(view, 50);
-	view->Width = 200;
-	view->Height = 300;
-	SolidColorBrush^ red = ref new SolidColorBrush();
-	red->Color = Colors::Red;
-	view->Background = red;
-	view->ManipulationMode =  ManipulationModes::All;	
-	view->ManipulationDelta::add(manipulationDelta1);
-	canvas->Children->Append(view);
-
-	Canvas^ view2 = ref new Canvas();
-	Canvas::SetTop(view2, 50);
-	Canvas::SetLeft(view2, 350);
-	view2->Width = 200;
-	view2->Height = 300;
-	SolidColorBrush^ yellow = ref new SolidColorBrush();
-	yellow->Color = Colors::Yellow;
-	view2->Background = yellow;
-	view2->ManipulationMode =  ManipulationModes::All;
-	view2->ManipulationDelta::add(manipulationDelta2);
-	canvas->Children->Append(view2);
-	*/
-
+    */
+	
 
 	Windows_UI_Xaml_Controls_Canvas::create(context, global);
 	Windows_UI_Xaml_Media_SolidColorBrush::create(context, global);
 	Windows_UI_Xaml_Window::create(context, global);
+	ManipulationHandler::create(context, global);
 
 	/* ToDo:
 	   1) Need Windows Bounds
 	   2) Need Canvas Children 
 	   3) Need Event Handler
-	   4) Activate should not need an arg
+	   4) Need to use add through ManipulationDelta object
+	   5) Support singleton objects so new is not done on them
+	   6) JS api names match MS names fo caps see Dawsons Sample
+	   7) For JS defined handlers use prepended UID?
     */
-
-	//Window^ window = Window::Current;
-	// ...
-	//canvas->Width = window->Bounds.Width;
-	//canvas->Height = window->Bounds.Height;
-	// ...
-	//canvas->Children->Append(view);
-	// ...
-	//view->ManipulationMode =  ManipulationModes::All;
-	//view->ManipulationDelta::add(manipulationDelta2);
-	// ...
-	///window->Activate();
 
 	// Objects are available in runtime now use them	
 	JSStringRef string = JSStringCreateWithUTF8CString(
 											"var Colors = { Red : 0, Yellow : 1, Green : 2, Blue: 3 };\n"
+											"var ManipulationModes = { All : 0 };\n"
+
 											"var canvas = new Canvas();\n"
 											"canvas.width = 1600;\n"
 											"canvas.height = 900;\n"
 											"var blue = new SolidColorBrush();\n"
 											"blue.color = Colors.Blue;\n"
 											"canvas.background = blue;\n"
+
+											"var handler = new ManipulationHandler();\n"
+											"//var delta = new ManipulationDeltaEventHandler(handler,\n"
+											"//                                       manipulationDelta);\n"	
 
 											"var view = new Canvas();\n"
 											"view.width = 200;\n"
@@ -175,6 +93,8 @@ void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 											"canvas.setTop(view, 50);\n"
 											"canvas.setLeft(view, 50);\n"
 											"canvas.append(view);\n"
+											"//view.ManipulationMode = ManipulationModes.All;\n"
+											"//view.add(delta);\n"
 
 											"var view2 = new Canvas();\n"
 											"view2.width = 200;\n"
@@ -198,7 +118,13 @@ void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 
 											"var window = new Window();\n"
 											"window.content = canvas;\n"
-											"window.activate(1);\n"
+											"window.activate();\n"
+
+											"function manipulationDelta(sender, e) {\n"
+											"	//var rotateTransform = new RotateTransform();\n"
+											"	//var view = e.OriginalSource;\n"
+											"   //var angle = e.Rotation;\n"
+											"}\n"
 											 ); 
 	JSValueRef result = JSEvaluateScript(context, string, global, NULL, 0, NULL);
 	JSStringRef sValue = JSValueToStringCopy(context, result, NULL);

@@ -50,13 +50,18 @@ public:
 		JSStringRelease(defineProperty);
 	}
 
-
 	static JSObjectRef classConstructor(JSContextRef ctx, JSObjectRef constructor, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
 		PrivateObjectContainer* poc = new PrivateObjectContainer();
 		Window^ nobj = Window::Current;
 		JSClassDefinition classDefinition = kJSClassDefinitionEmpty;
 		JSClassRef classDef = JSClassCreate(&classDefinition);
+		poc->set(nobj);
 		return JSObjectMake(ctx, classDef, (void*)nobj);
+	}
+
+	static void classDestructor(JSObjectRef object) {
+		void* raw = JSObjectGetPrivate(object);
+		reinterpret_cast<PrivateObjectContainer*>(raw)->clean();
 	}
 
 	static JSValueRef SetContent(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
@@ -66,6 +71,7 @@ public:
 		JSObjectRef objRef = JSValueToObject(ctx, val, NULL);
 		raw = JSObjectGetPrivate(objRef);
 		Window^ nobj = Window::Current;
+
 		nobj->Content =  (UIElement^)reinterpret_cast<PrivateObjectContainer*>(raw)->get();
 		return val;
 	}
@@ -74,13 +80,7 @@ public:
 		JSValueRef val = arguments[0];
 		Window^ nobj = Window::Current;
 		nobj->Activate();
-		return val;
+		return JSValueMakeUndefined(ctx);
 	}
-
-	static void classDestructor(JSObjectRef object) {
-		void* raw = JSObjectGetPrivate(object);
-		reinterpret_cast<PrivateObjectContainer*>(raw)->clean();
-	}
-
 };
 

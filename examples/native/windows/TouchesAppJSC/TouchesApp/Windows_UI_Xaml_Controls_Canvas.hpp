@@ -4,8 +4,6 @@
 using namespace Windows::UI;
 using namespace Windows::UI::Xaml::Media;
 
-Canvas^ obj;
-
 class Windows_UI_Xaml_Controls_Canvas
 {
 public:
@@ -74,7 +72,13 @@ public:
 		JSStringRef appendMethod = JSStringCreateWithUTF8CString("append");
 		JSValueRef append = JSObjectMakeFunctionWithCallback(ctx, appendMethod, Append);
 		JSObjectSetProperty(ctx, prototype, appendMethod, append, kJSPropertyAttributeDontEnum, NULL);
-		JSStringRelease(appendMethod);		
+		JSStringRelease(appendMethod);	
+
+		// ... method: add.
+		JSStringRef addMethod = JSStringCreateWithUTF8CString("add");
+		JSValueRef addref = JSObjectMakeFunctionWithCallback(ctx, addMethod, add);
+		JSObjectSetProperty(ctx, prototype, addMethod, addref, kJSPropertyAttributeDontEnum, NULL);
+		JSStringRelease(addMethod);		
 
 		// Call Object.defineProperty for Width property.		
 		JSStringRef defineProperty = JSStringCreateWithUTF8CString("Object.defineProperty(Canvas.prototype, 'width', { get: Canvas.prototype.getWidth, set: Canvas.prototype.setWidth });");
@@ -94,11 +98,16 @@ public:
 
 	static JSObjectRef classConstructor(JSContextRef ctx, JSObjectRef constructor, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
 		PrivateObjectContainer* poc = new PrivateObjectContainer();
-		obj = ref new Canvas();
+		Canvas^ obj = ref new Canvas();
 		JSClassDefinition classDefinition = kJSClassDefinitionEmpty;
 		JSClassRef classDef = JSClassCreate(&classDefinition);
 		poc->set(obj);
 		return JSObjectMake(ctx, classDef, poc);
+	}
+
+	static void classDestructor(JSObjectRef object) {
+		void* raw = JSObjectGetPrivate(object);
+		reinterpret_cast<PrivateObjectContainer*>(raw)->clean();
 	}
 
 	static JSValueRef SetWidth(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
@@ -168,18 +177,15 @@ public:
 		return val;
 	}
 
-	static void classDestructor(JSObjectRef object) {
-		void* raw = JSObjectGetPrivate(object);
-		reinterpret_cast<PrivateObjectContainer*>(raw)->clean();
+	static JSValueRef add(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {	
+		JSValueRef val = arguments[0];
+		JSObjectRef objRef = JSValueToObject(ctx, val, NULL);
+		// 3rd arg will be this during function NULL is global
+		JSValueRef arg = JSValueMakeNumber(ctx, 1337);
+		JSValueRef arg2 = JSValueMakeNumber(ctx, 999);
+		JSValueRef args[] = { arg, arg2 };
+		JSValueRef result = JSObjectCallAsFunction(ctx, objRef, NULL, 2, args, NULL);
+		return JSValueMakeUndefined(ctx);
 	}
-
-	static bool SetCurrentContent(JSContextRef ctx, JSObjectRef object, JSStringRef propertyName, JSValueRef value, JSValueRef* exception) {
-		JSObjectRef obj = JSValueToObject(ctx, value, NULL);
-		void* raw = JSObjectGetPrivate(obj);
-		UIElement^ ui = (UIElement^)reinterpret_cast<PrivateObjectContainer*>(raw)->get();
-		Window::Current->Content = ui;
-		return true;
-	}
-
 };
 
