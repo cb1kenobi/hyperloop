@@ -3,8 +3,9 @@
 
 using namespace Windows::UI;
 using namespace Windows::UI::Xaml::Media;
+using namespace Windows::UI::Xaml;
 
-class Windows_UI_Xaml_Media_SolidColorBrush
+class Windows_UI_Xaml_Window
 {
 public:
 
@@ -16,7 +17,7 @@ public:
 		JSObjectRef classDef = JSObjectMakeConstructor(ctx, NULL, classConstructor);
 
 		// Register it in the global ctx as a constructor.
-		JSStringRef className = JSStringCreateWithUTF8CString("SolidColorBrush");
+		JSStringRef className = JSStringCreateWithUTF8CString("Window");
 		JSObjectSetProperty(ctx, global, className, classDef, kJSPropertyAttributeNone, NULL);
 		JSStringRelease(className);
 
@@ -26,31 +27,35 @@ public:
 
 		// ... property: name.
 		JSStringRef nameProperty = JSStringCreateWithUTF8CString("name"),
-		valueProperty = JSStringCreateWithUTF8CString("SolidColorBrush");
+		valueProperty = JSStringCreateWithUTF8CString("Window");
 		JSValueRef valueRef = JSValueMakeString(ctx, valueProperty);
 		JSObjectSetProperty(ctx, prototype, nameProperty, valueRef, kJSPropertyAttributeDontEnum, NULL);
 		JSStringRelease(nameProperty);
 		JSStringRelease(valueProperty);
 
-		// ... method: setColor.
-		JSStringRef setColorProperty = JSStringCreateWithUTF8CString("setColor");
-		JSValueRef setColor = JSObjectMakeFunctionWithCallback(ctx, setColorProperty, SetColor);
-		JSObjectSetProperty(ctx, prototype, setColorProperty, setColor, kJSPropertyAttributeDontEnum, NULL);
-		JSStringRelease(setColorProperty);
+		// ... method: setContent.
+		JSStringRef setContentProperty = JSStringCreateWithUTF8CString("setContent");
+		JSValueRef setContent = JSObjectMakeFunctionWithCallback(ctx, setContentProperty, SetContent);
+		JSObjectSetProperty(ctx, prototype, setContentProperty, setContent, kJSPropertyAttributeDontEnum, NULL);
+		JSStringRelease(setContentProperty);
 
-		JSStringRef defineProperty = JSStringCreateWithUTF8CString("Object.defineProperty(SolidColorBrush.prototype, 'color', { set:SolidColorBrush.prototype.setColor });");
+		// ... method: Activate.
+		JSStringRef activateMethod = JSStringCreateWithUTF8CString("activate");
+		JSValueRef activate = JSObjectMakeFunctionWithCallback(ctx, activateMethod, Activate);
+		JSObjectSetProperty(ctx, prototype, activateMethod, activate, kJSPropertyAttributeDontEnum, NULL);
+		JSStringRelease(activateMethod);
+
+		JSStringRef defineProperty = JSStringCreateWithUTF8CString("Object.defineProperty(Window.prototype, 'content', { set:Window.prototype.setContent });");
 		JSEvaluateScript(ctx, defineProperty, global, NULL, 0, NULL);
 		JSStringRelease(defineProperty);
 	}
 
 	static JSObjectRef classConstructor(JSContextRef ctx, JSObjectRef constructor, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
 		PrivateObjectContainer* poc = new PrivateObjectContainer();
-		SolidColorBrush^ nobj = ref new SolidColorBrush();
-		nobj->Color = Colors::AliceBlue;
+		Window^ nobj = Window::Current;
 		JSClassDefinition classDefinition = kJSClassDefinitionEmpty;
 		JSClassRef classDef = JSClassCreate(&classDefinition);
-		poc->set(nobj);
-		return JSObjectMake(ctx, classDef, poc);
+		return JSObjectMake(ctx, classDef, (void*)nobj);
 	}
 
 	static void classDestructor(JSObjectRef object) {
@@ -58,23 +63,22 @@ public:
 		reinterpret_cast<PrivateObjectContainer*>(raw)->clean();
 	}
 
-	static JSValueRef SetColor(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
+	static JSValueRef SetContent(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
 		void* raw = JSObjectGetPrivate(thisObject);
-		SolidColorBrush^ nobj = (SolidColorBrush^)reinterpret_cast<PrivateObjectContainer*>(raw)->get();
+		//Window^ nobj = (Window^)(raw);
 		JSValueRef val = arguments[0];
-		double nVal = JSValueToNumber(ctx, val, NULL);
-
-		if (nVal == 0)
-			nobj->Color =  Colors::Red; 
-		if (nVal == 1)
-			nobj->Color =  Colors::Yellow; 
-		if (nVal == 2)
-			nobj->Color =  Colors::Green; 
-		if (nVal == 3)
-			nobj->Color =  Colors::Blue; 
-
+		JSObjectRef objRef = JSValueToObject(ctx, val, NULL);
+		raw = JSObjectGetPrivate(objRef);
+		Window^ nobj = Window::Current;
+		nobj->Content =  (UIElement^)reinterpret_cast<PrivateObjectContainer*>(raw)->get();
 		return val;
 	}
 
+	static JSValueRef Activate(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
+		JSValueRef val = arguments[0];
+		Window^ nobj = Window::Current;
+		nobj->Activate();
+		return JSValueMakeUndefined(ctx);
+	}
 };
 

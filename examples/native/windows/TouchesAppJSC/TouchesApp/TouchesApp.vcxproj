@@ -135,7 +135,9 @@
   <ItemGroup>
     <ClInclude Include="..\..\WinSimpleJSC\Utils.h" />
     <ClInclude Include="Headers.h" />
+    <ClInclude Include="ManipulationHandler.hpp" />
     <ClInclude Include="Windows_UI_Xaml_Controls_Canvas.hpp" />
+    <ClInclude Include="Windows_UI_Xaml_Input_ManipulationDeltaEventHandler.hpp" />
     <ClInclude Include="Windows_UI_Xaml_Media_SolidColorBrush.hpp" />
     <ClInclude Include="Windows_UI_Xaml_Window.hpp" />
   </ItemGroup>
