@@ -11,62 +11,43 @@
 #include <Windows_UI_Xaml_Media_SolidColorBrush.hpp>
 #include <Windows_UI_Xaml_Window.hpp>
 #include <ManipulationHandler.hpp>
-
-using namespace Windows::UI;
-using namespace Windows::UI::Core;
-using namespace Windows::UI::Input;
-using namespace Windows::UI::Xaml;
-using namespace Windows::UI::Xaml::Media;
-using namespace Windows::UI::Xaml::Input;
-using namespace Windows::UI::Xaml::Controls;
-using namespace Windows::UI::Xaml::Controls::Primitives;
-using namespace Windows::Foundation;
-using namespace Windows::ApplicationModel;
-using namespace Windows::ApplicationModel::Activation;
-using namespace Windows::Globalization;
-using namespace Platform::Details;
+#include <Windows_UI_Xaml_Input_ManipulationDeltaEventHandler.hpp>
 
 ref class MyApp sealed : public ::Application
 {
 public:
 	MyApp();
 	virtual void OnLaunched(LaunchActivatedEventArgs^ args) override;
-private:
 
-	JSContextRef context;
+private:
+	const JSContextRef context;
+	const JSObjectRef global;
 };
 
-MyApp::MyApp()
+MyApp::MyApp() : context(JSGlobalContextCreate(NULL)), global(JSContextGetGlobalObject(context))
 {
-	context = JSGlobalContextCreate(NULL);
 }
 
 void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 {
-	JSObjectRef global = JSContextGetGlobalObject(context);
-
-	// ToDo use AddRef on object to keep it around rather then add to App
-	/*
-	this->manipulationHandler1 = ref new ManipulationHandler();
-	ManipulationDeltaEventHandler^ manipulationDelta1 = 
-		ref new ManipulationDeltaEventHandler(manipulationHandler1, &ManipulationHandler::ManipulationDelta);
-    */
-	
-
 	Windows_UI_Xaml_Controls_Canvas::create(context, global);
 	Windows_UI_Xaml_Media_SolidColorBrush::create(context, global);
 	Windows_UI_Xaml_Window::create(context, global);
 	ManipulationHandler::create(context, global);
+	Windows_UI_Xaml_Input_ManipulationDeltaEventHandler::create(context, global);
 
 	/* ToDo:
-	   1) Need Windows Bounds
-	   2) Need Canvas Children 
-	   3) Need Event Handler
-	   4) Need to use add through ManipulationDelta object
-	   5) Support singleton objects so new is not done on them
-	   6) JS api names match MS names fo caps see Dawsons Sample
-	   7) For JS defined handlers use prepended UID?
-    */
+	   1) Need singleton objects so new is not done on them
+			a) Windows Bounds
+			b) Need Canvas Children 
+			c) Need Canvas ManipulationDelta object
+	   2) JS api names match MS names fo caps see Dawsons Sample for example width should be Width
+	   3) For JS defined handlers prepended UID?
+	   4) Create MyApp from gen code and do load of app.js from file
+	   5) Ensure no memory leaks
+	   6) Cleanup include and using files
+	   7) Figure how to set public non winrt types in handlers 
+	*/
 
 	// Objects are available in runtime now use them	
 	JSStringRef string = JSStringCreateWithUTF8CString(
@@ -81,8 +62,8 @@ void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 											"canvas.background = blue;\n"
 
 											"var handler = new ManipulationHandler();\n"
-											"//var delta = new ManipulationDeltaEventHandler(handler,\n"
-											"//                                       manipulationDelta);\n"	
+											"var delta = new ManipulationDeltaEventHandler(handler,\n"
+											"                                       manipulationDelta);\n"	
 
 											"var view = new Canvas();\n"
 											"view.width = 200;\n"
@@ -94,7 +75,7 @@ void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 											"canvas.setLeft(view, 50);\n"
 											"canvas.append(view);\n"
 											"//view.ManipulationMode = ManipulationModes.All;\n"
-											"//view.add(delta);\n"
+											"view.add(delta);\n"
 
 											"var view2 = new Canvas();\n"
 											"view2.width = 200;\n"
@@ -121,6 +102,7 @@ void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 											"window.activate();\n"
 
 											"function manipulationDelta(sender, e) {\n"
+											"   new Window();\n"
 											"	//var rotateTransform = new RotateTransform();\n"
 											"	//var view = e.OriginalSource;\n"
 											"   //var angle = e.Rotation;\n"
@@ -130,6 +112,7 @@ void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 	JSStringRef sValue = JSValueToStringCopy(context, result, NULL);
 	JSStringRelease(sValue);
 	JSStringRelease(string);
+	JSObjectRef global = JSContextGetGlobalObject(context);
 }
 
 int main(Platform::Array<Platform::String^>^)

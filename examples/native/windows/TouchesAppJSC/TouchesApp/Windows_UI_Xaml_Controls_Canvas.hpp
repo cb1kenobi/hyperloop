@@ -1,8 +1,10 @@
 #pragma once
 #include "Headers.h"
+#include "ManipulationHandler.hpp"
 
 using namespace Windows::UI;
 using namespace Windows::UI::Xaml::Media;
+using namespace Windows::UI::Xaml::Input;
 
 class Windows_UI_Xaml_Controls_Canvas
 {
@@ -178,6 +180,21 @@ public:
 	}
 
 	static JSValueRef add(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {	
+		void* raw = JSObjectGetPrivate(thisObject);
+		Canvas^ nobj = (Canvas^)reinterpret_cast<PrivateObjectContainer*>(raw)->get();
+		nobj->ManipulationMode = ManipulationModes::All;		
+		JSValueRef val = arguments[0];
+		JSObjectRef objRef = JSValueToObject(ctx, val, NULL);
+		raw = JSObjectGetPrivate(objRef);
+        ManipulationHandler_UID^ nobj2 = (ManipulationHandler_UID^)reinterpret_cast<PrivateObjectContainer*>(raw)->get();
+		
+		// since handler is a winrt component can not easily set members that 
+		// are not ref types or scalars
+	    nobj2->SetSource((int64)thisObject);
+
+		nobj->ManipulationDelta::add(ref new ManipulationDeltaEventHandler(nobj2, &ManipulationHandler_UID::ManipulationDelta));
+
+		/*
 		JSValueRef val = arguments[0];
 		JSObjectRef objRef = JSValueToObject(ctx, val, NULL);
 		// 3rd arg will be this during function NULL is global
@@ -185,6 +202,8 @@ public:
 		JSValueRef arg2 = JSValueMakeNumber(ctx, 999);
 		JSValueRef args[] = { arg, arg2 };
 		JSValueRef result = JSObjectCallAsFunction(ctx, objRef, NULL, 2, args, NULL);
+		*/
+
 		return JSValueMakeUndefined(ctx);
 	}
 };
