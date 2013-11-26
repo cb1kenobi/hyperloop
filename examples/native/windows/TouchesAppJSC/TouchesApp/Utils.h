@@ -5,11 +5,15 @@ using namespace Platform;
 
 using namespace Windows::UI::Xaml;
 
+static JSContextRef app_context;
+
 class Utils
 {
 public:
 	static Platform::String^ getPlatformString(JSStringRef sValue);
 	static JSStringRef getJSStringRef(Platform::String^ string);
+	static JSContextRef getAppContext();
+	static void setAppContext(JSContextRef context);
 private:
 	Utils();
 };

@@ -16,3 +16,12 @@ JSStringRef Utils::getJSStringRef(Platform::String^ string) {
 	return JSStringCreateWithUTF8CString(charStr);
 }
 
+
+ JSContextRef Utils::getAppContext() {
+	return app_context;
+}
+
+ void Utils::setAppContext(JSContextRef context) {
+	 app_context = context;
+}
+
