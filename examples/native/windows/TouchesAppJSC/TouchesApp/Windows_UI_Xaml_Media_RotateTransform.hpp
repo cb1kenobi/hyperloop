@@ -3,7 +3,7 @@
 
 using namespace Windows::UI::Xaml::Media;
 
-class Windows_UI_Xaml_Media_SolidColorBrush
+class Windows_UI_Xaml_Media_RotateTransform
 {
 public:
 
@@ -15,7 +15,7 @@ public:
 		JSObjectRef classDef = JSObjectMakeConstructor(ctx, NULL, classConstructor);
 
 		// Register it in the global ctx as a constructor.
-		JSStringRef className = JSStringCreateWithUTF8CString("SolidColorBrush");
+		JSStringRef className = JSStringCreateWithUTF8CString("RotateTransform");
 		JSObjectSetProperty(ctx, global, className, classDef, kJSPropertyAttributeNone, NULL);
 		JSStringRelease(className);
 
@@ -25,27 +25,32 @@ public:
 
 		// ... property: name.
 		JSStringRef nameProperty = JSStringCreateWithUTF8CString("name"),
-		valueProperty = JSStringCreateWithUTF8CString("SolidColorBrush");
+		valueProperty = JSStringCreateWithUTF8CString("RotateTransform");
 		JSValueRef valueRef = JSValueMakeString(ctx, valueProperty);
 		JSObjectSetProperty(ctx, prototype, nameProperty, valueRef, kJSPropertyAttributeDontEnum, NULL);
 		JSStringRelease(nameProperty);
 		JSStringRelease(valueProperty);
 
-		// ... method: setColor.
-		JSStringRef setColorProperty = JSStringCreateWithUTF8CString("setColor");
-		JSValueRef setColor = JSObjectMakeFunctionWithCallback(ctx, setColorProperty, SetColor);
-		JSObjectSetProperty(ctx, prototype, setColorProperty, setColor, kJSPropertyAttributeDontEnum, NULL);
-		JSStringRelease(setColorProperty);
+		// ... property: setAngle.
+		JSStringRef setAngleProperty = JSStringCreateWithUTF8CString("setAngle");
+		JSValueRef setAngle = JSObjectMakeFunctionWithCallback(ctx, setAngleProperty, SetAngle);
+		JSObjectSetProperty(ctx, prototype, setAngleProperty, setAngle, kJSPropertyAttributeDontEnum, NULL);
+		JSStringRelease(setAngleProperty);
 
-		JSStringRef defineProperty = JSStringCreateWithUTF8CString("Object.defineProperty(SolidColorBrush.prototype, 'color', { set:SolidColorBrush.prototype.setColor });");
+		// ... property: getAngle.
+		JSStringRef getAngleProperty = JSStringCreateWithUTF8CString("getAngle");
+		JSValueRef getAngle = JSObjectMakeFunctionWithCallback(ctx, getAngleProperty, GetAngle);
+		JSObjectSetProperty(ctx, prototype, getAngleProperty, getAngle, kJSPropertyAttributeDontEnum, NULL);
+		JSStringRelease(getAngleProperty);
+
+		JSStringRef defineProperty = JSStringCreateWithUTF8CString("Object.defineProperty(RotateTransform.prototype, 'Angle', { get: RotateTransform.prototype.getAngle, set:RotateTransform.prototype.setAngle });");
 		JSEvaluateScript(ctx, defineProperty, global, NULL, 0, NULL);
 		JSStringRelease(defineProperty);
 	}
 
 	static JSObjectRef classConstructor(JSContextRef ctx, JSObjectRef constructor, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
 		PrivateObjectContainer* poc = new PrivateObjectContainer();
-		SolidColorBrush^ nobj = ref new SolidColorBrush();
-		nobj->Color = Colors::AliceBlue;
+		RotateTransform^ nobj = ref new RotateTransform();
 		JSClassDefinition classDefinition = kJSClassDefinitionEmpty;
 		JSClassRef classDef = JSClassCreate(&classDefinition);
 		poc->set(nobj);
@@ -57,23 +62,19 @@ public:
 		reinterpret_cast<PrivateObjectContainer*>(raw)->clean();
 	}
 
-	static JSValueRef SetColor(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
+	static JSValueRef SetAngle(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
 		void* raw = JSObjectGetPrivate(thisObject);
-		SolidColorBrush^ nobj = (SolidColorBrush^)reinterpret_cast<PrivateObjectContainer*>(raw)->get();
+		RotateTransform^ nobj = (RotateTransform^)reinterpret_cast<PrivateObjectContainer*>(raw)->get();
 		JSValueRef val = arguments[0];
 		double nVal = JSValueToNumber(ctx, val, NULL);
-
-		if (nVal == 0)
-			nobj->Color =  Colors::Red; 
-		if (nVal == 1)
-			nobj->Color =  Colors::Yellow; 
-		if (nVal == 2)
-			nobj->Color =  Colors::Green; 
-		if (nVal == 3)
-			nobj->Color =  Colors::Blue; 
-
+		nobj->Angle = nVal;
 		return val;
 	}
 
+	static JSValueRef GetAngle(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
+		void* raw = JSObjectGetPrivate(thisObject);
+		RotateTransform^ nobj = (RotateTransform^)reinterpret_cast<PrivateObjectContainer*>(raw)->get();
+		return  JSValueMakeNumber(ctx, nobj->Angle); 
+	}
 };
 

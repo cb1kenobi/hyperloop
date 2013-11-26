@@ -4,7 +4,7 @@
  * Russ + Dawson
  *
  */
-#include <Windows.h>
+//#include <Windows.h>
 
 #include <JavaScriptCore/JavaScript.h>
 #include <Windows_UI_Xaml_Controls_Canvas.hpp>
@@ -12,6 +12,9 @@
 #include <Windows_UI_Xaml_Window.hpp>
 #include <ManipulationHandler.hpp>
 #include <Windows_UI_Xaml_Input_ManipulationDeltaEventHandler.hpp>
+#include <Windows_UI_Xaml_Media_TranslateTransform.hpp>
+#include <Windows_UI_Xaml_Media_TransformGroup.hpp>
+#include <Windows_UI_Xaml_Media_RotateTransform.hpp>
 
 ref class MyApp sealed : public ::Application
 {
@@ -20,34 +23,25 @@ public:
 	virtual void OnLaunched(LaunchActivatedEventArgs^ args) override;
 
 private:
-	const JSContextRef context;
-	const JSObjectRef global;
 };
 
-MyApp::MyApp() : context(JSGlobalContextCreate(NULL)), global(JSContextGetGlobalObject(context))
+MyApp::MyApp()
 {
+	Utils::setAppContext(JSGlobalContextCreate(NULL));
 }
 
 void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 {
-	Windows_UI_Xaml_Controls_Canvas::create(context, global);
-	Windows_UI_Xaml_Media_SolidColorBrush::create(context, global);
-	Windows_UI_Xaml_Window::create(context, global);
-	ManipulationHandler::create(context, global);
-	Windows_UI_Xaml_Input_ManipulationDeltaEventHandler::create(context, global);
-
-	/* ToDo:
-	   1) Need singleton objects so new is not done on them
-			a) Windows Bounds
-			b) Need Canvas Children 
-			c) Need Canvas ManipulationDelta object
-	   2) JS api names match MS names fo caps see Dawsons Sample for example width should be Width
-	   3) For JS defined handlers prepended UID?
-	   4) Create MyApp from gen code and do load of app.js from file
-	   5) Ensure no memory leaks
-	   6) Cleanup include and using files
-	   7) Figure how to set public non winrt types in handlers 
-	*/
+	JSContextRef ctx = Utils::getAppContext();
+	JSObjectRef global = JSContextGetGlobalObject(ctx);
+	Windows_UI_Xaml_Controls_Canvas::create(ctx, global);
+	Windows_UI_Xaml_Media_SolidColorBrush::create(ctx, global);
+	Windows_UI_Xaml_Window::create(ctx, global);
+	ManipulationHandler::create(ctx, global);
+	Windows_UI_Xaml_Input_ManipulationDeltaEventHandler::create(ctx, global);
+	Windows_UI_Xaml_Media_TranslateTransform::create(ctx, global);
+	Windows_UI_Xaml_Media_TransformGroup::create(ctx, global);
+	Windows_UI_Xaml_Media_RotateTransform::create(ctx, global);
 
 	// Objects are available in runtime now use them	
 	JSStringRef string = JSStringCreateWithUTF8CString(
@@ -64,6 +58,12 @@ void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 											"var handler = new ManipulationHandler();\n"
 											"var delta = new ManipulationDeltaEventHandler(handler,\n"
 											"                                       manipulationDelta);\n"	
+											"var handler2 = new ManipulationHandler();\n"
+											"var delta2 = new ManipulationDeltaEventHandler(handler2,\n"
+											"                                       manipulationDelta);\n"	
+											"var handler3 = new ManipulationHandler();\n"
+											"var delta3 = new ManipulationDeltaEventHandler(handler3,\n"
+											"                                       manipulationDelta);\n"	
 
 											"var view = new Canvas();\n"
 											"view.width = 200;\n"
@@ -74,7 +74,7 @@ void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 											"canvas.setTop(view, 50);\n"
 											"canvas.setLeft(view, 50);\n"
 											"canvas.append(view);\n"
-											"//view.ManipulationMode = ManipulationModes.All;\n"
+											"view.ManipulationMode = ManipulationModes.All;\n"
 											"view.add(delta);\n"
 
 											"var view2 = new Canvas();\n"
@@ -86,6 +86,8 @@ void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 											"canvas.setTop(view2, 50);\n"
 											"canvas.setLeft(view2, 350);\n"
 											"canvas.append(view2);\n"
+											"view2.ManipulationMode = ManipulationModes.All;\n"
+											"view2.add(delta2);\n"
 
 											"var view3 = new Canvas();\n"
 											"view3.width = 200;\n"
@@ -96,23 +98,43 @@ void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 											"canvas.setTop(view3, 50);\n"
 											"canvas.setLeft(view3, 650);\n"
 											"canvas.append(view3);\n"
+											"view3.ManipulationMode = ManipulationModes.All;\n"
+											"view3.add(delta3);\n"
 
 											"var window = new Window();\n"
 											"window.content = canvas;\n"
 											"window.activate();\n"
 
+											"// ?? collides with  TranslateTransform.X - view.X = 0;\n"
+
 											"function manipulationDelta(sender, e) {\n"
-											"   new Window();\n"
-											"	//var rotateTransform = new RotateTransform();\n"
-											"	//var view = e.OriginalSource;\n"
-											"   //var angle = e.Rotation;\n"
+											"   var view = e.OriginalSource;\n"
+											"   var _X = view._X || 0;\n"
+											"   var _Y = view._Y || 0;\n"
+											"   var _Angle = view._Angle || 0;\n"
+											"   view.width += e.expansion;\n"
+											"   view.height += e.expansion;\n"
+											"   var translateTransform = new TranslateTransform();\n"
+											"   _X += e._X;\n"
+											"   _Y += e._Y;\n"
+											"   translateTransform.X = _X;\n"
+											"   translateTransform.Y = _Y;\n"
+											"   view._X = _X;\n"
+											"   view._Y = _Y;\n"
+											"   var rotateTransform = new RotateTransform();\n"
+											"   _Angle += e._Angle;\n"
+                                            "   rotateTransform.Angle = _Angle;\n"
+											"   view._Angle = _Angle;\n"
+											"   var transformGroup = new TransformGroup();\n"
+											"   transformGroup.Append(rotateTransform);\n"
+											"   transformGroup.Append(translateTransform);\n"										
+											"   view.RenderTransform = transformGroup;\n"
 											"}\n"
 											 ); 
-	JSValueRef result = JSEvaluateScript(context, string, global, NULL, 0, NULL);
-	JSStringRef sValue = JSValueToStringCopy(context, result, NULL);
+	JSValueRef result = JSEvaluateScript(ctx, string, global, NULL, 0, NULL);
+	JSStringRef sValue = JSValueToStringCopy(ctx, result, NULL);
 	JSStringRelease(sValue);
 	JSStringRelease(string);
-	JSObjectRef global = JSContextGetGlobalObject(context);
 }
 
 int main(Platform::Array<Platform::String^>^)

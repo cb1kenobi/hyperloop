@@ -138,7 +138,11 @@
     <ClInclude Include="ManipulationHandler.hpp" />
     <ClInclude Include="Windows_UI_Xaml_Controls_Canvas.hpp" />
     <ClInclude Include="Windows_UI_Xaml_Input_ManipulationDeltaEventHandler.hpp" />
+    <ClInclude Include="Windows_UI_Xaml_Input_ManipulationDeltaRoutedEventArgs.hpp" />
+    <ClInclude Include="Windows_UI_Xaml_Media_RotateTransform.hpp" />
     <ClInclude Include="Windows_UI_Xaml_Media_SolidColorBrush.hpp" />
+    <ClInclude Include="Windows_UI_Xaml_Media_TransformGroup.hpp" />
+    <ClInclude Include="Windows_UI_Xaml_Media_TranslateTransform.hpp" />
     <ClInclude Include="Windows_UI_Xaml_Window.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

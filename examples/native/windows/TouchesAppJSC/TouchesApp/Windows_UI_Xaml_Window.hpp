@@ -56,7 +56,7 @@ public:
 		JSClassDefinition classDefinition = kJSClassDefinitionEmpty;
 		JSClassRef classDef = JSClassCreate(&classDefinition);
 		poc->set(nobj);
-		return JSObjectMake(ctx, classDef, (void*)nobj);
+		return JSObjectMake(ctx, classDef, poc);
 	}
 
 	static void classDestructor(JSObjectRef object) {
@@ -64,21 +64,19 @@ public:
 		reinterpret_cast<PrivateObjectContainer*>(raw)->clean();
 	}
 
-	static JSValueRef SetContent(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
+	static JSValueRef SetContent(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {	
 		void* raw = JSObjectGetPrivate(thisObject);
-		//Window^ nobj = (Window^)(raw);
+		Window^ nobj = (Window^)reinterpret_cast<PrivateObjectContainer*>(raw)->get();
 		JSValueRef val = arguments[0];
 		JSObjectRef objRef = JSValueToObject(ctx, val, NULL);
 		raw = JSObjectGetPrivate(objRef);
-		Window^ nobj = Window::Current;
-
 		nobj->Content =  (UIElement^)reinterpret_cast<PrivateObjectContainer*>(raw)->get();
 		return val;
 	}
 
 	static JSValueRef Activate(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
-		JSValueRef val = arguments[0];
-		Window^ nobj = Window::Current;
+		void* raw = JSObjectGetPrivate(thisObject);
+		Window^ nobj = (Window^)reinterpret_cast<PrivateObjectContainer*>(raw)->get();
 		nobj->Activate();
 		return JSValueMakeUndefined(ctx);
 	}

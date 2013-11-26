@@ -1,8 +1,9 @@
 #pragma once
 #include "Headers.h"
-#include <ManipulationHandler.hpp>
 
-class Windows_UI_Xaml_Input_ManipulationDeltaEventHandler
+using namespace Windows::UI::Xaml::Media;
+
+class Windows_UI_Xaml_Media_TransformGroup
 {
 public:
 
@@ -14,7 +15,7 @@ public:
 		JSObjectRef classDef = JSObjectMakeConstructor(ctx, NULL, classConstructor);
 
 		// Register it in the global ctx as a constructor.
-		JSStringRef className = JSStringCreateWithUTF8CString("ManipulationDeltaEventHandler");
+		JSStringRef className = JSStringCreateWithUTF8CString("TransformGroup");
 		JSObjectSetProperty(ctx, global, className, classDef, kJSPropertyAttributeNone, NULL);
 		JSStringRelease(className);
 
@@ -24,21 +25,22 @@ public:
 
 		// ... property: name.
 		JSStringRef nameProperty = JSStringCreateWithUTF8CString("name"),
-		valueProperty = JSStringCreateWithUTF8CString("ManipulationDeltaEventHandler");
+		valueProperty = JSStringCreateWithUTF8CString("TransformGroup");
 		JSValueRef valueRef = JSValueMakeString(ctx, valueProperty);
 		JSObjectSetProperty(ctx, prototype, nameProperty, valueRef, kJSPropertyAttributeDontEnum, NULL);
 		JSStringRelease(nameProperty);
-		JSStringRelease(valueProperty);		
+		JSStringRelease(valueProperty);
+
+		// ... method: Append.
+		JSStringRef AppendProperty = JSStringCreateWithUTF8CString("Append");
+		JSValueRef AppendFunc = JSObjectMakeFunctionWithCallback(ctx, AppendProperty, Append);
+		JSObjectSetProperty(ctx, prototype, AppendProperty, AppendFunc, kJSPropertyAttributeDontEnum, NULL);
+		JSStringRelease(AppendProperty);
 	}
 
 	static JSObjectRef classConstructor(JSContextRef ctx, JSObjectRef constructor, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
 		PrivateObjectContainer* poc = new PrivateObjectContainer();
-		JSValueRef val = arguments[0];
-		JSValueRef val2 = arguments[1];
-		JSObjectRef objRef = JSValueToObject(ctx, val, NULL);
-		void* raw = JSObjectGetPrivate(objRef);
-		ManipulationHandler_UID^ nobj = (ManipulationHandler_UID^)reinterpret_cast<PrivateObjectContainer*>(raw)->get();
-	    nobj->SetDeltaCallback((int64)JSValueToObject(ctx, val2, NULL));
+		TransformGroup^ nobj = ref new TransformGroup();
 		JSClassDefinition classDefinition = kJSClassDefinitionEmpty;
 		JSClassRef classDef = JSClassCreate(&classDefinition);
 		poc->set(nobj);
@@ -49,5 +51,17 @@ public:
 		void* raw = JSObjectGetPrivate(object);
 		reinterpret_cast<PrivateObjectContainer*>(raw)->clean();
 	}
+
+	static JSValueRef Append(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
+		void* raw = JSObjectGetPrivate(thisObject);
+		TransformGroup^ nobj = (TransformGroup^)reinterpret_cast<PrivateObjectContainer*>(raw)->get();
+		JSValueRef val = arguments[0];
+		JSObjectRef objRef = JSValueToObject(ctx, val, NULL);
+		raw = JSObjectGetPrivate(objRef);
+		nobj->Children->Append((Transform^)reinterpret_cast<PrivateObjectContainer*>(raw)->get());
+
+		return val;
+	}
+
 };
 
