@@ -13,7 +13,7 @@ public:
 		JSClassRef myClass = JSClassCreate(&myClassDefinition);
 		JSObjectRef myObject = JSObjectMake(ctx, myClass, NULL);
 
-		JSStringRef nameProperty = JSStringCreateWithUTF8CString("expansion");
+		JSStringRef nameProperty = JSStringCreateWithUTF8CString("Expansion");
 		JSValueRef valueRef = JSValueMakeNumber(ctx, e->Delta.Expansion);
 		JSObjectSetProperty(ctx, myObject, nameProperty, valueRef, kJSPropertyAttributeDontEnum, NULL);
 		
@@ -21,15 +21,15 @@ public:
 		valueRef = source;
 		JSObjectSetProperty(ctx, myObject, nameProperty, valueRef, kJSPropertyAttributeDontEnum, NULL);
 
-		nameProperty = JSStringCreateWithUTF8CString("_X");
+		nameProperty = JSStringCreateWithUTF8CString("X");
 		valueRef = JSValueMakeNumber(ctx, e->Delta.Translation.X);
 		JSObjectSetProperty(ctx, myObject, nameProperty, valueRef, kJSPropertyAttributeDontEnum, NULL);
 
-		nameProperty = JSStringCreateWithUTF8CString("_Y");
+		nameProperty = JSStringCreateWithUTF8CString("Y");
 		valueRef = JSValueMakeNumber(ctx, e->Delta.Translation.Y);
 		JSObjectSetProperty(ctx, myObject, nameProperty, valueRef, kJSPropertyAttributeDontEnum, NULL);
 
-		nameProperty = JSStringCreateWithUTF8CString("_Angle");
+		nameProperty = JSStringCreateWithUTF8CString("Angle");
 		valueRef = JSValueMakeNumber(ctx, e->Delta.Rotation);
 		JSObjectSetProperty(ctx, myObject, nameProperty, valueRef, kJSPropertyAttributeDontEnum, NULL);
 
