@@ -10,53 +10,37 @@ class Windows_UI_Xaml_Window
 public:
 
 	static void create(JSContextRef ctx, JSObjectRef global) {
-		// Create our class.
 		JSClassDefinition classDefinition = kJSClassDefinitionEmpty;
 		classDefinition.callAsConstructor = classConstructor;
-		classDefinition.finalize = classDestructor;
-		JSObjectRef classDef = JSObjectMakeConstructor(ctx, NULL, classConstructor);
-
-		// Register it in the global ctx as a constructor.
+		JSClassRef clsRef = JSClassCreate(&classDefinition);
+		JSObjectRef classDef = JSObjectMake(ctx, clsRef, NULL);
 		JSStringRef className = JSStringCreateWithUTF8CString("Window");
 		JSObjectSetProperty(ctx, global, className, classDef, kJSPropertyAttributeNone, NULL);
-		JSStringRelease(className);
-
-		// Set the prototype.
-		JSObjectRef prototype = JSValueToObject(ctx, JSObjectGetPrototype(ctx, classDef), NULL);
-		JSObjectSetPrototype(ctx, classDef, prototype);
-
-		// ... property: name.
-		JSStringRef nameProperty = JSStringCreateWithUTF8CString("name"),
-		valueProperty = JSStringCreateWithUTF8CString("Window");
-		JSValueRef valueRef = JSValueMakeString(ctx, valueProperty);
-		JSObjectSetProperty(ctx, prototype, nameProperty, valueRef, kJSPropertyAttributeDontEnum, NULL);
-		JSStringRelease(nameProperty);
-		JSStringRelease(valueProperty);
-
-		// ... method: setContent.
-		JSStringRef setContentProperty = JSStringCreateWithUTF8CString("setContent");
-		JSValueRef setContent = JSObjectMakeFunctionWithCallback(ctx, setContentProperty, SetContent);
-		JSObjectSetProperty(ctx, prototype, setContentProperty, setContent, kJSPropertyAttributeDontEnum, NULL);
-		JSStringRelease(setContentProperty);
-
-		// ... method: Activate.
-		JSStringRef activateMethod = JSStringCreateWithUTF8CString("activate");
-		JSValueRef activate = JSObjectMakeFunctionWithCallback(ctx, activateMethod, Activate);
-		JSObjectSetProperty(ctx, prototype, activateMethod, activate, kJSPropertyAttributeDontEnum, NULL);
-		JSStringRelease(activateMethod);
-
-		JSStringRef defineProperty = JSStringCreateWithUTF8CString("Object.defineProperty(Window.prototype, 'content', { set:Window.prototype.setContent });");
-		JSEvaluateScript(ctx, defineProperty, global, NULL, 0, NULL);
-		JSStringRelease(defineProperty);
 	}
 
 	static JSObjectRef classConstructor(JSContextRef ctx, JSObjectRef constructor, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
 		PrivateObjectContainer* poc = new PrivateObjectContainer();
-		Window^ nobj = Window::Current;
-		JSClassDefinition classDefinition = kJSClassDefinitionEmpty;
-		JSClassRef classDef = JSClassCreate(&classDefinition);
+		Window^ nobj =  Window::Current;
 		poc->set(nobj);
-		return JSObjectMake(ctx, classDef, poc);
+		JSClassDefinition classDefinition = kJSClassDefinitionEmpty;		
+		classDefinition.finalize = classDestructor;
+		JSStaticValue StaticValueArray[] = {{ "Content", GetContent, SetContent, kJSPropertyAttributeNone }, 
+		                                    { 0, 0, 0, 0 }
+		                                    };
+		
+		classDefinition.staticValues = StaticValueArray; 
+		JSClassRef clsRef = JSClassCreate(&classDefinition);
+		JSObjectRef classDef = JSObjectMake(ctx, clsRef, poc);
+
+		JSObjectRef prototype = JSValueToObject(ctx, JSObjectGetPrototype(ctx, classDef), NULL);
+		JSObjectSetPrototype(ctx, classDef, prototype);
+
+		JSStringRef activateMethod = JSStringCreateWithUTF8CString("Activate");
+		JSValueRef activate = JSObjectMakeFunctionWithCallback(ctx, activateMethod, Activate);
+		JSObjectSetProperty(ctx, prototype, activateMethod, activate, kJSPropertyAttributeDontEnum, NULL);
+		JSStringRelease(activateMethod);
+
+		return classDef; 
 	}
 
 	static void classDestructor(JSObjectRef object) {
@@ -64,14 +48,19 @@ public:
 		reinterpret_cast<PrivateObjectContainer*>(raw)->clean();
 	}
 
-	static JSValueRef SetContent(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {	
+	static bool SetContent(JSContextRef ctx, JSObjectRef thisObject,  JSStringRef propertyName, const JSValueRef value, JSValueRef* exception) {
 		void* raw = JSObjectGetPrivate(thisObject);
 		Window^ nobj = (Window^)reinterpret_cast<PrivateObjectContainer*>(raw)->get();
-		JSValueRef val = arguments[0];
-		JSObjectRef objRef = JSValueToObject(ctx, val, NULL);
+		JSObjectRef objRef = JSValueToObject(ctx, value, NULL);
 		raw = JSObjectGetPrivate(objRef);
 		nobj->Content =  (UIElement^)reinterpret_cast<PrivateObjectContainer*>(raw)->get();
-		return val;
+		return true;
+	}
+
+	static JSValueRef GetContent(JSContextRef ctx, JSObjectRef thisObject,  JSStringRef propertyName, JSValueRef* exception) {
+		void* raw = JSObjectGetPrivate(thisObject);
+		Window^ nobj = (Window^)reinterpret_cast<PrivateObjectContainer*>(raw)->get();
+		return  JSValueMakeNumber(ctx, 0); //nobj->Width); 
 	}
 
 	static JSValueRef Activate(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
