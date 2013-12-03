@@ -14,6 +14,7 @@ public:
 		JSObjectRef classDef = JSObjectMake(ctx, clsRef, NULL);
 		JSStringRef className = JSStringCreateWithUTF8CString("SolidColorBrush");
 		JSObjectSetProperty(ctx, global, className, classDef, kJSPropertyAttributeNone, NULL);
+		JSStringRelease(className);
 	}
 
 	static JSObjectRef classConstructor(JSContextRef ctx, JSObjectRef constructor, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
@@ -58,6 +59,7 @@ public:
 	static JSValueRef GetColor(JSContextRef ctx, JSObjectRef thisObject,  JSStringRef propertyName, JSValueRef* exception) {
 		void* raw = JSObjectGetPrivate(thisObject);
 		SolidColorBrush^ nobj = (SolidColorBrush^)reinterpret_cast<PrivateObjectContainer*>(raw)->get();
+		
 		return  JSValueMakeNumber(ctx, 0); //nobj->Color); 
 	}
 

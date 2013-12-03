@@ -13,6 +13,7 @@ public:
 		JSObjectRef classDef = JSObjectMake(ctx, clsRef, NULL);
 		JSStringRef className = JSStringCreateWithUTF8CString("ManipulationDeltaEventHandler");
 		JSObjectSetProperty(ctx, global, className, classDef, kJSPropertyAttributeNone, NULL);
+		JSStringRelease(className);
 	}
 
 	static JSObjectRef classConstructor(JSContextRef ctx, JSObjectRef constructor, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
@@ -27,6 +28,7 @@ public:
 		JSClassDefinition classDefinition = kJSClassDefinitionEmpty;
 		classDefinition.finalize = classDestructor;
 		JSClassRef classDef = JSClassCreate(&classDefinition);
+		
 		return JSObjectMake(ctx, classDef, poc);
 	}
 

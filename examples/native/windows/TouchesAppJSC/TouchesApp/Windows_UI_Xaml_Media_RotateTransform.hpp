@@ -14,6 +14,7 @@ public:
 		JSObjectRef classDef = JSObjectMake(ctx, clsRef, NULL);
 		JSStringRef className = JSStringCreateWithUTF8CString("RotateTransform");
 		JSObjectSetProperty(ctx, global, className, classDef, kJSPropertyAttributeNone, NULL);
+		JSStringRelease(className);
 	}
 
 	static JSObjectRef classConstructor(JSContextRef ctx, JSObjectRef constructor, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {

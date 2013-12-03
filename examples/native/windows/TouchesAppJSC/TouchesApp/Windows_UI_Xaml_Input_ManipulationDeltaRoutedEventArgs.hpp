@@ -13,25 +13,30 @@ public:
 		JSClassRef myClass = JSClassCreate(&myClassDefinition);
 		JSObjectRef myObject = JSObjectMake(ctx, myClass, NULL);
 
-		JSStringRef nameProperty = JSStringCreateWithUTF8CString("Expansion");
+		JSStringRef expansionProperty = JSStringCreateWithUTF8CString("Expansion");
 		JSValueRef valueRef = JSValueMakeNumber(ctx, e->Delta.Expansion);
-		JSObjectSetProperty(ctx, myObject, nameProperty, valueRef, kJSPropertyAttributeDontEnum, NULL);
-		
-	    nameProperty = JSStringCreateWithUTF8CString("OriginalSource");
+		JSObjectSetProperty(ctx, myObject, expansionProperty, valueRef, kJSPropertyAttributeDontEnum, NULL);
+		JSStringRelease(expansionProperty);
+
+	    JSStringRef originalSourceProperty = JSStringCreateWithUTF8CString("OriginalSource");
 		valueRef = source;
-		JSObjectSetProperty(ctx, myObject, nameProperty, valueRef, kJSPropertyAttributeDontEnum, NULL);
+		JSObjectSetProperty(ctx, myObject, originalSourceProperty, valueRef, kJSPropertyAttributeDontEnum, NULL);
+		JSStringRelease(originalSourceProperty);
 
-		nameProperty = JSStringCreateWithUTF8CString("X");
+		JSStringRef xProperty = JSStringCreateWithUTF8CString("X");
 		valueRef = JSValueMakeNumber(ctx, e->Delta.Translation.X);
-		JSObjectSetProperty(ctx, myObject, nameProperty, valueRef, kJSPropertyAttributeDontEnum, NULL);
+		JSObjectSetProperty(ctx, myObject, xProperty, valueRef, kJSPropertyAttributeDontEnum, NULL);
+		JSStringRelease(xProperty);
 
-		nameProperty = JSStringCreateWithUTF8CString("Y");
+		JSStringRef yProperty = JSStringCreateWithUTF8CString("Y");
 		valueRef = JSValueMakeNumber(ctx, e->Delta.Translation.Y);
-		JSObjectSetProperty(ctx, myObject, nameProperty, valueRef, kJSPropertyAttributeDontEnum, NULL);
+		JSObjectSetProperty(ctx, myObject, yProperty, valueRef, kJSPropertyAttributeDontEnum, NULL);
+		JSStringRelease(yProperty);
 
-		nameProperty = JSStringCreateWithUTF8CString("Angle");
+		JSStringRef angleProperty = JSStringCreateWithUTF8CString("Angle");
 		valueRef = JSValueMakeNumber(ctx, e->Delta.Rotation);
-		JSObjectSetProperty(ctx, myObject, nameProperty, valueRef, kJSPropertyAttributeDontEnum, NULL);
+		JSObjectSetProperty(ctx, myObject, angleProperty, valueRef, kJSPropertyAttributeDontEnum, NULL);
+		JSStringRelease(angleProperty);
 
 		return myObject;
 	}

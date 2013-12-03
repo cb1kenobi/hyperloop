@@ -16,6 +16,7 @@ public:
 		JSObjectRef classDef = JSObjectMake(ctx, clsRef, NULL);
 		JSStringRef className = JSStringCreateWithUTF8CString("Canvas");
 		JSObjectSetProperty(ctx, global, className, classDef, kJSPropertyAttributeNone, NULL);
+		JSStringRelease(className);
 	}
 
 	static JSObjectRef classConstructor(JSContextRef ctx, JSObjectRef constructor, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
@@ -72,6 +73,7 @@ public:
 		Canvas^ nobj = (Canvas^)reinterpret_cast<PrivateObjectContainer*>(raw)->get();
 		double nVal = JSValueToNumber(ctx, value, NULL);
 		nobj->Width =  nVal;
+		
 		return true;
 	}
 
@@ -86,12 +88,14 @@ public:
 		Canvas^ nobj = (Canvas^)reinterpret_cast<PrivateObjectContainer*>(raw)->get();
 		double nVal = JSValueToNumber(ctx, value, NULL);
 		nobj->Height =  nVal;
+		
 		return true;
 	}
 
 	static JSValueRef GetHeight(JSContextRef ctx, JSObjectRef thisObject,  JSStringRef propertyName, JSValueRef* exception) {
 		void* raw = JSObjectGetPrivate(thisObject);
 		Canvas^ nobj = (Canvas^)reinterpret_cast<PrivateObjectContainer*>(raw)->get();
+		
 		return  JSValueMakeNumber(ctx, nobj->Height); 
 	}
 
