@@ -61,6 +61,7 @@ public:
 		classDefinition.finalize = classDestructor;
 		JSClassRef classDef = JSClassCreate(&classDefinition);
 		poc->set(obj);
+		
 		return JSObjectMake(ctx, classDef, poc);
 	}
 

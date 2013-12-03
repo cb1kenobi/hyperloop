@@ -4,7 +4,6 @@
  * Russ + Dawson
  *
  */
-//#include <Windows.h>
 
 #include <JavaScriptCore/JavaScript.h>
 #include <Windows_UI_Xaml_Controls_Canvas.hpp>
@@ -16,32 +15,22 @@
 #include <Windows_UI_Xaml_Media_TransformGroup.hpp>
 #include <Windows_UI_Xaml_Media_RotateTransform.hpp>
 
-ref class MyApp sealed : public ::Application
+ref class App sealed : public ::Application
 {
 public:
-	MyApp();
+	App();
 	virtual void OnLaunched(LaunchActivatedEventArgs^ args) override;
 
 private:
 };
 
-MyApp::MyApp()
-{
-	Utils::setAppContext(JSGlobalContextCreate(NULL));
+App::App() {
 }
 
-void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
-{
+void App::OnLaunched(LaunchActivatedEventArgs^ args) {
+
 	JSContextRef ctx = Utils::getAppContext();
 	JSObjectRef global = JSContextGetGlobalObject(ctx);
-	Windows_UI_Xaml_Controls_Canvas::create(ctx, global);
-	Windows_UI_Xaml_Media_SolidColorBrush::create(ctx, global);
-	Windows_UI_Xaml_Window::create(ctx, global);
-	ManipulationHandler::create(ctx, global);
-	Windows_UI_Xaml_Input_ManipulationDeltaEventHandler::create(ctx, global);
-	Windows_UI_Xaml_Media_TranslateTransform::create(ctx, global);
-	Windows_UI_Xaml_Media_TransformGroup::create(ctx, global);
-	Windows_UI_Xaml_Media_RotateTransform::create(ctx, global);
 
 	// Objects are available in runtime now use them	
 	JSStringRef string = JSStringCreateWithUTF8CString(
@@ -101,7 +90,7 @@ void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 											"view3.ManipulationMode = ManipulationModes.All;\n"
 											"view3.add(delta3);\n"
 
-											"var window = new Window();\n"
+											"var window = Window.Current;\n"
 											"window.Content = canvas;\n"
 											"window.Activate();\n"
 
@@ -130,15 +119,26 @@ void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 											"}\n"
 											 ); 
 	JSValueRef result = JSEvaluateScript(ctx, string, global, NULL, 0, NULL);
-	JSStringRef sValue = JSValueToStringCopy(ctx, result, NULL);
-	JSStringRelease(sValue);
 	JSStringRelease(string);
 }
 
-int main(Platform::Array<Platform::String^>^)
-{
+int main(Platform::Array<Platform::String^>^) {
+	
+	Utils::setAppContext(JSGlobalContextCreate(NULL));
+
+	JSContextRef ctx = Utils::getAppContext();
+	JSObjectRef global = JSContextGetGlobalObject(ctx);
+	Windows_UI_Xaml_Controls_Canvas::create(ctx, global);
+	Windows_UI_Xaml_Media_SolidColorBrush::create(ctx, global);
+	Windows_UI_Xaml_Window::create(ctx, global);
+	ManipulationHandler::create(ctx, global);
+	Windows_UI_Xaml_Input_ManipulationDeltaEventHandler::create(ctx, global);
+	Windows_UI_Xaml_Media_TranslateTransform::create(ctx, global);
+	Windows_UI_Xaml_Media_TransformGroup::create(ctx, global);
+	Windows_UI_Xaml_Media_RotateTransform::create(ctx, global);
+
 	Application::Start(ref new ApplicationInitializationCallback([](ApplicationInitializationCallbackParams^ params) {
-		MyApp^ app = ref new MyApp();
+		App^ app = ref new App();
 	}));
 
 	return 0;
