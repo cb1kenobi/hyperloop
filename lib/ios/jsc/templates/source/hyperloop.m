@@ -484,7 +484,7 @@ HyperloopJS* HyperloopRunInVM (JSGlobalContextRef globalContextRef, NSString *na
     JSStringRelease(prop);
 
     // setup our globals object
-    JSStringRef globalProperty = JSStringCreateWithUTF8CString("globals");
+    JSStringRef globalProperty = JSStringCreateWithUTF8CString("global");
     if (!JSObjectHasProperty(globalContextRef,globalObjectref,globalProperty))
     {
         JSObjectSetProperty(globalContextRef, globalObjectref, globalProperty, globalObjectref, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete, 0);
@@ -535,7 +535,7 @@ JSGlobalContextRef HyperloopCreateVM (NSString *name, NSString *prefix)
     JSStringRelease(prop);
 
     // setup our globals object
-    JSStringRef globalProperty = JSStringCreateWithUTF8CString("globals");
+    JSStringRef globalProperty = JSStringCreateWithUTF8CString("global");
     JSObjectSetProperty(globalContextRef, globalObjectref, globalProperty, globalObjectref, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete, 0);
     JSStringRelease(globalProperty);
 
