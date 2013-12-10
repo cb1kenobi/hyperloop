@@ -11,33 +11,7 @@ This example contains a set of lessons that ports [webgl-lessons](http://learnin
 
 ## Do you mean Hyperloop supports WebGL?
 
-No. Hyperloop itself doesn't support WebGL. For example hyperloop does not have [Typed Array](http://www.khronos.org/registry/typedarray/specs/latest/) such as [Int32Array and Float32Array](http://www.khronos.org/registry/typedarray/specs/latest/#7) that WebGL-capable browser have. This example demonstrates how to write a wrapper around OpenGL ES 2.0 to help porting your WebGL project onto hyperloop.
-
-Since Hyperloop doesn't have [Typed Array](http://www.khronos.org/registry/typedarray/specs/latest/), [WebGL wrapper](./lesson01/webgl.hjs) extends bindBuffer function to set buffer type manually.
-
-```javascript
-// Standard JavaScript array can be used to set array buffer.
-var vertices = [
-    // Front face
-    -1.0, -1.0,  1.0,
-     1.0, -1.0,  1.0,
-     1.0,  1.0,  1.0,
-    -1.0,  1.0,  1.0,
-    ...
-    ];
-// Default buffer type equals gl.FLOAT.
-// Note that Float32Array can not be used here.
-gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-
-// Buffer type (gl.UNSIGNED_SHORT in this case) can be added to set buffer type manually.
-// Usually ELEMENT_ARRAY_BUFFER needs UNSIGNED_SHORT buffer.
-// Note that Uint16Array can not be used here. 
-var cubeVertexIndices = [
-    0, 1, 2, 0, 2, 3,    // Front face
-    ...
-];
-gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndices, gl.STATIC_DRAW, gl.UNSIGNED_SHORT);
-```
+No. The WebGL wrapper in this example is not aiming perfect compatibility with WebGL. This example demonstrates how to write a wrapper around OpenGL ES 2.0 to help porting your WebGL project onto hyperloop.
 
 ## What does it look like?
 

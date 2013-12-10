@@ -23,14 +23,15 @@ GL.prototype.deleteBuffer = function(buffer) {
 GL.prototype.bindBuffer = function(target, buffer) {
     glBindBuffer(target, buffer._);
 };
-GL.prototype.bufferData = function(target, data, usage, type) {
-    var buffer = @memory();
-    if (this.isShort(type)) {
-        buffer.putShort(data);
+GL.prototype.bufferData = function(target, buffer, usage) {
+    var data;
+    if (buffer.constructor.name == 'Array') {
+       data = @memory();
+       data.putFloat(buffer);
     } else {
-        buffer.putFloat(data);
+        data = buffer._buffer._buffer;
     }
-    glBufferData(target, buffer.length, buffer, usage);
+    glBufferData(target, data.length, data, usage);
 };
 GL.prototype.shaderSource = function(shader, source) {
     var buffer = @memory();
