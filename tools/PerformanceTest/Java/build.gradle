@@ -1,0 +1,41 @@
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: '*.jar')
+    
+    testCompile group:'junit', name:'junit', version:'4.+'
+    testCompile fileTree(dir: 'libs', include: '*.jar')
+}
+
+task copyNativeLibs(type: Copy) {
+    from('libs') { include '**/*.dylib' }
+    into new File(buildDir, 'native-libs')
+}
+
+project.ext.nativesDir = project.buildDir.absolutePath + "/native-libs"
+project.ext.XcodeTmpDir = project.buildDir.absolutePath + "/native-tmp"
+project.ext.XcodeProjectDir = project.projectDir.absolutePath + "/native"
+project.ext.XcodeOutputDir = project.projectDir.absolutePath + "/libs"
+
+task jnibuild(type:Exec) {
+    commandLine 'xcodebuild','-sdk','macosx10.9','-project',project.ext.XcodeProjectDir+'/JavaScriptCorePerformanceTestOption3.xcodeproj','ONLY_ACTIVE_ARCH=NO','-configuration','Debug','-target','JavaScriptCorePerformanceTestOption3','CONFIGURATION_BUILD_DIR='+project.ext.XcodeOutputDir,'PROJECT_TEMP_DIR='+project.ext.XcodeTmpDir,'build'
+    standardOutput = new ByteArrayOutputStream()
+    ext.output = {
+      return standardOutput.toString()
+    }
+}
+
+tasks.withType(Compile) {
+    compileTask -> compileTask.dependsOn copyNativeLibs
+}
+
+test {
+    systemProperty 'java.library.path', project.ext.nativesDir
+    jvmArgs '-verbose:gc'
+}
+
+clean.dependsOn 'cleanCopyNativeLibs'
