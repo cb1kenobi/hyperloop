@@ -8,7 +8,7 @@ function assert (value, test, msg) {
 		(!value ? ('\t(received: '+msg+')') : '')
 	);
 }
-globals.assert = assert;
+global.assert = assert;
 
 
 var mod = require('./mod'),					// local directory
@@ -40,7 +40,7 @@ nested.count++;
 nested = require('./nested');
 
 assert(nested.count===2,'nested count should be 2',nested.count);
-assert(globals.foobar===123,'globals.foobar should be 123',globals.foobar);
+assert(global.foobar===123,'global.foobar should be 123',global.foobar);
 assert(false===module.loaded,'module should not be loaded yet',module.loaded);
 assert(module.parent===null,'module should not have a parent',module.parent);
 

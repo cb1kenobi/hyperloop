@@ -2,5 +2,5 @@ var m = require('module');
 
 exports.count = 1;
 
-// test globals
-globals.foobar = 123;
+// test global
+global.foobar = 123;
