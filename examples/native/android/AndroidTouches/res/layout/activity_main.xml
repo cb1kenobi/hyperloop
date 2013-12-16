@@ -1,0 +1,31 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="top" >
+
+    <View android:background="@drawable/magentasquare" 
+			android:layout_height="200px" 
+			android:layout_width="200px" 
+			android:id="@+id/magenta"
+			android:layout_gravity="top" >	
+	</View> 
+	
+	<View android:background="@drawable/cyansquare" 
+			android:layout_height="200px" 
+			android:layout_width="200px" 
+			android:layout_marginTop="300px"
+			android:id="@+id/cyan"
+			android:layout_gravity="top" > 
+	</View> 
+	
+	<View android:background="@drawable/yellowsquare" 
+			android:layout_height="200px" 
+			android:layout_width="200px" 
+			android:layout_marginTop="600px"
+			android:id="@+id/yellow"
+			android:layout_gravity="top" > 
+	</View>
+
+</FrameLayout>
