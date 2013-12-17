@@ -4,7 +4,7 @@ var child = require('child_process'),
   spawn = child.spawn;
 
 var BIN = './node_modules/.bin/',
-  TEST_SRC = ['test/bin/*_test.js', 'test/lib/**/*.js'];
+  TEST_SRC = ['test/bin/*_test.js', 'test/lib/*.js'];
 
 module.exports = function(grunt) {
 
