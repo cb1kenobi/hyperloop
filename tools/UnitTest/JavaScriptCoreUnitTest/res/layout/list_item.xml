@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="5dip" >
+
+<TextView
+    android:id="@+id/nameLabel"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textStyle="bold"
+    android:text="Name" >
+
+</TextView>
+
+<TextView
+    android:id="@+id/resultLabel"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignBaseline="@+id/durationLabel"
+    android:layout_alignBottom="@+id/durationLabel"
+    android:layout_marginRight="15dp"
+    android:layout_toLeftOf="@+id/durationLabel"
+    android:text="Result"
+    android:textColor="#00ff00" />
+
+<TextView
+    android:id="@+id/durationLabel"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignBaseline="@+id/nameLabel"
+    android:layout_alignBottom="@+id/nameLabel"
+    android:layout_alignParentRight="true"
+    android:layout_marginRight="23dp"
+    android:text="Duration" />
+
+</RelativeLayout>
