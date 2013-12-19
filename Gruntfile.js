@@ -1,5 +1,4 @@
 var child = require('child_process'),
-  path = require('path'),
   exec = child.exec,
   spawn = child.spawn;
 
@@ -66,7 +65,6 @@ module.exports = function(grunt) {
   });
 
   // Load grunt plugins for modules
-  grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-clean');
 
@@ -93,6 +91,8 @@ module.exports = function(grunt) {
 
   // run tests
   grunt.registerTask('test', 'run tests', function(type) {
+
+    grunt.loadNpmTasks('grunt-mocha-test');
 
     // run the original test suite, not currently tied to travis or coverage reports
     // TODO: remove this option once new testing covers the same cases
