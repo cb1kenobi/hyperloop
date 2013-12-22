@@ -5,7 +5,8 @@ var should = require('should'),
 	path = require('path'),
 	fs = require('fs'),
 	ilparser = require('../../lib/windows/ilparser'),
-	winmd = require('../../lib/windows/winmd'),
+	finder = require('../../lib/windows/finder'),
+	programs = require('../../lib/windows/programs'),
 	templates_dir = path.join(__dirname, 'winmd');
 
 describe("ilparser", function() {
@@ -14,9 +15,9 @@ describe("ilparser", function() {
 	if (process.platform === 'win32')
 	it("should parse Windows.winmd", function(done) {
 		this.timeout(30000);
-		winmd.find('Windows.winmd', function(ref) {
+		finder.find('Windows.winmd', function(ref) {
 			should.exist(ref, 'Windows.winmd not found at ' + ref);
-			winmd.ildasm(ref, 'windows.il', function(ref) {
+			programs.ildasm(ref, 'windows.il', function(ref) {
 				should.exist(ref, 'windows.il does not exist at ' + ref);
 				ilparser.parseFile(ref, function(err, ast) {
 					if (err) return done(err);
@@ -34,7 +35,7 @@ describe("ilparser", function() {
 
 	it("should parse complex class type", function(done) {
 
-		var template = path.join(templates_dir,'winmd.il');
+		var template = path.join(templates_dir, 'winmd.il');
 
 		ilparser.parseFile(template,function(err,ast){
 			if (err) return done(err);
@@ -76,6 +77,31 @@ describe("ilparser", function() {
 			done();
 		});
 
+	});
+
+	it("should properly parse property with object type", function(done) {
+		var template = path.join(templates_dir, 'winmd.depprop.il');
+		ilparser.parseFile(template, function(err, ast) {
+			if (err) {
+				return done(err);
+			}
+			ast.should.not.be.null;
+			var json = ast.toJSON();
+			json.should.not.be.null;
+			json.should.have.property('classes');
+			Object.keys(json.classes).should.have.length(1);
+			var cls = json.classes['Windows.UI.Xaml.DependencyProperty'];
+			cls.should.not.be.null;
+			var props = cls.properties;
+			props.should.not.be.null;
+			var unsetValue = props.UnsetValue;
+			unsetValue.should.not.be.null;
+			var getter = unsetValue.getter;
+			getter.should.not.be.null;
+			getter.type.should.equal('object');
+			should.strictEqual(getter.returnType, undefined);
+			done();
+		});
 	});
 
 	it("should handle embedded comments in class", function(done){
@@ -123,9 +149,36 @@ describe("ilparser", function() {
 			json.classes['Windows.UI.ApplicationSettings.ISettingsCommandFactory'].methods[0].args[2].should.have.property('name','handler');
 			done();
 		});
-
 	});
 
+	it("should annotate protected members", function(done){
+		var template = path.join(templates_dir,'winmd.application.il');
+
+		ilparser.parseFile(template,function(err,ast){
+			if (err) return done(err);
+			ast.should.not.be.null;
+			var json = ast.toJSON();
+			json.should.not.be.null;
+			json.should.have.property('classes');
+			Object.keys(json.classes).should.have.length(1);
+			json.classes.should.have.property('Windows.UI.Xaml.Application');
+			var application = json.classes['Windows.UI.Xaml.Application'];
+			application.should.have.property('methods');
+			var methods = application.methods,
+				foundOnLaunched = false;
+			for (var i = 0, iL = methods.length; i < iL; i++) {
+				var method = methods[i];
+				if (method.name === 'OnLaunched') {
+					foundOnLaunched = true;
+					method.should.have.property('attributes');
+					method.attributes.indexOf('public').should.eql(-1);
+					break;
+				}
+			}
+			foundOnLaunched.should.be.true;
+			done();
+		});
+	});
 	it("should handle class with fields", function(done){
 		var template = path.join(templates_dir,'winmd4.il');
 

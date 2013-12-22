@@ -1,58 +1,23 @@
-@import("Windows");
-
-@compiler({
-	application: 'MyApp'
-});
-
-var grid,
-	window,
-	text;
-
-@class('MyApp', Application, [], [
-
+@class('App', Application, [], [
 	{
+		override: true,
 		name: 'OnLaunched',
 		returnType: 'void',
-		arguments: [ { name: 'args', type: 'LaunchActivatedEventArgs' } ],
+		arguments: [ { name: 'args', type: 'LaunchActivatedEventArgs^' } ],
 		action: function(params) {
-			
-			window = Window.Current;
+			var window = Window.Current,
+				text = new TextBlock();
 
-			grid = new Grid();
-			var red = new SolidColorBrush();
-			red.Color = Colors.Red;
-			grid.Background = red;
-
-			text = new TextBlock();
-			text.Text = "Tap me to find out\nwhat time it is!";
+			text.Text = "Hello, world!";
 			text.TextAlignment = TextAlignment.Center;
 			text.VerticalAlignment = VerticalAlignment.Center;
 			text.HorizontalAlignment = HorizontalAlignment.Center;
 			text.FontSize = 60;
-			grid.Children.Append(text);
 
-			var eventHandler = new TappedEventHandler(this,'PointerPressed');
-			grid.Tapped.add(eventHandler);
-
-			window.Content = grid;
+			window.Content = text;
 			window.Activate();
 		}
-	},
-
-	{
-		name: 'PointerPressed',
-		returnType: 'void',
-		arguments: [ { name: 'sender', type: 'Object' }, { name:'e', type: 'TappedRoutedEventArgs' } ],
-		action: function(params) {
-			var green = new SolidColorBrush();
-			green.Color = Colors.DarkGreen;
-			grid.Background = green;
-
-			var cal = new Calendar();
-			text.FontSize = 180;
-			text.Text = cal.HourAsPaddedString(2) + ':' + cal.MinuteAsPaddedString(2) + ':' + cal.SecondAsPaddedString(2);
-		}
 	}
-
 ]);
 
+var app = new App();
