@@ -454,7 +454,6 @@ public class JSVirtualMachineTest {
         assertTrue(tObj.equals(pObj));
     }
 
-/*
     @Test
     public void testJSObjectMakeGlobalObject() {
         JSClassDefinition globalObjectDef = new JSClassDefinition();
@@ -472,14 +471,13 @@ public class JSVirtualMachineTest {
             }
         }, null, JSPropertyAttribute.None.getValue());
         globalObjectDef.staticValues = staticValues;
-        JSClassRef globalObjectClass = jsc.JSClassCreate(globalObjectDef);
+        JSClassRef globalObjectClass = jsc.JSGlobalClassCreate(globalObjectDef);
         JSGlobalContextRef context = jsc.JSGlobalContextCreate(globalObjectClass); 
         JSObjectRef globalObject = jsc.JSContextGetGlobalObject(context);
         JSValueRef value = context.evaluateScript("globalStaticValue;", globalObject, null);
         assertTrue(value.toInt() == 123);
         jsc.JSGlobalContextRelease(context);
     }
-*/
 
     @Test
     public void testJSObjectMakeFunctionWithCallback() {

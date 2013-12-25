@@ -50,69 +50,69 @@ public class  TestAPI {
 
     @Before
     public void setUp() throws Exception {
-    	/* Static values */
-    	JSStaticValues evilStaticValues = new JSStaticValues();
-    	evilStaticValues.add("nullGetSet", null, null, JSPropertyAttribute.None.getValue());    	
-    	evilStaticValues.add("nullGetForwardSet", null, new JSObjectSetPropertyCallback() {
-			@Override
-			public boolean setProperty(JSContextRef context, JSObjectRef object,
-					String propertyName, JSValueRef value, Pointer exception) {
-			    return false; // Forward to parent class.
-			}
-    	}, JSPropertyAttribute.None.getValue());
-    	
-    	/* Static functions */
-    	JSStaticFunctions evilStaticFunctions = new JSStaticFunctions();
-    	evilStaticFunctions.add("nullCall", null, JSPropertyAttribute.None.getValue());
-    	
-    	/* Class definitions */
-    	MyObject_definition = new MyObjectDefinition();
-    	MyObject_definition.staticValues = evilStaticValues;
-    	MyObject_definition.staticFunctions = evilStaticFunctions;
-    	
-    	MyObject_convertToTypeWrapperDefinition = new MyObject_convertToTypeWrapperDefinition();
-    	
-    	MyObject_nullWrapperDefinition = new JSClassDefinition();
-    	MyObject_nullWrapperDefinition.version = 0;
-    	MyObject_nullWrapperDefinition.attributes = JSClassAttribute.None.getValue();
-    	MyObject_nullWrapperDefinition.className = "MyObject";
-    	
-    	PropertyCatchalls_definition   = new PropertyCatchallsDefinition();
-    	EvilExceptionObject_definition = new EvilExceptionObjectDefinition();
-    	EmptyObject_definition = new JSClassDefinition();
-    	
-    	print_callAsFunction = new JSObjectCallAsFunctionCallback() {
-			@Override
-			public JSValueRef callAsFunction(JSContextRef context,
-					JSObjectRef function, JSObjectRef object, int argumentCount,
-					JSValueArrayRef arguments, Pointer exception) {
-			    if (argumentCount > 0) {
-			    	System.out.println(arguments.get(context, 0).toString());
-			    }
-			    return jsc.JSValueMakeUndefined(context);
-			}
-    	};
-    	myConstructor_callAsConstructor = new JSObjectCallAsConstructorCallback() {
-			@Override
-			public JSObjectRef callAsConstructor(JSContextRef context,
-					JSObjectRef constructor, int argumentCount, JSValueArrayRef arguments,
-					Pointer exception) {
-			    JSObjectRef result = jsc.JSObjectMake(context, null);
-			    if (argumentCount > 0) {
-			        jsc.JSObjectSetProperty(context, result, "value", arguments.get(context, 0), JSPropertyAttribute.None.getValue(), null);
-			    }
-			    
-			    return result;
-			}
-    	};
-    	myBadConstructor_callAsConstructor = new JSObjectCallAsConstructorCallback() {
-			@Override
-			public JSObjectRef callAsConstructor(JSContextRef context,
-					JSObjectRef constructor, int argumentCount, JSValueArrayRef arguments,
-					Pointer exception) {
-				return null;
-			}
-    	};
+        /* Static values */
+        JSStaticValues evilStaticValues = new JSStaticValues();
+        evilStaticValues.add("nullGetSet", null, null, JSPropertyAttribute.None.getValue());        
+        evilStaticValues.add("nullGetForwardSet", null, new JSObjectSetPropertyCallback() {
+            @Override
+            public boolean setProperty(JSContextRef context, JSObjectRef object,
+                    String propertyName, JSValueRef value, Pointer exception) {
+                return false; // Forward to parent class.
+            }
+        }, JSPropertyAttribute.None.getValue());
+        
+        /* Static functions */
+        JSStaticFunctions evilStaticFunctions = new JSStaticFunctions();
+        evilStaticFunctions.add("nullCall", null, JSPropertyAttribute.None.getValue());
+        
+        /* Class definitions */
+        MyObject_definition = new MyObjectDefinition();
+        MyObject_definition.staticValues = evilStaticValues;
+        MyObject_definition.staticFunctions = evilStaticFunctions;
+        
+        MyObject_convertToTypeWrapperDefinition = new MyObject_convertToTypeWrapperDefinition();
+        
+        MyObject_nullWrapperDefinition = new JSClassDefinition();
+        MyObject_nullWrapperDefinition.version = 0;
+        MyObject_nullWrapperDefinition.attributes = JSClassAttribute.None.getValue();
+        MyObject_nullWrapperDefinition.className = "MyObject";
+        
+        PropertyCatchalls_definition   = new PropertyCatchallsDefinition();
+        EvilExceptionObject_definition = new EvilExceptionObjectDefinition();
+        EmptyObject_definition = new JSClassDefinition();
+        
+        print_callAsFunction = new JSObjectCallAsFunctionCallback() {
+            @Override
+            public JSValueRef callAsFunction(JSContextRef context,
+                    JSObjectRef function, JSObjectRef object, int argumentCount,
+                    JSValueArrayRef arguments, Pointer exception) {
+                if (argumentCount > 0) {
+                    System.out.println(arguments.get(context, 0).toString());
+                }
+                return jsc.JSValueMakeUndefined(context);
+            }
+        };
+        myConstructor_callAsConstructor = new JSObjectCallAsConstructorCallback() {
+            @Override
+            public JSObjectRef callAsConstructor(JSContextRef context,
+                    JSObjectRef constructor, int argumentCount, JSValueArrayRef arguments,
+                    Pointer exception) {
+                JSObjectRef result = jsc.JSObjectMake(context, null);
+                if (argumentCount > 0) {
+                    jsc.JSObjectSetProperty(context, result, "value", arguments.get(context, 0), JSPropertyAttribute.None.getValue(), null);
+                }
+                
+                return result;
+            }
+        };
+        myBadConstructor_callAsConstructor = new JSObjectCallAsConstructorCallback() {
+            @Override
+            public JSObjectRef callAsConstructor(JSContextRef context,
+                    JSObjectRef constructor, int argumentCount, JSValueArrayRef arguments,
+                    Pointer exception) {
+                return null;
+            }
+        };
 
         globalObjectClassDefinition = new JSClassDefinition();
         globalObjectClassDefinition.initialize = new JSObjectInitializeCallback() {
@@ -173,7 +173,7 @@ public class  TestAPI {
 
     @After
     public void tearDown() throws Exception {
-    	
+        
     }
     
     @Test
@@ -189,8 +189,12 @@ public class  TestAPI {
         TestInitializeFinalize = false;
 
         assertTrue(Base_didFinalize);
-    
-        JSClassRef globalObjectClass = jsc.JSClassCreate(globalObjectClassDefinition);
+        
+        /* 
+         * Unlike C API, use 'JSGlobalClassCreate' instead of 'JSClassCreate' to create global object class
+         * otherwise context crashes on JSGlobalContextRelease
+         */
+        JSClassRef globalObjectClass = jsc.JSGlobalClassCreate(globalObjectClassDefinition);
         context = jsc.JSGlobalContextCreateInGroup(null, globalObjectClass);
         JSContextGroupRef contextGroup = jsc.JSContextGetGroup(context);
         jsc.JSGlobalContextRetain(context);
@@ -415,9 +419,8 @@ public class  TestAPI {
         JSObjectRef printFunction = jsc.JSObjectMakeFunctionWithCallback(context, "print", print_callAsFunction);
         jsc.JSObjectSetProperty(context, globalObject, "print", printFunction, JSPropertyAttribute.None.getValue(), null); 
         
-        // Unlike C API, Java API provides access to set/get private object on function object
-        assertTrue(jsc.JSObjectSetPrivate(printFunction, 1));
-        assertTrue(jsc.JSObjectGetPrivate(printFunction) != null);
+        assertTrue(!jsc.JSObjectSetPrivate(printFunction, 1));
+        assertTrue(jsc.JSObjectGetPrivate(printFunction) == null);
 
         JSObjectRef myConstructor = jsc.JSObjectMakeConstructor(context, null, myConstructor_callAsConstructor);
         jsc.JSObjectSetProperty(context, globalObject, "MyConstructor", myConstructor, JSPropertyAttribute.None.getValue(), null);
@@ -531,7 +534,7 @@ public class  TestAPI {
         String scriptUTF8 = createStringWithContentsOfFile("/com/appcelerator/javascriptcore/testapi.js");
         exception = JSValueRef.Null();
         result = jsc.JSEvaluateScript(context, scriptUTF8, globalObject, null, 1, exception);
-        assertTrue(jsc.JSValueIsUndefined(context, result));
+        assertTrue(jsc.JSValueIsNull(context, result));
 
         // Clear out local variables pointing at JSObjectRefs to allow their values to be collected
         function = null;
@@ -549,15 +552,52 @@ public class  TestAPI {
 
         JSClassDefinition prototypeLoopClassDefinition = new JSClassDefinition();
         prototypeLoopClassDefinition.staticFunctions = globalObjectClassDefinition.staticFunctions;
-        JSClassRef prototypeLoopClass = jsc.JSClassCreate(prototypeLoopClassDefinition);
+        JSClassRef prototypeLoopClass = jsc.JSGlobalClassCreate(prototypeLoopClassDefinition);
         JSGlobalContextRef prototypeLoopContext = jsc.JSGlobalContextCreateInGroup(null, prototypeLoopClass);
-
+        /* 
+         * Unlike C API, use 'JSGlobalClassCreate' instead of 'JSClassCreate' to create global object class
+         * otherwise context crashes on JSGlobalContextRelease
+         */
         jsc.JSObjectHasProperty(prototypeLoopContext, jsc.JSContextGetGlobalObject(prototypeLoopContext), "name");
 
         jsc.JSGlobalContextRelease(prototypeLoopContext);
         jsc.JSClassRelease(prototypeLoopClass);
 
         System.out.println("PASS: Infinite prototype chain does not occur.");
+
+        context = jsc.JSGlobalContextCreate(null);
+        JSObjectRef object1 = jsc.JSObjectMake(context, /* jsClass */ null, /* data */ null);
+        JSObjectRef object2 = jsc.JSObjectMake(context, /* jsClass */ null, /* data */ null);
+        JSObjectRef object3 = jsc.JSObjectMake(context, /* jsClass */ null, /* data */ null);
+
+        jsc.JSObjectSetPrototype(context, object1, jsc.JSValueMakeNull(context));
+        assertTrue(jsc.JSValueIsNull(context, jsc.JSObjectGetPrototype(context, object1)));
+
+        // object1 -> object1
+        jsc.JSObjectSetPrototype(context, object1, object1);
+        assertTrue(jsc.JSValueIsNull(context, jsc.JSObjectGetPrototype(context, object1)));
+
+        // object1 -> object2 -> object1
+        jsc.JSObjectSetPrototype(context, object2, object1);
+        assertTrue(jsc.JSValueIsStrictEqual(context, jsc.JSObjectGetPrototype(context, object2), object1));
+        jsc.JSObjectSetPrototype(context, object1, object2);
+        assertTrue(jsc.JSValueIsNull(context, jsc.JSObjectGetPrototype(context, object1)));
+
+        // object1 -> object2 -> object3 -> object1
+        jsc.JSObjectSetPrototype(context, object2, object3);
+        assertTrue(jsc.JSValueIsStrictEqual(context, jsc.JSObjectGetPrototype(context, object2), object3));
+        jsc.JSObjectSetPrototype(context, object1, object2);
+        assertTrue(jsc.JSValueIsStrictEqual(context, jsc.JSObjectGetPrototype(context, object1), object2));
+        jsc.JSObjectSetPrototype(context, object3, object1);
+        assertTrue(!jsc.JSValueIsStrictEqual(context, jsc.JSObjectGetPrototype(context, object3), object1));
+
+        exception = JSValueRef.Null();
+        String code = "o = { }; p = { }; o.__proto__ = p; p.__proto__ = o";
+        assertTrue(jsc.JSEvaluateScript(context, code, /* thisObject*/ null, "", 1, exception).isNullPointer());
+        jsc.JSGlobalContextRelease(context);
+
+        System.out.println("PASS: A cycle in a prototype chain can't be created.");
+        System.out.println("PASS: Program exited normally.");
 
     }
 
@@ -595,32 +635,32 @@ public class  TestAPI {
             MyObject_nullWrapperDefinition.parentClass = wrapperClass;
             jsMyObjectClassRef = jsc.JSClassCreate(MyObject_nullWrapperDefinition);
         }
-        return jsMyObjectClassRef;    	
+        return jsMyObjectClassRef;      
     }
     
     private JSClassRef PropertyCatchalls_class(JSContextRef context) {
         if (jsPropertyCatchallsClassRef == null)
-        	jsPropertyCatchallsClassRef = jsc.JSClassCreate(PropertyCatchalls_definition);
+            jsPropertyCatchallsClassRef = jsc.JSClassCreate(PropertyCatchalls_definition);
         
         return jsPropertyCatchallsClassRef;
     }
     
     private JSClassRef EvilExceptionObject_class(JSContextRef context) {
-    	if (jsEvilExceptionObjectClassRef == null) {
-    		jsEvilExceptionObjectClassRef = jsc.JSClassCreate(EvilExceptionObject_definition);
-    	}
-    	return jsEvilExceptionObjectClassRef;
+        if (jsEvilExceptionObjectClassRef == null) {
+            jsEvilExceptionObjectClassRef = jsc.JSClassCreate(EvilExceptionObject_definition);
+        }
+        return jsEvilExceptionObjectClassRef;
     }
     
     private JSClassRef EmptyObject_class(JSContextRef context) {
-    	if (jsEmptyObjectClassRef == null) {
-    		jsEmptyObjectClassRef = jsc.JSClassCreate(EmptyObject_definition);
-    	}
-    	return jsEmptyObjectClassRef;
+        if (jsEmptyObjectClassRef == null) {
+            jsEmptyObjectClassRef = jsc.JSClassCreate(EmptyObject_definition);
+        }
+        return jsEmptyObjectClassRef;
     }
     
     private JSClassRef Base_class(JSContextRef context) {
-    	if (jsBaseObjectClassRef == null) {
+        if (jsBaseObjectClassRef == null) {
             JSStaticFunctions Base_staticFunctions = new JSStaticFunctions();
             Base_staticFunctions.add("baseProtoDup", null, JSPropertyAttribute.None.getValue());
             Base_staticFunctions.add("baseProto", new JSObjectCallAsFunctionCallback() {
@@ -664,26 +704,26 @@ public class  TestAPI {
             definition.staticValues = Base_staticValues;
             definition.staticFunctions = Base_staticFunctions;
             definition.initialize = new JSObjectInitializeCallback() {
-				@Override
-				public void initialize(JSContextRef context, JSObjectRef object) {
-					if (TestInitializeFinalize) {
-						assertTrue(jsc.JSObjectGetPrivate(object).equals(1));
-						jsc.JSObjectSetPrivate(object, 2);
-					}
-				}
+                @Override
+                public void initialize(JSContextRef context, JSObjectRef object) {
+                    if (TestInitializeFinalize) {
+                        assertTrue(jsc.JSObjectGetPrivate(object).equals(1));
+                        jsc.JSObjectSetPrivate(object, 2);
+                    }
+                }
             };
             definition.finalize = new JSObjectFinalizeCallback() {
-				@Override
-				public void finalize(JSObjectRef object) {
-					if (TestInitializeFinalize) {
-						assertTrue(jsc.JSObjectGetPrivate(object).equals(4));
-						Base_didFinalize = true;
-					}
-				}
+                @Override
+                public void finalize(JSObjectRef object) {
+                    if (TestInitializeFinalize) {
+                        assertTrue(jsc.JSObjectGetPrivate(object).equals(4));
+                        Base_didFinalize = true;
+                    }
+                }
             };
             jsBaseObjectClassRef = jsc.JSClassCreate(definition);
-    	}
-    	return jsBaseObjectClassRef;
+        }
+        return jsBaseObjectClassRef;
     }
     
 
@@ -697,16 +737,16 @@ public class  TestAPI {
     }
 
     private JSClassRef Derived_class(JSContextRef context) {
-    	if (jsDerivedObjectClassRef == null) {
-    		JSObjectCallAsFunctionCallback Derived_callAsFunction = new JSObjectCallAsFunctionCallback() {
-				@Override
-				public JSValueRef callAsFunction(JSContextRef context,
-						JSObjectRef function, JSObjectRef thisObject, int argumentCount,
-						JSValueArrayRef arguments, Pointer exception) {
-				    return jsc.JSValueMakeNumber(context, 2); // distinguish base call from derived call
-				}
-    		};
-    		
+        if (jsDerivedObjectClassRef == null) {
+            JSObjectCallAsFunctionCallback Derived_callAsFunction = new JSObjectCallAsFunctionCallback() {
+                @Override
+                public JSValueRef callAsFunction(JSContextRef context,
+                        JSObjectRef function, JSObjectRef thisObject, int argumentCount,
+                        JSValueArrayRef arguments, Pointer exception) {
+                    return jsc.JSValueMakeNumber(context, 2); // distinguish base call from derived call
+                }
+            };
+            
             JSObjectGetPropertyCallback Derived_get = new JSObjectGetPropertyCallback() {
                 @Override
                 public JSValueRef getProperty(JSContextRef context, JSObjectRef object,
@@ -738,26 +778,26 @@ public class  TestAPI {
             definition.staticValues = Derived_staticValues;
             definition.staticFunctions = Derived_staticFunctions;
             definition.initialize = new JSObjectInitializeCallback() {
-				@Override
-				public void initialize(JSContextRef context, JSObjectRef object) {
-					if (TestInitializeFinalize) {
-						assertTrue(jsc.JSObjectGetPrivate(object).equals(2));
-						jsc.JSObjectSetPrivate(object, 3);
-					}
-				}
+                @Override
+                public void initialize(JSContextRef context, JSObjectRef object) {
+                    if (TestInitializeFinalize) {
+                        assertTrue(jsc.JSObjectGetPrivate(object).equals(2));
+                        jsc.JSObjectSetPrivate(object, 3);
+                    }
+                }
             };
             definition.finalize = new JSObjectFinalizeCallback() {
-				@Override
-				public void finalize(JSObjectRef object) {
-					if (TestInitializeFinalize) {
-						assertTrue(jsc.JSObjectGetPrivate(object).equals(3));
-						jsc.JSObjectSetPrivate(object, 4);
-					}
-				}
+                @Override
+                public void finalize(JSObjectRef object) {
+                    if (TestInitializeFinalize) {
+                        assertTrue(jsc.JSObjectGetPrivate(object).equals(3));
+                        jsc.JSObjectSetPrivate(object, 4);
+                    }
+                }
             };
             jsDerivedObjectClassRef = jsc.JSClassCreate(definition);
-    	}
-    	return jsDerivedObjectClassRef;
+        }
+        return jsDerivedObjectClassRef;
     }
     private JSClassRef Derived_class2(JSContextRef context) {
         if (jsDerived2ObjectClassRef == null) {
@@ -770,55 +810,55 @@ public class  TestAPI {
 }
 class EvilExceptionObjectDefinition extends JSClassDefinition implements JSObjectHasInstanceCallback, JSObjectConvertToTypeCallback {
     private JavaScriptCoreLibrary jsc = JavaScriptCoreLibrary.getInstance();
-	public EvilExceptionObjectDefinition() {
-    	this.version = 0;
-    	this.attributes = JSClassAttribute.None.getValue();
-		this.className = "EvilExceptionObject";
-		this.hasInstance = this;
-		this.convertToType = this;
-	}
-	@Override
-	public JSValueRef convertToType(JSContextRef context, JSObjectRef object,
-			JSType type, Pointer exception) {
-	    String funcName;
-	    switch (type) {
-	    case Number:
-	        funcName = "toNumber";
-	        break;
-	    case String:
-	        funcName = "toStringExplicit";
-	        break;
-	    default:
-	        return jsc.JSValueMakeNull(context);
-	    }
-	    
+    public EvilExceptionObjectDefinition() {
+        this.version = 0;
+        this.attributes = JSClassAttribute.None.getValue();
+        this.className = "EvilExceptionObject";
+        this.hasInstance = this;
+        this.convertToType = this;
+    }
+    @Override
+    public JSValueRef convertToType(JSContextRef context, JSObjectRef object,
+            JSType type, Pointer exception) {
+        String funcName;
+        switch (type) {
+        case Number:
+            funcName = "toNumber";
+            break;
+        case String:
+            funcName = "toStringExplicit";
+            break;
+        default:
+            return jsc.JSValueMakeNull(context);
+        }
+        
         JSValueRef new_exception = JSValueRef.Null();
-	    JSValueRef func = jsc.JSObjectGetProperty(context, object, funcName, new_exception);
-	    JSObjectRef function = jsc.JSValueToObject(context, func, new_exception);
+        JSValueRef func = jsc.JSObjectGetProperty(context, object, funcName, new_exception);
+        JSObjectRef function = jsc.JSValueToObject(context, func, new_exception);
         exception.update(new_exception);
-	    if (function.isNull())
-	        return jsc.JSValueMakeNull(context);
-	    JSValueRef value = jsc.JSObjectCallAsFunction(context, function, object, JSValueArrayRef.noArg(), new_exception);
+        if (function.isNull())
+            return jsc.JSValueMakeNull(context);
+        JSValueRef value = jsc.JSObjectCallAsFunction(context, function, object, JSValueArrayRef.noArg(), new_exception);
         exception.update(new_exception);
-	    if (value.isNull()) {
-	        return jsc.JSValueMakeString(context, "convertToType failed");
-	    }
-	    return value;
-	}
+        if (value.isNull()) {
+            return jsc.JSValueMakeString(context, "convertToType failed");
+        }
+        return value;
+    }
 
-	@Override
-	public boolean hasInstance(JSContextRef context, JSObjectRef constructor,
-			JSValueRef possibleValue, Pointer exception) {
-	    JSValueRef hasInstance = jsc.JSObjectGetProperty(context, constructor, "hasInstance", null);
-	    if (hasInstance.isNull())
-	        return false;
-	    JSObjectRef function = jsc.JSValueToObject(context, hasInstance, null);
+    @Override
+    public boolean hasInstance(JSContextRef context, JSObjectRef constructor,
+            JSValueRef possibleValue, Pointer exception) {
+        JSValueRef hasInstance = jsc.JSObjectGetProperty(context, constructor, "hasInstance", null);
+        if (hasInstance.isNull())
+            return false;
+        JSObjectRef function = jsc.JSValueToObject(context, hasInstance, null);
         JSValueArrayRef argv = new JSValueArrayRef(1);
         argv.set(0, possibleValue);
-	    JSValueRef result = jsc.JSObjectCallAsFunction(context, function, constructor, argv, null);
-	    return !result.isNull() && jsc.JSValueToBoolean(context, result);
-	}
-	
+        JSValueRef result = jsc.JSObjectCallAsFunction(context, function, constructor, argv, null);
+        return !result.isNull() && jsc.JSValueToBoolean(context, result);
+    }
+    
 }
 class PropertyCatchallsDefinition extends JSClassDefinition implements JSObjectGetPropertyCallback, JSObjectSetPropertyCallback, JSObjectGetPropertyNamesCallback {
     private JavaScriptCoreLibrary jsc = JavaScriptCoreLibrary.getInstance();
@@ -829,260 +869,260 @@ class PropertyCatchallsDefinition extends JSClassDefinition implements JSObjectG
     private static int xSetCount = 0;
     private static int propertyNamesCount = 0;
     
-	public PropertyCatchallsDefinition() {
-    	this.version = 0;
-    	this.attributes = JSClassAttribute.None.getValue();
-    	this.className = "PropertyCatchalls";
-		this.getProperty = this;
-		this.setProperty = this;
-		this.getPropertyNames = this;
-	}
+    public PropertyCatchallsDefinition() {
+        this.version = 0;
+        this.attributes = JSClassAttribute.None.getValue();
+        this.className = "PropertyCatchalls";
+        this.getProperty = this;
+        this.setProperty = this;
+        this.getPropertyNames = this;
+    }
 
-	@Override
-	public void getPropertyNames(JSContextRef context, JSObjectRef object, JSPropertyNameAccumulatorRef propertyNames) {
-	    String numbers[] = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
-	    
-	    // Provide a property of a different name every time.
-	    String propertyName = numbers[propertyNamesCount++ % 10];
-	    jsc.JSPropertyNameAccumulatorAddName(propertyNames, propertyName);
-	}
+    @Override
+    public void getPropertyNames(JSContextRef context, JSObjectRef object, JSPropertyNameAccumulatorRef propertyNames) {
+        String numbers[] = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+        
+        // Provide a property of a different name every time.
+        String propertyName = numbers[propertyNamesCount++ % 10];
+        jsc.JSPropertyNameAccumulatorAddName(propertyNames, propertyName);
+    }
 
-	@Override
-	public boolean setProperty(JSContextRef context, JSObjectRef object,
-			String propertyName, JSValueRef value, Pointer exception) {
-	    if (propertyName.equals("x")) {
-	        if (xSetCount++ < 5)
-	            return false;
+    @Override
+    public boolean setProperty(JSContextRef context, JSObjectRef object,
+            String propertyName, JSValueRef value, Pointer exception) {
+        if (propertyName.equals("x")) {
+            if (xSetCount++ < 5)
+                return false;
 
-	        // Swallow all .x sets after 4.
-	        return true;
-	    }
+            // Swallow all .x sets after 4.
+            return true;
+        }
 
-	    if (propertyName.equals("make_throw") || propertyName.equals("0")) {
+        if (propertyName.equals("make_throw") || propertyName.equals("0")) {
             // *exception = JSValueMakeNumber(context, 5);
             exception.update(jsc.JSValueMakeNumber(context, 5));
             return true;
-	    }
+        }
 
-	    return false;
-	}
+        return false;
+    }
 
-	@Override
-	public JSValueRef getProperty(JSContextRef context, JSObjectRef object,
-			String propertyName, Pointer exception) {
+    @Override
+    public JSValueRef getProperty(JSContextRef context, JSObjectRef object,
+            String propertyName, Pointer exception) {
 
-	    if (propertyName.equals("x")) {
-	        if (xCount++ < 5)
-	            return null;
+        if (propertyName.equals("x")) {
+            if (xCount++ < 5)
+                return null;
 
-	        // Swallow all .x gets after 5, returning null.
-	        return jsc.JSValueMakeNull(context);
-	    }
+            // Swallow all .x gets after 5, returning null.
+            return jsc.JSValueMakeNull(context);
+        }
 
-	    if (propertyName.equals("y")) {
-	        if (yCount++ < 5)
-	            return null;
+        if (propertyName.equals("y")) {
+            if (yCount++ < 5)
+                return null;
 
-	        // Swallow all .y gets after 5, returning null.
-	        return jsc.JSValueMakeNull(context);
-	    }
-	    
-	    if (propertyName.equals("z")) {
-	        if (zCount++ < 5)
-	            return null;
+            // Swallow all .y gets after 5, returning null.
+            return jsc.JSValueMakeNull(context);
+        }
+        
+        if (propertyName.equals("z")) {
+            if (zCount++ < 5)
+                return null;
 
-	        // Swallow all .y gets after 5, returning null.
-	        return jsc.JSValueMakeNull(context);
-	    }
+            // Swallow all .y gets after 5, returning null.
+            return jsc.JSValueMakeNull(context);
+        }
 
-	    return null;
-	}
-	
+        return null;
+    }
+    
 }
 class MyObjectDefinition extends JSClassDefinition implements JSObjectHasPropertyCallback, JSObjectGetPropertyCallback,
-						  JSObjectSetPropertyCallback, JSObjectGetPropertyNamesCallback, 
-						  JSObjectDeletePropertyCallback, JSObjectCallAsFunctionCallback,
-						  JSObjectCallAsConstructorCallback, JSObjectHasInstanceCallback,
-						  JSObjectConvertToTypeCallback {
-	
+                          JSObjectSetPropertyCallback, JSObjectGetPropertyNamesCallback, 
+                          JSObjectDeletePropertyCallback, JSObjectCallAsFunctionCallback,
+                          JSObjectCallAsConstructorCallback, JSObjectHasInstanceCallback,
+                          JSObjectConvertToTypeCallback {
+    
     private JavaScriptCoreLibrary jsc = JavaScriptCoreLibrary.getInstance();
-	
-	public MyObjectDefinition() {
+    
+    public MyObjectDefinition() {
         this.version = 0;
         this.attributes = JSClassAttribute.None.getValue();
         this.className = "MyObject";
-		this.hasProperty = this;
-		this.getProperty = this;
-		this.setProperty = this;
-		this.getPropertyNames = this;
-		this.deleteProperty = this;
-		this.callAsFunction = this;
-		this.callAsConstructor = this;
-		this.hasInstance = this;
-		this.convertToType = this;
-	}
+        this.hasProperty = this;
+        this.getProperty = this;
+        this.setProperty = this;
+        this.getPropertyNames = this;
+        this.deleteProperty = this;
+        this.callAsFunction = this;
+        this.callAsConstructor = this;
+        this.hasInstance = this;
+        this.convertToType = this;
+    }
 
-	@Override
-	public void getPropertyNames(JSContextRef context, JSObjectRef object,
-			JSPropertyNameAccumulatorRef propertyNames) {
-	    jsc.JSPropertyNameAccumulatorAddName(propertyNames, "alwaysOne");
-	    jsc.JSPropertyNameAccumulatorAddName(propertyNames, "myPropertyName");
-	}
+    @Override
+    public void getPropertyNames(JSContextRef context, JSObjectRef object,
+            JSPropertyNameAccumulatorRef propertyNames) {
+        jsc.JSPropertyNameAccumulatorAddName(propertyNames, "alwaysOne");
+        jsc.JSPropertyNameAccumulatorAddName(propertyNames, "myPropertyName");
+    }
 
-	@Override
-	public boolean setProperty(JSContextRef context, JSObjectRef object,
-			String propertyName, JSValueRef value, Pointer exception) {
-	    if (propertyName.equals("cantSet"))
-	        return true; // pretend we set the property in order to swallow it
-	    
-	    if (propertyName.equals("throwOnSet")) {
+    @Override
+    public boolean setProperty(JSContextRef context, JSObjectRef object,
+            String propertyName, JSValueRef value, Pointer exception) {
+        if (propertyName.equals("cantSet"))
+            return true; // pretend we set the property in order to swallow it
+        
+        if (propertyName.equals("throwOnSet")) {
             JSValueRef exception_new = JSValueRef.Null();
-	        jsc.JSEvaluateScript(context, "throw 'an exception'", object, "test script", 1, exception_new);
+            jsc.JSEvaluateScript(context, "throw 'an exception'", object, "test script", 1, exception_new);
             exception.update(exception_new);
-	    }
-	    return false;
-	}
+        }
+        return false;
+    }
 
-	@Override
-	public JSValueRef getProperty(JSContextRef context, JSObjectRef object,
-			String propertyName, Pointer exception) {
-	    if (propertyName.equals("alwaysOne")) {
-	        return jsc.JSValueMakeNumber(context, 1);
-	    }
-	    
-	    if (propertyName.equals("myPropertyName")) {
-	        return jsc.JSValueMakeNumber(context, 1);
-	    }
+    @Override
+    public JSValueRef getProperty(JSContextRef context, JSObjectRef object,
+            String propertyName, Pointer exception) {
+        if (propertyName.equals("alwaysOne")) {
+            return jsc.JSValueMakeNumber(context, 1);
+        }
+        
+        if (propertyName.equals("myPropertyName")) {
+            return jsc.JSValueMakeNumber(context, 1);
+        }
 
-	    if (propertyName.equals("cantFind")) {
-	        return jsc.JSValueMakeUndefined(context);
-	    }
-	    
-	    if (propertyName.equals("hasPropertyLie")) {
-	        return null;
-	    }
+        if (propertyName.equals("cantFind")) {
+            return jsc.JSValueMakeUndefined(context);
+        }
+        
+        if (propertyName.equals("hasPropertyLie")) {
+            return null;
+        }
 
-	    if (propertyName.equals("throwOnGet")) {
+        if (propertyName.equals("throwOnGet")) {
             JSValueRef exception_new = JSValueRef.Null();
-	        JSValueRef value = jsc.JSEvaluateScript(context,"throw 'an exception'", object, "test script", 1, exception_new);
+            JSValueRef value = jsc.JSEvaluateScript(context,"throw 'an exception'", object, "test script", 1, exception_new);
             exception.update(exception_new);
             return value;
-	    }
+        }
 
-	    if (propertyName.equals("0")) {
-	    	// *exception = JSValueMakeNumber(context, 1);
+        if (propertyName.equals("0")) {
+            // *exception = JSValueMakeNumber(context, 1);
             exception.update(jsc.JSValueMakeNumber(context, 1));
             return jsc.JSValueMakeNumber(context, 1);
-	    }
-	    return jsc.JSValueMakeNull(context);
-	}
+        }
+        return jsc.JSValueMakeNull(context);
+    }
 
-	@Override
-	public boolean hasProperty(JSContextRef context, JSObjectRef object, String propertyName) {
-	    if (propertyName.equals("alwaysOne")
-	            || propertyName.equals("cantFind")
-	            || propertyName.equals("throwOnGet")
-	            || propertyName.equals("myPropertyName")
-	            || propertyName.equals("hasPropertyLie")
-	            || propertyName.equals("0")) {
-	            return true;
-	    }
-	    return false;
-	}
+    @Override
+    public boolean hasProperty(JSContextRef context, JSObjectRef object, String propertyName) {
+        if (propertyName.equals("alwaysOne")
+                || propertyName.equals("cantFind")
+                || propertyName.equals("throwOnGet")
+                || propertyName.equals("myPropertyName")
+                || propertyName.equals("hasPropertyLie")
+                || propertyName.equals("0")) {
+                return true;
+        }
+        return false;
+    }
 
-	@Override
-	public JSValueRef convertToType(JSContextRef context, JSObjectRef object, JSType type, Pointer exception) {
-	    
-	    switch (type) {
-	    case Number:
-	        return jsc.JSValueMakeNumber(context, 1);
-	    case String:
-	        {
-	            return jsc.JSValueMakeString(context, "MyObjectAsString");
-	        }
-	    default:
-	        break;
-	    }
+    @Override
+    public JSValueRef convertToType(JSContextRef context, JSObjectRef object, JSType type, Pointer exception) {
+        
+        switch (type) {
+        case Number:
+            return jsc.JSValueMakeNumber(context, 1);
+        case String:
+            {
+                return jsc.JSValueMakeString(context, "MyObjectAsString");
+            }
+        default:
+            break;
+        }
 
-	    // string conversion -- forward to default object class
-	    return jsc.JSValueMakeNull(context);
-	}
+        // string conversion -- forward to default object class
+        return jsc.JSValueMakeNull(context);
+    }
 
-	@Override
-	public boolean hasInstance(JSContextRef context, JSObjectRef constructor,
-									JSValueRef possibleValue, Pointer exception) {
-	    if (possibleValue.isString() && possibleValue.toString().equals("throwOnHasInstance")) {
+    @Override
+    public boolean hasInstance(JSContextRef context, JSObjectRef constructor,
+                                    JSValueRef possibleValue, Pointer exception) {
+        if (possibleValue.isString() && possibleValue.toString().equals("throwOnHasInstance")) {
             JSValueRef exception_new = JSValueRef.Null();
-	        jsc.JSEvaluateScript(context, "throw 'an exception'", constructor, "test script", 1, exception_new);
+            jsc.JSEvaluateScript(context, "throw 'an exception'", constructor, "test script", 1, exception_new);
             exception.update(exception_new);
-	        return false;
-	    }
+            return false;
+        }
 
-	    JSObjectRef numberConstructor = jsc.JSValueToObject(context, jsc.JSObjectGetProperty(context, jsc.JSContextGetGlobalObject(context), "Number", null), null);
-	    return jsc.JSValueIsInstanceOfConstructor(context, possibleValue, numberConstructor, null);
-	}
+        JSObjectRef numberConstructor = jsc.JSValueToObject(context, jsc.JSObjectGetProperty(context, jsc.JSContextGetGlobalObject(context), "Number", null), null);
+        return jsc.JSValueIsInstanceOfConstructor(context, possibleValue, numberConstructor, null);
+    }
 
-	@Override
-	public JSObjectRef callAsConstructor(JSContextRef context, JSObjectRef object,
-			int argumentCount, JSValueArrayRef arguments, Pointer exception) {
-	    if (argumentCount > 0 && arguments.get(context, 0).isString() && arguments.get(context, 0).toString().equals("throwOnConstruct")) {
+    @Override
+    public JSObjectRef callAsConstructor(JSContextRef context, JSObjectRef object,
+            int argumentCount, JSValueArrayRef arguments, Pointer exception) {
+        if (argumentCount > 0 && arguments.get(context, 0).isString() && arguments.get(context, 0).toString().equals("throwOnConstruct")) {
             JSValueRef exception_new = JSValueRef.Null();
-	        jsc.JSEvaluateScript(context, "throw 'an exception'", object, "test script", 1, exception_new);
+            jsc.JSEvaluateScript(context, "throw 'an exception'", object, "test script", 1, exception_new);
             exception.update(exception_new);
-	        return object;
-	    }
+            return object;
+        }
 
-	    if (argumentCount > 0 && arguments.get(context, 0).isStrictEqual(jsc.JSValueMakeNumber(context, 0)))
-	        return jsc.JSValueToObject(context, jsc.JSValueMakeNumber(context, 1), null);
-	    return jsc.JSValueToObject(context, jsc.JSValueMakeNumber(context, 0), null);
-	}
+        if (argumentCount > 0 && arguments.get(context, 0).isStrictEqual(jsc.JSValueMakeNumber(context, 0)))
+            return jsc.JSValueToObject(context, jsc.JSValueMakeNumber(context, 1), null);
+        return jsc.JSValueToObject(context, jsc.JSValueMakeNumber(context, 0), null);
+    }
 
-	@Override
-	public JSValueRef callAsFunction(JSContextRef context, JSObjectRef object,
-			JSObjectRef thisObject, int argumentCount, JSValueArrayRef arguments, Pointer exception) {
+    @Override
+    public JSValueRef callAsFunction(JSContextRef context, JSObjectRef object,
+            JSObjectRef thisObject, int argumentCount, JSValueArrayRef arguments, Pointer exception) {
 
-	    if (argumentCount > 0 && arguments.get(context, 0).isString() && arguments.get(context, 0).toString().equals("throwOnCall")) {
+        if (argumentCount > 0 && arguments.get(context, 0).isString() && arguments.get(context, 0).toString().equals("throwOnCall")) {
             JSValueRef exception_new = JSValueRef.Null();
-	        jsc.JSEvaluateScript(context, "throw 'an exception'", object, "test script", 1, exception_new);
+            jsc.JSEvaluateScript(context, "throw 'an exception'", object, "test script", 1, exception_new);
             exception.update(exception_new);
-	        return jsc.JSValueMakeUndefined(context);
-	    }
+            return jsc.JSValueMakeUndefined(context);
+        }
 
-	    if (argumentCount > 0 && arguments.get(context, 0).isStrictEqual(jsc.JSValueMakeNumber(context, 0)))
-	        return jsc.JSValueMakeNumber(context, 1);
-	    
-	    return jsc.JSValueMakeUndefined(context);
-	}
+        if (argumentCount > 0 && arguments.get(context, 0).isStrictEqual(jsc.JSValueMakeNumber(context, 0)))
+            return jsc.JSValueMakeNumber(context, 1);
+        
+        return jsc.JSValueMakeUndefined(context);
+    }
 
-	@Override
-	public boolean deleteProperty(JSContextRef context, JSObjectRef object,
-			String propertyName, Pointer exception) {
-	    if (propertyName.equals("cantDelete"))
-	        return true;
-	    
-	    if (propertyName.equals("throwOnDelete")) {
+    @Override
+    public boolean deleteProperty(JSContextRef context, JSObjectRef object,
+            String propertyName, Pointer exception) {
+        if (propertyName.equals("cantDelete"))
+            return true;
+        
+        if (propertyName.equals("throwOnDelete")) {
             JSValueRef exception_new = JSValueRef.Null();
-	        jsc.JSEvaluateScript(context, "throw 'an exception'", object, "test script", 1, exception_new);
+            jsc.JSEvaluateScript(context, "throw 'an exception'", object, "test script", 1, exception_new);
             exception.update(exception_new);
-	        return false;
-	    }
-	    return false;
-	}
-	
+            return false;
+        }
+        return false;
+    }
+    
 }
 class MyObject_convertToTypeWrapperDefinition extends JSClassDefinition implements JSObjectConvertToTypeCallback {
-	public MyObject_convertToTypeWrapperDefinition() {
-		super();
+    public MyObject_convertToTypeWrapperDefinition() {
+        super();
         this.version = 0;
         this.attributes = JSClassAttribute.None.getValue();
         this.className = "MyObject";
-		this.convertToType = this;
-	}
+        this.convertToType = this;
+    }
 
-	@Override
-	public JSValueRef convertToType(JSContextRef context, JSObjectRef object,
-			JSType type, Pointer exception) {
-	    // Forward to default object class
-	    return null;
-	}
+    @Override
+    public JSValueRef convertToType(JSContextRef context, JSObjectRef object,
+            JSType type, Pointer exception) {
+        // Forward to default object class
+        return null;
+    }
 }
