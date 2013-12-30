@@ -1,0 +1,29 @@
+var window = Window.Current,
+	grid = new Grid(),
+	button = new Button(),
+	white = new SolidColorBrush();
+
+grid.Width = window.Bounds.Width;
+grid.Height = window.Bounds.Height;
+
+white.Color = Colors.White;
+
+button.Content = 'Click me, please!';
+button.Width = 200;
+button.Height = 60;
+button.Foreground = white;
+button.VerticalAlignment = VerticalAlignment.Center;
+button.HorizontalAlignment = HorizontalAlignment.Center;
+grid.Children.Append(button);
+
+window.Content = grid;
+window.Activate();
+
+var tapHandler = new TapHandler(text, grid),
+	tapped = new TappedEventHandler(tapHandler, TapHandler.PointerPressed);
+grid.add_Tapped(tapped);
+
+function PointerPresser() {
+	var dialog = new MessageDialog("Content", "Title");
+	dialog.showAsync().done();
+}
