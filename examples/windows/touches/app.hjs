@@ -1,4 +1,8 @@
-var transformOrigin = Point(.5, .5);
+var transformOrigin = Point(.5, .5),
+	deltas = [],
+	window = Window.Current,
+	canvas = new Canvas(),
+	brush = new SolidColorBrush();
 
 @class('ManipulationHandler', null, [], [
 	{
@@ -39,45 +43,27 @@ var transformOrigin = Point(.5, .5);
 	}
 ]);
 
-var deltas = [];
+brush.Color = Colors.Blue;
+canvas.Background = brush;
+canvas.Width = window.Bounds.Width;
+canvas.Height = window.Bounds.Height;
 
-@class('App', Application, [], [
-	{
-		override: true,
-		name: 'OnLaunched',
-		returnType: 'void',
-		arguments: [ { name: 'args', type: 'LaunchActivatedEventArgs^' } ],
-		action: function(params) {
-			var window = Window.Current,
-				canvas = new Canvas(),
-				brush = new SolidColorBrush();
+for (var i = 0; i < 3; i++) {
+	var handler = new ManipulationHandler(),
+	// TODO: We need to figure out how to protect handlers in memory, if necessary.
+		delta = deltas[i] = new ManipulationDeltaEventHandler(handler, 'ManipulationDelta'),
+		view = new Canvas();
 
-			brush.Color = Colors.Blue;
-			canvas.Background = brush;
-			canvas.Width = window.Bounds.Width;
-			canvas.Height = window.Bounds.Height;
+	view.Width = view.Height = (Math.random() * 200 + 100) | 0;
+	Canvas.SetTop(view, (Math.random() * (canvas.Height - view.Height)) | 0);
+	Canvas.SetLeft(view, (Math.random() * (canvas.Width - view.Width)) | 0);
+	view.ManipulationMode = ManipulationModes.All;
+	view.add_ManipulationDelta(delta);
+	brush = new SolidColorBrush();
+	brush.Color = [ Colors.Red, Colors.Yellow, Colors.Green ][i % 3];
+	view.Background = brush;
+	canvas.Children.Append(view);
+}
 
-			for (var i = 0; i < 3; i++) {
-				var handler = new ManipulationHandler(),
-				// TODO: We need to figure out how to protect handlers in memory, if necessary.
-					delta = deltas[i] = new ManipulationDeltaEventHandler(handler, 'ManipulationDelta'),
-					view = new Canvas();
-
-				view.Width = view.Height = (Math.random() * 200 + 100) | 0;
-				Canvas.SetTop(view, (Math.random() * (canvas.Height - view.Height)) | 0);
-				Canvas.SetLeft(view, (Math.random() * (canvas.Width - view.Width)) | 0);
-				view.ManipulationMode = ManipulationModes.All;
-				view.add_ManipulationDelta(delta);
-				brush = new SolidColorBrush();
-				brush.Color = [ Colors.Red, Colors.Yellow, Colors.Green ][i % 3];
-				view.Background = brush;
-				canvas.Children.Append(view);
-			}
-
-			window.Content = canvas;
-			window.Activate();
-		}
-	}
-]);
-
-var app = new App();
+window.Content = canvas;
+window.Activate();

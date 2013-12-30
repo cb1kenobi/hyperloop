@@ -11,9 +11,7 @@ using namespace Windows::ApplicationModel::Activation;
 #include "hyperloop.h"
 #include "GeneratedApp.h"
 
-int main(Platform::Array<Platform::String^>^)
-{
-	Application::Start(ref new ApplicationInitializationCallback([](ApplicationInitializationCallbackParams^ params) {
+<% function boot() { %>
 		JSGlobalContextRef ctx = HyperloopCreateVM();
 		JSObjectRef global = JSContextGetGlobalObject(ctx);
 		GeneratedApp::loadWithObject(ctx, global);
@@ -25,6 +23,29 @@ int main(Platform::Array<Platform::String^>^)
 		String^ sResult = hyperloop::getPlatformString(ctx, result);
 		JSStringRelease(sourceURL);
 		JSStringRelease(script);
+<% } %>
+<% if (!App) { %>
+ref class HyperloopApp sealed : public Application
+{
+public:
+	virtual void OnLaunched(LaunchActivatedEventArgs^ args) override;
+private:
+	JSContextRef context;
+};
+void HyperloopApp::OnLaunched(LaunchActivatedEventArgs^ args)
+{
+		<% boot() %>
+}
+<% } %>
+
+int main(Platform::Array<Platform::String^>^)
+{
+	Application::Start(ref new ApplicationInitializationCallback([](ApplicationInitializationCallbackParams^ params) {
+		<% if (!App) { %>
+		HyperloopApp^ app = ref new HyperloopApp();
+		<% } else { %>
+		<% boot() %>
+		<% } %>
 	}));
 
 	return 0;
