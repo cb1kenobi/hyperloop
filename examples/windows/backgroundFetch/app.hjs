@@ -1,0 +1,32 @@
+// Coordinates of Appcelerator HQ.
+var latitude = "37.389587",
+	longitude = "-122.05037";
+
+/*
+ Create our simple UI.
+ */
+var window = Window.Current,
+	text = new TextBlock();
+text.Text = "Loading weather...";
+text.TextAlignment = TextAlignment.Center;
+text.VerticalAlignment = VerticalAlignment.Center;
+text.HorizontalAlignment = HorizontalAlignment.Center;
+text.FontSize = 60;
+window.Content = text;
+window.Activate();
+
+var weatherUrl = 'http://api.openweathermap.org/data/2.5/weather?lat=' + latitude + '&lon=' + longitude,
+	client = new http_client(weatherUrl);
+console.log('Weather URL =', weatherUrl);
+
+client.request(methods.GET).then(function(response) {
+	var body = response.body();
+	console.log('completed with', body);
+	var result = JSON.parse(body);
+	console.log(result);
+	var weather = 'The weather in\nMountain View:\n\n' + result.weather[0].description;
+	console.log('weather', weather);
+	text.Text = weather;
+});
+
+var app = new App();
