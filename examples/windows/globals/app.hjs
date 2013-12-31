@@ -1,0 +1,15 @@
+// TODO: Import the C++ library.
+@import("fabs");
+
+var window = Window.Current,
+	text = new TextBlock(),
+	pi = fabs(Math.PI);
+
+text.Text = "PI is:\n\n"+pi;
+text.TextAlignment = TextAlignment.Center;
+text.VerticalAlignment = VerticalAlignment.Center;
+text.HorizontalAlignment = HorizontalAlignment.Center;
+text.FontSize = 24;
+
+window.Content = text;
+window.Activate();
