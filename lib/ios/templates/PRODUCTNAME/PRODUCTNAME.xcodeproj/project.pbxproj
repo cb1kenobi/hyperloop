@@ -10,9 +10,9 @@
 		2486A69F17CDD2BD009F6F82 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2486A69E17CDD2BD009F6F82 /* Foundation.framework */; };
 		2486A6A117CDD2BD009F6F82 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2486A6A017CDD2BD009F6F82 /* CoreGraphics.framework */; };
 		2486A6A317CDD2BD009F6F82 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2486A6A217CDD2BD009F6F82 /* UIKit.framework */; };
-		2486A6AB17CDD2BD009F6F82 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2486A6AA17CDD2BD009F6F82 /* main.m */; };
+		2486A6AB17CDD2BD009F6F82 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2486A6AA17CDD2BD009F6F82 /* main.mm */; };
 		2486A6AF17CDD2BD009F6F82 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2486A6AE17CDD2BD009F6F82 /* AppDelegate.m */; };
-		24F7B619180B930C00355B0F /* HyperloopApp.m in Sources */ = {isa = PBXBuildFile; fileRef = 24F7B618180B930C00355B0F /* HyperloopApp.m */; };		
+		24F7B619180B930C00355B0F /* HyperloopApp.mm in Sources */ = {isa = PBXBuildFile; fileRef = 24F7B618180B930C00355B0F /* HyperloopApp.mm */; };		
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,11 +22,11 @@
 		2486A6A217CDD2BD009F6F82 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		2486A6A617CDD2BD009F6F82 /* PRODUCTNAME-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PRODUCTNAME-Info.plist"; sourceTree = "<group>"; };
 		2486A6A817CDD2BD009F6F82 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		2486A6AA17CDD2BD009F6F82 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		2486A6AA17CDD2BD009F6F82 /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objcpp; path = main.mm; sourceTree = "<group>"; };
 		2486A6AC17CDD2BD009F6F82 /* PRODUCTNAME-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PRODUCTNAME-Prefix.pch"; sourceTree = "<group>"; };
 		2486A6AD17CDD2BD009F6F82 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		2486A6AE17CDD2BD009F6F82 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		24F7B618180B930C00355B0F /* HyperloopApp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HyperloopApp.m; sourceTree = "<group>"; };
+		24F7B618180B930C00355B0F /* HyperloopApp.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objcpp; path = HyperloopApp.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,7 +73,7 @@
 		2486A6A417CDD2BD009F6F82 /* PRODUCTNAME */ = {
 			isa = PBXGroup;
 			children = (
-				24F7B618180B930C00355B0F /* HyperloopApp.m */,
+				24F7B618180B930C00355B0F /* HyperloopApp.mm */,
 				2486A6AD17CDD2BD009F6F82 /* AppDelegate.h */,
 				2486A6AE17CDD2BD009F6F82 /* AppDelegate.m */,
 				2486A6A517CDD2BD009F6F82 /* Supporting Files */,
@@ -85,7 +85,7 @@
 			isa = PBXGroup;
 			children = (
 				2486A6A617CDD2BD009F6F82 /* PRODUCTNAME-Info.plist */,
-				2486A6AA17CDD2BD009F6F82 /* main.m */,
+				2486A6AA17CDD2BD009F6F82 /* main.mm */,
 				2486A6AC17CDD2BD009F6F82 /* PRODUCTNAME-Prefix.pch */,
 			);
 			name = "Supporting Files";
@@ -152,9 +152,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				24F7B619180B930C00355B0F /* HyperloopApp.m in Sources */,
+				24F7B619180B930C00355B0F /* HyperloopApp.mm in Sources */,
 				2486A6AF17CDD2BD009F6F82 /* AppDelegate.m in Sources */,
-				2486A6AB17CDD2BD009F6F82 /* main.m in Sources */,
+				2486A6AB17CDD2BD009F6F82 /* main.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

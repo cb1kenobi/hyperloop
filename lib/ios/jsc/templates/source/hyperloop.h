@@ -155,3 +155,19 @@ id HyperloopDynamicInvoke (JSContextRef ctx, const JSValueRef *arguments, size_t
  * invoke a dynamic argument using a sentinel
  */
 id HyperloopDynamicInvokeWithSentinel(JSContextRef ctx, const JSValueRef *arguments, size_t argumentCount, id target, SEL selector, bool instance);
+
+/**
+ * function will properly convert a native exception into a JS Error and throw it back
+ * into the JSContext by setting the Error in the exception passed
+ */
+void HyperloopRaiseNativetoJSException(JSContextRef ctx, JSValueRef *exception, NSException *ex, NSArray *backtrace, const char *file, const char *fnName, int lineNumber);
+
+/**
+ * for a given JS filename and line, turn it into to a source map result
+ */
+NSDictionary* HyperloopSourceMap(JSContextRef context, NSString *prefix, NSString *filename, NSString *line, NSString *column);
+
+/**
+ * register a try/catch handler which will process special native exceptions
+ */
+void HyperloopRegisterTryCatchHandler(JSContextRef ctx);

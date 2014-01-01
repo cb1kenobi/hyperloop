@@ -14,10 +14,10 @@
 #endif
 @import Foundation;
 
-#define CHECK_EXCEPTION(ctx,ex) [NSException raiseJSException:ex context:ctx]
+#define CHECK_EXCEPTION(ctx,ex,cp) if (ex!=NULL) { [NSException raiseJSException:ex context:ctx prefix:cp]; }
 
 @interface NSException (NSExceptionHyperloopAdditions)
 
-+ (void)raiseJSException:(JSValueRef)exception context:(JSContextRef)context;
++ (void)raiseJSException:(JSValueRef)exception context:(JSContextRef)context prefix:(NSString*)prefix;
 
 @end

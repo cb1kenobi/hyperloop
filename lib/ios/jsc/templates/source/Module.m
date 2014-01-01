@@ -9,6 +9,9 @@
 #import "Module.h"
 #import <hyperloop.h>
 #import "NSException+NSExceptionHyperloopAdditions.h"
+#ifndef HL_DISABLE_CRASH
+#import <KSCrash/KSCrash.h>
+#endif
 
 #ifdef DEBUG_LOGGING
 	#define DEBUGLOG(...) NSLog(__VA_ARGS__)
@@ -19,6 +22,8 @@
 static NSMutableDictionary *modules;
 
 extern NSData* HyperloopDecompressBuffer (NSData*);
+
+extern JSValueRef HyperloopNativeErrorProcessor (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception);
 
 @implementation HyperloopJS {
 	NSString *id;
@@ -131,7 +136,7 @@ JSValueRef JSDispatchAsync (JSContextRef ctx, JSObjectRef function, JSObjectRef 
     {
         return HyperloopMakeException(ctx,"callback must be a function",exception);
     }
-    CHECK_EXCEPTION(ctx,*exception);
+    CHECK_EXCEPTION(ctx,*exception,module.prefix);
 
 #ifdef USE_TIJSCORE
     //NOTE: this is probably a little unsafe since we are executing JS context code on a different thread.
@@ -436,10 +441,50 @@ HyperloopJS* HyperloopLoadJSWithLogger (JSContextRef ctx, HyperloopJS *parent, N
 				[[path stringByAppendingPathExtension:@"js"] UTF8String]);
 			JSObjectRef requireFn = JSObjectMakeFunction(ctx, fnName, 1, parameterNames, body, filename, 1, &exception);
 			JSStringRelease(filename);
-			CHECK_EXCEPTION(ctx,exception);
+			CHECK_EXCEPTION(ctx,exception,module.prefix);
 
-			JSObjectCallAsFunction(ctx, requireFn, moduleObjectRef, 1, arguments, &exception);
-			CHECK_EXCEPTION(ctx,exception);
+			JSValueRef fnResult = JSObjectCallAsFunction(ctx, requireFn, moduleObjectRef, 1, arguments, &exception);
+			JSStringRef pathRef = JSStringCreateWithUTF8CString([path UTF8String]);
+			JSStringRef prefixRef = JSStringCreateWithUTF8CString([prefix UTF8String]);
+
+			JSValueRef args[3];
+			args[0] = exception;
+			args[1] = JSValueMakeString(ctx,pathRef);
+			args[2] = JSValueMakeString(ctx,prefixRef);
+
+			exception = HyperloopNativeErrorProcessor(ctx,0,0,3,args,0);
+
+			JSStringRelease(pathRef);
+			JSStringRelease(prefixRef);
+
+			if (exception!=NULL)
+			{
+				// print out the exception
+				NSLog(@"[ERROR] Application encountered an unhandled exception loading %@.js",path);
+				JSObjectRef exObject = JSValueToObject(ctx,exception,0);
+				JSStringRef messageProperty = JSStringCreateWithUTF8CString("message");
+				JSValueRef messageRef = JSObjectGetProperty(ctx,exObject,messageProperty,0);
+				JSStringRelease(messageProperty);
+				NSLog(@"[ERROR] %@", HyperloopToNSString(ctx,messageRef));
+				JSStringRef stackProperty = JSStringCreateWithUTF8CString("stack");
+				JSValueRef stackRef = JSObjectGetProperty(ctx,exObject,stackProperty,0);
+				JSStringRelease(stackProperty);
+				// split it so that it formats nicer as an ERROR on each line
+				NSString *stackStr = HyperloopToNSString(ctx,stackRef);
+				NSArray *stack = [stackStr componentsSeparatedByString:@"\n"];
+				for (NSString *s in stack)
+				{
+					NSLog(@"[ERROR] %@", s);
+				}
+#ifndef HL_DISABLE_CRASH
+				[[KSCrash sharedInstance] reportUserException:HyperloopToNSString(ctx,messageRef)
+										reason:HyperloopToNSString(ctx,messageRef)
+										lineOfCode:[stack objectAtIndex:0]
+										stackTrace:stack
+										terminateProgram:YES];
+#endif
+			}
+
 			JSStringRelease(fnName);
 			JSStringRelease(body);
 			JSStringRelease(parameterNames[0]);
