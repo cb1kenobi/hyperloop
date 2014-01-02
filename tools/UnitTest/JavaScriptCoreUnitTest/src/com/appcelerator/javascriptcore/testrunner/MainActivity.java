@@ -13,6 +13,7 @@ import android.widget.Toast;
 import android.app.Activity;
 
 import com.appcelerator.javascriptcore.JSVirtualMachineTest;
+import com.appcelerator.javascriptcore.TestAPI;
 import com.appcelerator.javascriptcore.R;
 
 public class MainActivity extends Activity {
@@ -39,7 +40,7 @@ public class MainActivity extends Activity {
 
             @Override
             protected Result doInBackground(JUnitCore... runner) {
-                return runner[0].run(JSVirtualMachineTest.class);
+                return runner[0].run(JSVirtualMachineTest.class, TestAPI.class);
             }
             
             @Override

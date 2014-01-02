@@ -9,11 +9,13 @@ import com.appcelerator.javascriptcore.opaquetypes.JSObjectRef;
 import com.appcelerator.javascriptcore.opaquetypes.JSClassRef;
 import com.appcelerator.javascriptcore.opaquetypes.JSClassDefinition;
 import com.appcelerator.javascriptcore.opaquetypes.JSPropertyNameArrayRef;
+import com.appcelerator.javascriptcore.opaquetypes.JSPropertyNameAccumulatorRef;
 import com.appcelerator.javascriptcore.opaquetypes.JSStaticValues;
 import com.appcelerator.javascriptcore.opaquetypes.JSStaticFunctions;
 import com.appcelerator.javascriptcore.opaquetypes.Pointer;
 
 import com.appcelerator.javascriptcore.enums.JSPropertyAttribute;
+import com.appcelerator.javascriptcore.enums.JSType;
 
 import com.appcelerator.javascriptcore.callbacks.JSObjectCallAsConstructorCallback;
 import com.appcelerator.javascriptcore.callbacks.JSObjectCallAsFunctionCallback;
@@ -145,29 +147,21 @@ public class JSVirtualMachineTest {
     @Test
     public void testEvaluateInvalidScriptSyntax() {
         JSGlobalContextRef context = vm.getDefaultContext();
-        boolean errorThrown = false;
-        try {
-            context.evaluateScript("{#@%){");
-        } catch (JavaScriptException e) {
-            errorThrown = true;
-            assertTrue(e.getMessage().length() > 0);
-        }
-        assertTrue(errorThrown);
+        JSValueRef exception = JSValueRef.Null();
+        context.evaluateScript("{#@%){", null, exception);
+        assertTrue(!jsc.JSValueIsNull(context, exception));
     }
 
     @Test
     public void testJSCheckScriptSyntax() {
         JSGlobalContextRef context = vm.getDefaultContext();
-        JSValueRef result = context.checkScriptSyntax("var a = 0;");
-        assertTrue(result.isBoolean() && result.toBoolean());
+        assertTrue(context.checkScriptSyntax("var a = 0;"));
     }
 
     @Test
     public void testJSCheckInvalidScriptSyntax() {
         JSGlobalContextRef context = vm.getDefaultContext();
-        JSValueRef result = context.checkScriptSyntax("{#@%){");
-        assertFalse(result.isBoolean() && result.toBoolean());
-        assertTrue(result.toString().length() > 0);
+        assertFalse(context.checkScriptSyntax("{#@%){"));
     }
 
     @Test
@@ -262,9 +256,9 @@ public class JSVirtualMachineTest {
     @Test
     public void testJSValueMakeFromJSONString() {
         JSGlobalContextRef context = vm.getDefaultContext();
-        JSValueRef value = jsc.JSValueMakeFromJSONString(context, "'Lorem ipsum dolor sit amet'");
-        assertTrue(value.isString());
-        assertTrue("'Lorem ipsum dolor sit amet'".equals(value.toString()));
+        JSValueRef value = jsc.JSValueMakeFromJSONString(context, "{\"string\":\"Lorem ipsum dolor sit amet\"}");
+        assertTrue(value.isObject());
+        assertTrue("{\"string\":\"Lorem ipsum dolor sit amet\"}".equals(value.toJSON()));
     }
 
     @Test
@@ -289,7 +283,7 @@ public class JSVirtualMachineTest {
         JSGlobalContextRef context = vm.getDefaultContext();
         JSClassDefinition definition = new JSClassDefinition();
         definition.initialize = new JSObjectInitializeCallback() {
-            public void apply(JSContextRef ctx, JSObjectRef object) {
+            public void initialize(JSContextRef ctx, JSObjectRef object) {
                 assertTrue(ctx.pointer() != 0);
                 assertTrue(object.pointer() != 0);
             }
@@ -304,7 +298,7 @@ public class JSVirtualMachineTest {
         JSGlobalContextRef context = vm.getDefaultContext();
         JSClassDefinition definition = new JSClassDefinition();
         definition.finalize = new JSObjectFinalizeCallback() {
-            public void apply(JSObjectRef object) {
+            public void finalize(JSObjectRef object) {
                 assertTrue(object.pointer() != 0);
             }
         };
@@ -323,9 +317,9 @@ public class JSVirtualMachineTest {
 
         JSClassDefinition definition = new JSClassDefinition();
         definition.callAsConstructor = new JSObjectCallAsConstructorCallback() {
-            public JSObjectRef apply(JSContextRef ctx, JSObjectRef constructor,
+            public JSObjectRef callAsConstructor(JSContextRef ctx, JSObjectRef constructor,
                                     int argumentCount, JSValueArrayRef arguments, 
-                                    JSValueRef exception) {
+                                    Pointer exception) {
                 assertTrue(ctx.p() != 0);
                 assertTrue(constructor.p() != 0);
                 assertTrue(argumentCount == 3);
@@ -338,7 +332,7 @@ public class JSVirtualMachineTest {
         };
         JSClassRef jsClass = jsc.JSClassCreate(definition);
         JSObjectRef jsObj = jsc.JSObjectMake(context, jsClass);
-        JSObjectRef value = jsc.JSObjectCallAsConstructor(context, jsObj, argv);
+        JSObjectRef value = jsc.JSObjectCallAsConstructor(context, jsObj, argv, null);
         assertTrue(value.p() != 0);
         assertTrue(value.p() == jsObj.p());
         argv.dispose();
@@ -353,9 +347,9 @@ public class JSVirtualMachineTest {
         argv.set(2, jsc.JSValueMakeNumber(context, 3));
         JSClassDefinition definition = new JSClassDefinition();
         definition.callAsFunction = new JSObjectCallAsFunctionCallback() {
-            public JSValueRef apply(JSContextRef ctx, JSObjectRef function,
+            public JSValueRef callAsFunction(JSContextRef ctx, JSObjectRef function,
                         JSObjectRef thisObject, int argumentCount,
-                        JSValueArrayRef arguments, JSValueRef exception) {
+                        JSValueArrayRef arguments, Pointer exception) {
                 assertTrue(ctx.p() != 0);
                 assertTrue(function.p() != 0);
                 assertTrue(argumentCount == 3);
@@ -367,7 +361,7 @@ public class JSVirtualMachineTest {
         };
         JSClassRef jsClass = jsc.JSClassCreate(definition);
         JSObjectRef jsObj = jsc.JSObjectMake(context, jsClass);
-        JSValueRef value = jsc.JSObjectCallAsFunction(context, jsObj, jsObj, argv);
+        JSValueRef value = jsc.JSObjectCallAsFunction(context, jsObj, jsObj, argv, null);
         assertTrue(value.p() != 0);
         assertTrue(value.toInt() == 111);
         argv.dispose();
@@ -379,8 +373,8 @@ public class JSVirtualMachineTest {
         JSClassDefinition definition = new JSClassDefinition();
         JSStaticValues staticValues = new JSStaticValues();
         staticValues.add("property1", new JSObjectGetPropertyCallback() {
-            public JSValueRef apply(JSContextRef ctx, JSObjectRef object,
-                                    String propertyName, JSValueRef exception) {
+            public JSValueRef getProperty(JSContextRef ctx, JSObjectRef object,
+                                    String propertyName, Pointer exception) {
                 assertTrue(ctx.p() != 0);
                 assertTrue(object.p() != 0);
                 assertTrue("property1".equals(propertyName));
@@ -391,7 +385,7 @@ public class JSVirtualMachineTest {
 
         JSClassRef jsClass = jsc.JSClassCreate(definition);
         JSObjectRef jsObj = jsc.JSObjectMake(context, jsClass);
-        JSValueRef value = jsc.JSObjectGetProperty(context, jsObj, "property1");
+        JSValueRef value = jsc.JSObjectGetProperty(context, jsObj, "property1", null);
         assert(value.toInt() == 123);
     }
 
@@ -401,8 +395,8 @@ public class JSVirtualMachineTest {
         JSClassDefinition definition = new JSClassDefinition();
         JSStaticValues staticValues = new JSStaticValues();
         staticValues.add("property1", null, new JSObjectSetPropertyCallback() {
-            public boolean apply(JSContextRef ctx, JSObjectRef object,
-                        String propertyName, JSValueRef value, JSValueRef exception) {
+            public boolean setProperty(JSContextRef ctx, JSObjectRef object,
+                        String propertyName, JSValueRef value, Pointer exception) {
                 assertTrue(ctx.p() != 0);
                 assertTrue(object.p() != 0);
                 assertTrue(value.p() != 0);
@@ -417,7 +411,7 @@ public class JSVirtualMachineTest {
         JSObjectRef jsObj = jsc.JSObjectMake(context, jsClass);
         jsc.JSObjectSetProperty(context, jsObj, "property1",
                         jsc.JSValueMakeNumber(context, 100),
-                        JSPropertyAttribute.None.getValue() | JSPropertyAttribute.DontDelete.getValue());
+                        JSPropertyAttribute.None.getValue() | JSPropertyAttribute.DontDelete.getValue(), null);
     }
 
     @Test
@@ -461,14 +455,39 @@ public class JSVirtualMachineTest {
     }
 
     @Test
+    public void testJSObjectMakeGlobalObject() {
+        JSClassDefinition globalObjectDef = new JSClassDefinition();
+        globalObjectDef.initialize = new JSObjectInitializeCallback() {
+            public void initialize(JSContextRef ctx, JSObjectRef object) {
+                assertTrue(object.equals(jsc.JSContextGetGlobalObject(ctx)));
+            }
+        };
+        JSStaticValues staticValues = new JSStaticValues();
+        staticValues.add("globalStaticValue", new JSObjectGetPropertyCallback() {
+            public JSValueRef getProperty(JSContextRef ctx, JSObjectRef object,
+                                    String propertyName, Pointer exception) {
+                assertTrue("globalStaticValue".equals(propertyName));
+                return jsc.JSValueMakeNumber(ctx, 123);
+            }
+        }, null, JSPropertyAttribute.None.getValue());
+        globalObjectDef.staticValues = staticValues;
+        JSClassRef globalObjectClass = jsc.JSGlobalClassCreate(globalObjectDef);
+        JSGlobalContextRef context = jsc.JSGlobalContextCreate(globalObjectClass); 
+        JSObjectRef globalObject = jsc.JSContextGetGlobalObject(context);
+        JSValueRef value = context.evaluateScript("globalStaticValue;", globalObject, null);
+        assertTrue(value.toInt() == 123);
+        jsc.JSGlobalContextRelease(context);
+    }
+
+    @Test
     public void testJSObjectMakeFunctionWithCallback() {
         JSGlobalContextRef context = vm.getDefaultContext();
         JSObjectRef globalObject = jsc.JSContextGetGlobalObject(context);
         JSObjectRef println = jsc.JSObjectMakeFunctionWithCallback(context,
                                 "println", new JSObjectCallAsFunctionCallback() {
-            public JSValueRef apply(JSContextRef ctx, JSObjectRef function,
+            public JSValueRef callAsFunction(JSContextRef ctx, JSObjectRef function,
                         JSObjectRef thisObject, int argumentCount,
-                        JSValueArrayRef arguments, JSValueRef exception) {
+                        JSValueArrayRef arguments, Pointer exception) {
                 assertTrue(function.p() != 0);
                 assertTrue(argumentCount == 1);
                 assertTrue("Hello, World".equals(arguments.get(ctx, 0).toString()));
@@ -476,7 +495,7 @@ public class JSVirtualMachineTest {
             }
         });
         assertTrue(println.p() != 0);
-        jsc.JSObjectSetProperty(context, globalObject, "println", println, JSPropertyAttribute.None.getValue());
+        jsc.JSObjectSetProperty(context, globalObject, "println", println, JSPropertyAttribute.None.getValue(), null);
         JSValueRef value = context.evaluateScript("println('Hello, World');");
         assertTrue(value.p() != 0);
         assertTrue(value.toInt() == 1234);
@@ -486,44 +505,48 @@ public class JSVirtualMachineTest {
     public void testJSObjectMakeConstructor() {
         JSGlobalContextRef context = vm.getDefaultContext();
         JSObjectRef globalObject = jsc.JSContextGetGlobalObject(context);
-        JSClassDefinition definition = new JSClassDefinition();
-        JSClassRef jsClass = jsc.JSClassCreate(definition);
-        JSObjectRef constructor = jsc.JSObjectMakeConstructor(context, jsClass, new JSObjectCallAsConstructorCallback() {
-            public JSObjectRef apply(JSContextRef ctx, JSObjectRef constructor,
-                                    int argumentCount, JSValueArrayRef arguments, JSValueRef exception) {
+        JSObjectRef constructor = jsc.JSObjectMakeConstructor(context, null, new JSObjectCallAsConstructorCallback() {
+            public JSObjectRef callAsConstructor(JSContextRef ctx, JSObjectRef constructor,
+                                    int argumentCount, JSValueArrayRef arguments, Pointer exception) {
                 assertTrue(constructor.p() != 0);
                 assertTrue(argumentCount == 1);
                 assertTrue("Hello, World".equals(arguments.get(ctx, 0).toString()));
-                return constructor;
+                return jsc.JSObjectMakeArray(ctx, arguments, null);
             }
         });
-        jsc.JSObjectSetProperty(context, globalObject, "TestObject", constructor, JSPropertyAttribute.None.getValue());
-        JSValueRef value = context.evaluateScript("new TestObject('Hello, World');");
-        assertTrue(value.p() != 0);
-        assertTrue(value.isObject());
+        assertTrue(constructor.p() != 0);
+        assertTrue(jsc.JSObjectIsConstructor(context, constructor));
+        jsc.JSObjectSetProperty(context, globalObject, "TestObject", constructor, JSPropertyAttribute.None.getValue(), null);
+        JSValueRef exception = JSValueRef.Null();
+        JSValueRef value = context.evaluateScript("new TestObject('Hello, World');", globalObject, exception);
+        assertTrue("[\"Hello, World\"]".equals(value.toJSON()));
     }
 
     @Test
     public void testJSObjectMakeArray() {
         JSGlobalContextRef context = vm.getDefaultContext();
 
-        JSValueArrayRef properties = new JSValueArrayRef(1);
+        JSValueArrayRef properties = new JSValueArrayRef(2);
         properties.set(0, jsc.JSValueMakeNumber(context, 123));
+        properties.set(1, jsc.JSValueMakeNumber(context, 456));
 
-        JSObjectRef array = jsc.JSObjectMakeArray(context, properties);
-        String json = jsc.JSValueCreateJSONString(context, array, 0);
-        assertTrue("[123]".equals(json));
+        JSObjectRef array = jsc.JSObjectMakeArray(context, properties, null);
+        String json = jsc.JSValueCreateJSONString(context, array, 0, null);
+        assertTrue("[123,456]".equals(json));
+        assertTrue(123 == jsc.JSObjectGetPropertyAtIndex(context, array, 0, null).toInt());
+        assertTrue(456 == jsc.JSObjectGetPropertyAtIndex(context, array, 1, null).toInt());
         properties.dispose();
     }
 
     @Test
     public void testJSObjectCopyPropertyNames() {
         JSGlobalContextRef context = vm.getDefaultContext();
-        JSObjectRef array = jsc.JSObjectMakeArray(context, JSValueArrayRef.EMPTY);
+        JSObjectRef array = jsc.JSObjectMakeArray(context, JSValueArrayRef.EMPTY, null);
         JSPropertyNameArrayRef names = jsc.JSObjectCopyPropertyNames(context, array);
         int count = jsc.JSPropertyNameArrayGetCount(names);
         assertTrue(names.pointer() != 0);
         assertTrue(count == 0);
+        jsc.JSPropertyNameArrayRelease(names);
     }
 
     @Test
@@ -533,10 +556,11 @@ public class JSVirtualMachineTest {
         JSValueArrayRef properties = new JSValueArrayRef(1);
         properties.set(0, jsc.JSValueMakeString(context, "value1"));
 
-        JSObjectRef array = jsc.JSObjectMakeArray(context, properties);
+        JSObjectRef array = jsc.JSObjectMakeArray(context, properties, null);
         JSPropertyNameArrayRef names = jsc.JSObjectCopyPropertyNames(context, array);
         int count = jsc.JSPropertyNameArrayGetCount(names);
         assertTrue(properties.length() == count);
+        jsc.JSPropertyNameArrayRelease(names);
 
         properties.dispose();
     }
@@ -547,9 +571,9 @@ public class JSVirtualMachineTest {
         JSClassDefinition definition = new JSClassDefinition();
         JSStaticFunctions staticFunctions = new JSStaticFunctions();
         staticFunctions.add("print_number", new JSObjectCallAsFunctionCallback() {
-            public JSValueRef apply(JSContextRef ctx, JSObjectRef function,
+            public JSValueRef callAsFunction(JSContextRef ctx, JSObjectRef function,
                         JSObjectRef thisObject, int argumentCount,
-                        JSValueArrayRef arguments, JSValueRef exception) {
+                        JSValueArrayRef arguments, Pointer exception) {
                 assertTrue(function.p() != 0);
                 assertTrue(argumentCount == 0);
                 return jsc.JSValueMakeNumber(ctx, 8765);
@@ -560,12 +584,12 @@ public class JSVirtualMachineTest {
         JSClassRef jsClass = jsc.JSClassCreate(definition);
         JSObjectRef jsObj = jsc.JSObjectMake(context, jsClass);
 
-        JSValueRef funcVal = jsc.JSObjectGetProperty(context, jsObj, "print_number");
+        JSValueRef funcVal = jsc.JSObjectGetProperty(context, jsObj, "print_number", null);
         assertTrue(!funcVal.isUndefined());
-        JSObjectRef funcObj = jsc.JSValueToObject(context, funcVal);
+        JSObjectRef funcObj = jsc.JSValueToObject(context, funcVal, null);
         assertTrue(funcObj.p() != 0);
 
-        JSValueRef value = jsc.JSObjectCallAsFunction(context, funcObj, jsObj, JSValueArrayRef.EMPTY);
+        JSValueRef value = jsc.JSObjectCallAsFunction(context, funcObj, jsObj, JSValueArrayRef.EMPTY, null);
         assertTrue(value.p() != 0);
         assertTrue(value.toInt() == 8765);
     }
@@ -576,9 +600,9 @@ public class JSVirtualMachineTest {
         JSClassDefinition definition = new JSClassDefinition();
         JSStaticFunctions staticFunctions = new JSStaticFunctions();
         staticFunctions.add("print_number", new JSObjectCallAsFunctionCallback() {
-            public JSValueRef apply(JSContextRef ctx, JSObjectRef function,
+            public JSValueRef callAsFunction(JSContextRef ctx, JSObjectRef function,
                         JSObjectRef thisObject, int argumentCount,
-                        JSValueArrayRef arguments, JSValueRef exception) {
+                        JSValueArrayRef arguments, Pointer exception) {
                 assertTrue(function.p() != 0);
                 assertTrue(argumentCount == 1);
                 assertTrue("Hello, World".equals(arguments.get(ctx, 0).toString()));
@@ -593,14 +617,180 @@ public class JSVirtualMachineTest {
         JSValueArrayRef argv = new JSValueArrayRef(1);
         argv.set(0, jsc.JSValueMakeString(context, "Hello, World"));
 
-        JSValueRef funcVal = jsc.JSObjectGetProperty(context, jsObj, "print_number");
+        JSValueRef funcVal = jsc.JSObjectGetProperty(context, jsObj, "print_number", null);
         assertTrue(!funcVal.isUndefined());
-        JSObjectRef funcObj = jsc.JSValueToObject(context, funcVal);
+        JSObjectRef funcObj = jsc.JSValueToObject(context, funcVal, null);
         assertTrue(funcObj.p() != 0);
 
-        JSValueRef value = jsc.JSObjectCallAsFunction(context, funcObj, jsObj, argv);
+        JSValueRef value = jsc.JSObjectCallAsFunction(context, funcObj, jsObj, argv, null);
         assertTrue(value.p() != 0);
         assertTrue(value.toInt() == 1234);
         argv.dispose();
+    }
+
+    @Test
+    public void testDerivedObjectHasPropertyCallback() {
+        JSGlobalContextRef context = vm.getDefaultContext();
+        JSClassDefinition grandParentDefinition = new JSClassDefinition();
+        grandParentDefinition.className = "GrandParent";
+        grandParentDefinition.hasProperty = new JSObjectHasPropertyCallback() {
+            public boolean hasProperty(JSContextRef ctx, JSObjectRef object, String propertyName) {
+                return true;
+            }
+        };
+        grandParentDefinition.hasInstance = new JSObjectHasInstanceCallback() {
+            public boolean hasInstance(JSContextRef ctx, JSObjectRef constructor,
+                                JSValueRef possibleInstance, Pointer exception) {
+                return false;
+            }
+        };
+        grandParentDefinition.getPropertyNames = new JSObjectGetPropertyNamesCallback() {
+            public void getPropertyNames(JSContextRef ctx, JSObjectRef object,
+                                            JSPropertyNameAccumulatorRef propertyNames) {
+            }
+        };
+        grandParentDefinition.getProperty = new JSObjectGetPropertyCallback() {
+            public JSValueRef getProperty(JSContextRef ctx, JSObjectRef object,
+                                        String propertyName, Pointer exception) {
+                if (propertyName.equals("unknown_property1")) {
+                    return jsc.JSValueMakeNumber(ctx, 1);
+                } else if (propertyName.equals("unknown_property2")) {
+                    return jsc.JSValueMakeNumber(ctx, 2);
+                }
+                return null;
+            }
+        };
+        grandParentDefinition.setProperty = new JSObjectSetPropertyCallback() {
+            public boolean setProperty(JSContextRef ctx, JSObjectRef object,
+                        String propertyName, JSValueRef value, Pointer exception) {
+                return true;
+            }
+        };
+        grandParentDefinition.deleteProperty = new JSObjectDeletePropertyCallback() {
+            public boolean deleteProperty(JSContextRef ctx, JSObjectRef object,
+                                        String propertyName, Pointer exception) {
+                return true;
+            }
+        };
+        grandParentDefinition.convertToType = new JSObjectConvertToTypeCallback() {
+            public JSValueRef convertToType(JSContextRef ctx, JSObjectRef object, JSType type,
+                                        Pointer exception) {
+                return jsc.JSValueMakeBoolean(ctx, true);
+            }
+        } ;
+        JSClassRef grandParentClass = jsc.JSClassCreate(grandParentDefinition);
+        JSObjectRef grandParent = jsc.JSObjectMake(context, grandParentClass);
+
+        JSClassDefinition parentDefinition = new JSClassDefinition();
+        parentDefinition.className = "Parent";
+        parentDefinition.parentClass = grandParentClass;
+        parentDefinition.hasProperty = new JSObjectHasPropertyCallback() {
+            public boolean hasProperty(JSContextRef ctx, JSObjectRef object, String propertyName) {
+                return false;
+            }
+        };
+        parentDefinition.hasInstance = new JSObjectHasInstanceCallback() {
+            public boolean hasInstance(JSContextRef ctx, JSObjectRef constructor,
+                                JSValueRef possibleInstance, Pointer exception) {
+                return false;
+            }
+        };
+        parentDefinition.getPropertyNames = new JSObjectGetPropertyNamesCallback() {
+            public void getPropertyNames(JSContextRef ctx, JSObjectRef object,
+                                            JSPropertyNameAccumulatorRef propertyNames) {
+            }
+        };
+        parentDefinition.getProperty = new JSObjectGetPropertyCallback() {
+            public JSValueRef getProperty(JSContextRef ctx, JSObjectRef object,
+                                        String propertyName, Pointer exception) {
+                return null;
+            }
+        };
+        parentDefinition.setProperty = new JSObjectSetPropertyCallback() {
+            public boolean setProperty(JSContextRef ctx, JSObjectRef object,
+                        String propertyName, JSValueRef value, Pointer exception) {
+                return false;
+            }
+        };
+        parentDefinition.deleteProperty = new JSObjectDeletePropertyCallback() {
+            public boolean deleteProperty(JSContextRef ctx, JSObjectRef object,
+                                        String propertyName, Pointer exception) {
+                return false;
+            }
+        };
+        parentDefinition.convertToType = new JSObjectConvertToTypeCallback() {
+            public JSValueRef convertToType(JSContextRef ctx, JSObjectRef object, JSType type,
+                                        Pointer exception) {
+                return JSValueRef.Null();
+            }
+        } ;
+        JSClassRef parentClass = jsc.JSClassCreate(parentDefinition);
+        JSObjectRef parent = jsc.JSObjectMake(context, parentClass);
+
+        JSClassDefinition definition = new JSClassDefinition();
+        definition.className = "child";
+        definition.parentClass = parentClass;
+        definition.hasProperty = new JSObjectHasPropertyCallback() {
+            public boolean hasProperty(JSContextRef ctx, JSObjectRef object, String propertyName) {
+                return false;
+            }
+        };
+        definition.hasInstance = new JSObjectHasInstanceCallback() {
+            public boolean hasInstance(JSContextRef ctx, JSObjectRef constructor,
+                                JSValueRef possibleInstance, Pointer exception) {
+                return false;
+            }
+        };
+        definition.getPropertyNames = new JSObjectGetPropertyNamesCallback() {
+            public void getPropertyNames(JSContextRef ctx, JSObjectRef object,
+                                            JSPropertyNameAccumulatorRef propertyNames) {
+            }
+        };
+        definition.getProperty = new JSObjectGetPropertyCallback() {
+            public JSValueRef getProperty(JSContextRef ctx, JSObjectRef object,
+                                        String propertyName, Pointer exception) {
+                return null;
+            }
+        };
+        definition.setProperty = new JSObjectSetPropertyCallback() {
+            public boolean setProperty(JSContextRef ctx, JSObjectRef object,
+                        String propertyName, JSValueRef value, Pointer exception) {
+                return false;
+            }
+        };
+        definition.deleteProperty = new JSObjectDeletePropertyCallback() {
+            public boolean deleteProperty(JSContextRef ctx, JSObjectRef object,
+                                        String propertyName, Pointer exception) {
+                return false;
+            }
+        };
+        definition.convertToType = new JSObjectConvertToTypeCallback() {
+            public JSValueRef convertToType(JSContextRef ctx, JSObjectRef object, JSType type,
+                                        Pointer exception) {
+                return JSValueRef.Null();
+            }
+        } ;
+
+        JSClassRef jsClass = jsc.JSClassCreate(definition);
+        JSObjectRef jsObj = jsc.JSObjectMake(context, jsClass);
+
+        JSValueRef value1 = jsc.JSObjectGetProperty(context, jsObj, "unknown_property1", null);
+        assertTrue(value1.isNumber() && value1.toInt() == 1);
+/*
+
+        jsc.JSObjectSetProperty(context, jsObj, "unknown_property2", jsc.JSValueMakeNumber(context, 2), 0);
+        JSValueRef value2 = jsc.JSObjectGetProperty(context, jsObj, "unknown_property2");
+        assertTrue(value2.isNumber() && value2.toInt() == 2);
+
+        JSValueRef value2 = jsc.JSObjectGetProperty(context, jsObj, "unknown_property2");
+        assertTrue(value2.isUndefined());
+
+        jsc.JSValueIsInstanceOfConstructor(context, jsObj, jsObj);
+        jsc.JSObjectCopyPropertyNames(context, jsObj);
+        jsc.JSObjectDeleteProperty(context, jsObj, "unknown_property1");
+        jsc.JSValueToNumber(context, jsObj);
+        jsc.JSObjectCallAsFunction(context, jsObj, jsObj, new JSValueArrayRef(0));
+        jsc.JSObjectCallAsConstructor(context, jsObj, new JSValueArrayRef(0), null);
+*/
     }
 }
