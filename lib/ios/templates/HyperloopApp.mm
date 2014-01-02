@@ -20,7 +20,7 @@
 // Generated on <%=new Date%>
 
 extern "C" JSGlobalContextRef HyperloopCreateVM(NSString *name, NSString *prefix);
-extern id HyperloopGetPrivateObjectAsID(JSObjectRef objectRef);
+extern "C" id HyperloopGetPrivateObjectAsID(JSObjectRef objectRef);
 
 @implementation HyperloopApp {
  	JSGlobalContextRef context;

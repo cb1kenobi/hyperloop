@@ -14,10 +14,12 @@
 
 + (void)raiseJSException:(JSValueRef)exception context:(JSContextRef)context prefix:(NSString*)prefix
 {
+#ifdef DEBUGEXCEPTION
 	NSLog(@"[ERROR] raiseJSException called %p",exception);
 	NSLog(@"[ERROR] %@",HyperloopToNSString(context,exception));
 	NSLog(@"[ERROR] %@", [NSThread callStackSymbols]);
-
+#endif
+	
 	NSString *line = @"-1";
 	NSString *column = nil;
 	NSMutableDictionary *fields = [[@{
