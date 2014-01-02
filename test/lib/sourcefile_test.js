@@ -46,7 +46,6 @@ describe('lib/sourcefile.js', function() {
 			sf.processCompiler.should.be.a.Function;
 			sf.processNewClass.should.be.a.Function;
 			sf.processCustomClass.should.be.a.Function;
-			sf.processOwner.should.be.a.Function;
 			sf.processMemory.should.be.a.Function;
 			sf.isCommonClass.should.be.a.Function;
 			sf.isGlobalClass.should.be.a.Function;
