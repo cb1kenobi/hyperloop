@@ -976,8 +976,10 @@ JSValueRef HyperloopNativeErrorProcessor (JSContextRef ctx, JSObjectRef function
         // fetch the source map details for this JS line
         NSDictionary *sourceMap = HyperloopSourceMap(ctx,classPrefix,fn,line,column); 
 
-NSLog(@"[INFO] sourceMap=%@",sourceMap);
-
+    #ifdef DEBUG_STACKTRACE
+        NSLog(@"[INFO] sourceMap=%@",sourceMap);
+    #endif
+        
         NSString *top;
         NSMutableArray *stack;
 
