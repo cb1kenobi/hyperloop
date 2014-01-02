@@ -1,0 +1,74 @@
+@import('Foundation');
+@import('UIKit');
+
+/* uncomment to show we can't catch certain system crashes but we can handle
+   them from a crash reporting standpoint
+try {
+	var str = NSString.stringWithFormat("%@%@","hello");
+}
+catch (E) {
+	console.log("Error caught",E);
+}*/
+
+function addToView(view, str){
+	// do something bad that should generate a native Exception
+	// we should be able to catch the native exception as a JS Exception
+	view.addSubview(str);
+}
+
+function throwAnException(view) {
+	var str = NSString.stringWithFormat("%@","hello");
+	addToView(view,str);
+}
+
+var view = new UIView();
+
+// uncomment to test unhandled exception (and crash handling)
+//throwAnException(view);
+
+
+try {
+	throwAnException(view);
+} 
+catch(E) {
+	// toString for the Error object
+	console.log('NATIVE EXCEPTION CAUGHT!!!!',E);
+
+	// the message and number (JS)
+	console.log(E.message+' at '+E.line);
+
+	// print out the JS stack
+	console.log('JS stack is:\n'+E.stack);
+	console.log(' ');
+
+	// print out the native stack
+	console.log('native stack is:\n'+E.nativeStack);
+	console.log(' ');
+
+	// print out some metadata about the native stack as well (filename, function declaration, function line number)
+	console.log('native file: '+E.nativeSource+', native function: '+E.nativeFunction,', native line: '+E.nativeLine)
+}
+
+
+var foo = require('./foo');
+try {
+	foo.throwAnException();
+}
+catch (E) {
+	// toString for the Error object
+	console.log('NATIVE EXCEPTION CAUGHT INSIDE MODULE!!!!',E);
+
+	// the message and number (JS)
+	console.log(E.message+' at '+E.line);
+
+	// print out the JS stack
+	console.log('JS stack is:\n'+E.stack);
+	console.log(' ');
+
+	// print out the native stack
+	console.log('native stack is:\n'+E.nativeStack);
+	console.log(' ');
+
+	// print out some metadata about the native stack as well (filename, function declaration, function line number)
+	console.log('native file: '+E.nativeSource+', native function: '+E.nativeFunction,', native line: '+E.nativeLine)
+}
