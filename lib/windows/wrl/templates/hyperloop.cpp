@@ -1,5 +1,7 @@
 #include "hyperloop.h"
 
+static double NAN = std::numeric_limits<double>::quiet_NaN();
+
 std::wstring hyperloop::getWString(JSStringRef sValue) {
 	size_t sLength = JSStringGetMaximumUTF8CStringSize(sValue);
 	char* cValue = new char[sLength];
@@ -20,6 +22,13 @@ const char* hyperloop::getCStr(Platform::String^ string) {
 	return s_str.c_str();
 }
 
+const char* hyperloop::getCStr(JSContextRef ctx, JSValueRef ref) {
+	JSStringRef sValue = JSValueToStringCopy(ctx, ref, NULL);
+	std::wstring w_str = hyperloop::getWString(sValue);
+	std::string s_str(w_str.begin(), w_str.end());
+	return s_str.c_str();
+}
+
 String^ hyperloop::getPlatformString(JSStringRef sValue) {
 	size_t sLength = JSStringGetMaximumUTF8CStringSize(sValue);
 	char* cValue = new char[sLength];
@@ -34,6 +43,12 @@ String^ hyperloop::getPlatformString(JSContextRef ctx, JSValueRef ref) {
 	JSStringRef sValue = JSValueToStringCopy(ctx, ref, &exception);
 	CHECK_EXCEPTION(ctx, exception);
 	return hyperloop::getPlatformString(sValue);
+}
+
+JSStringRef hyperloop::getJSStringRef(char *c_str, int length) {
+	std::string s_str(c_str, length);
+	const char* charStr = s_str.c_str();
+	return JSStringCreateWithUTF8CString(charStr);
 }
 
 JSStringRef hyperloop::getJSStringRef(Platform::String^ string) {
@@ -64,7 +79,7 @@ JSPrivateObject* HyperloopMakePrivateObjectForID(JSContextRef ctx, Object^ objec
 {
     JSPrivateObject *p = new JSPrivateObject();
     p->object = object;
-    p->value = std::numeric_limits<double>::quiet_NaN();
+    p->value = NAN;
     p->type = JSPrivateObjectTypeID;
     p->context = ctx;
 	return p;
@@ -159,7 +174,7 @@ double HyperloopGetPrivateObjectAsNumber(JSObjectRef object)
             }
         }
     }
-    return std::numeric_limits<double>::quiet_NaN();
+    return NAN;
 }
 
 

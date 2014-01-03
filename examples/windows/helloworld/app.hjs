@@ -1,0 +1,32 @@
+// create a String from JS string
+var hello = 'Hello';
+
+// create a direct memory buffer
+var buffer = @memory();
+
+// write a string into the buffer
+buffer.putString('world');
+
+// create a String from the buffer
+var message = '' + buffer;
+
+// log with both String
+console.log(hello, message);
+
+// log with buffer as argument
+console.log(hello, buffer);
+
+// log with buffer.toCharArray() as argument
+console.log(hello, buffer.toCharArray());
+
+// log with primitive
+console.log(hello, 1);
+
+// log with boolean
+console.log(hello, true);
+
+// log with object
+console.log(hello, { a: 1 });
+
+// log with string
+console.log(hello, 'world');

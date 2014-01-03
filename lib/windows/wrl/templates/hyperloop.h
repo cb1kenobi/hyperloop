@@ -12,9 +12,11 @@ public:
 	static std::wstring getWString(JSStringRef sValue);
 	static std::wstring getWString(JSContextRef ctx, JSValueRef ref);
 	static const char* hyperloop::getCStr(Platform::String^ string);
+	static const char* hyperloop::getCStr(JSContextRef ctx, JSValueRef ref);
 	static Platform::String^ getPlatformString(JSStringRef sValue);
 	static Platform::String^ getPlatformString(JSContextRef ctx, JSStringRef sValue);
 	static Platform::String^ getPlatformString(JSContextRef ctx, JSValueRef exception);
+	static JSStringRef getJSStringRef(char *c_str, int length);
 	static JSStringRef getJSStringRef(Platform::String^ string);
 	static JSValueRef getJSValueRef(JSContextRef ctx, Platform::String^ string);
 private:
