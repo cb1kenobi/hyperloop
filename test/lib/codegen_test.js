@@ -15,7 +15,6 @@ describe('lib/codegen.js', function() {
 		codegen.sources.should.eql([]);
 		codegen.generate.should.be.a.Function;
 		codegen.addSource.should.be.a.Function;
-		codegen.setFileCache.should.be.a.Function;
 	});
 
 	it('throws when #generate is called, as it requires implementation', function() {
@@ -35,18 +34,6 @@ describe('lib/codegen.js', function() {
 		var codegen = new Codegen();
 		codegen.addSource();
 		(typeof codegen.sources[0]).should.equal('undefined');
-	});
-
-	it('#setFileCache sets the file cache', function() {
-		var codegen = new Codegen();
-		codegen.setFileCache(DUMMY);
-		codegen.fileCache.should.equal(DUMMY);
-	});
-
-	it('#setFileCache with no arguments executes without error', function() {
-		var codegen = new Codegen();
-		codegen.setFileCache();
-		(typeof codegen.fileCache).should.equal('undefined');
 	});
 
 });
