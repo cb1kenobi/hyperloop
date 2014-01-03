@@ -1,0 +1,28 @@
+/**
+ * JS port of memops.c
+ *
+ * set M to number of iterations (matched in C)
+ *
+ * FIXME: this benchmark proves that we have some big
+ * performance issues in our native Buffer implementations
+ */
+function main() {
+  var N = 1024 * 1024,
+      M = 1;
+
+  var startTime = Date.now();
+  var f = 0;
+  var buf = new Uint8Array(N);
+
+  for (var t = 0; t < M; t++) {
+    for (var i = 0; i < N; i++)
+      buf[i] = (i + f)%256;
+    for (var i = 0; i < N; i++)
+      f += buf[i] & 1;
+    f = f % 1000;
+  }
+  var endTime = Date.now();
+  console.log('duration:',endTime-startTime,'ms');
+}
+
+main();
