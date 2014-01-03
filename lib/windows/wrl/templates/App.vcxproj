@@ -90,7 +90,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <PackageCertificateKeyFile>APPNAME_Key.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>PFX</PackageCertificateKeyFile>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
@@ -128,10 +128,21 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="APPNAME_Key.pfx" />
+    <None Include="PFX" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="hyperloop.cpp" />
+    <ClCompile Include="GeneratedApp.cpp" />
+    <% for (var i = 0, iL = implementations.length; i < iL; i++) { %>
+    <ClCompile Include="Generated/<%= implementations[i] %>"/><% } %>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="hyperloop.h"/>
+    <ClInclude Include="JSPrivateObject.h"/>
+    <ClInclude Include="GeneratedApp.h"/>
+    <% for (var j = 0, jL = headers.length; j < jL; j++) { %>
+    <ClInclude Include="Generated/<%= headers[j] %>"/><% } %>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

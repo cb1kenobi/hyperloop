@@ -64,7 +64,7 @@ void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 
 	Window^ window = Window::Current;
 	// Note: To see the results of TestCreateTextBlock, comment out the following line.
-	//window->Content = text;
+	window->Content = text;
 	window->Activate();
 }
 

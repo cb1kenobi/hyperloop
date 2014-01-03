@@ -1,0 +1,47 @@
+var window = Window.Current,
+	grid = new Grid(),
+	button = new Button(),
+	white = new SolidColorBrush(),
+	text = new TextBlock();
+
+text.Text = "Click me, please!";
+text.TextAlignment = TextAlignment.Center;
+text.VerticalAlignment = VerticalAlignment.Center;
+text.HorizontalAlignment = HorizontalAlignment.Center;
+text.FontSize = 60;
+
+grid.Width = window.Bounds.Width;
+grid.Height = window.Bounds.Height;
+
+white.Color = Colors.White;
+
+button.Content = text;
+button.Width = 500;
+button.Height = 100;
+button.Foreground = white;
+button.VerticalAlignment = VerticalAlignment.Center;
+button.HorizontalAlignment = HorizontalAlignment.Center;
+grid.Children.Append(button);
+
+window.Content = grid;
+window.Activate();
+
+@class('TapHandler', null, [], [
+	{
+		name: 'PointerPressed',
+		forHandler: 'TappedEventHandler',
+		returnType: 'void',
+		arguments: [
+			{ name: 'sender', type: 'Object^' },
+			{ name: 'e', type: 'TappedRoutedEventArgs^' }
+		],
+		action: function (params) {
+			var dialog = new MessageDialog("The Message", "The Title");
+			dialog.ShowAsync();
+		}
+	}
+]);
+
+var tapHandler = new TapHandler(),
+	tapped = new TappedEventHandler(tapHandler, 'PointerPressed');
+grid.add_Tapped(tapped);

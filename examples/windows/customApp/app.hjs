@@ -1,0 +1,31 @@
+/**
+ * In this example, we're going to create a new AppDelegate class and install
+ * it using the @compiler setting
+ */
+@compiler({
+	App: 'CustomApp'
+});
+
+@class('CustomApp', Application, [], [
+	{
+		override: true,
+		name: 'OnLaunched',
+		returnType: 'void',
+		arguments: [ { name: 'args', type: 'LaunchActivatedEventArgs^' } ],
+		action: function(params) {
+			var window = Window.Current,
+				text = new TextBlock();
+
+			text.Text = "Hello, world!";
+			text.TextAlignment = TextAlignment.Center;
+			text.VerticalAlignment = VerticalAlignment.Center;
+			text.HorizontalAlignment = HorizontalAlignment.Center;
+			text.FontSize = 60;
+
+			window.Content = text;
+			window.Activate();
+		}
+	}
+]);
+
+var CustomApp = new CustomApp();

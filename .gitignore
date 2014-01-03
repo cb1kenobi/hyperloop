@@ -23,3 +23,5 @@ Debug
 Thumbs.db
 *.user
 _tmp
+tmp
+$RECYCLE.BIN
