@@ -1,5 +1,4 @@
-// TODO: Import the C++ library.
-@import("fabs");
+@import("math.h");
 
 var window = Window.Current,
 	text = new TextBlock(),

@@ -1,3 +1,5 @@
+@import("http_client.h");
+
 // Coordinates of Appcelerator HQ.
 var latitude = "37.389587",
 	longitude = "-122.05037";
