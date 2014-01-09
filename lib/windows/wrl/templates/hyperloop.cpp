@@ -72,6 +72,13 @@ JSValueRef HyperloopundefinedToJSValueRef(JSContextRef ctx, void* o) {
 	return JSValueMakeUndefined(ctx);
 }
 
+int HyperloopGetLength(JSContextRef ctx, JSObjectRef objRef, JSValueRef *exception) {
+	JSStringRef str = JSStringCreateWithUTF8CString("length");
+	JSValueRef length = JSObjectGetProperty(ctx, objRef, str, exception);
+	JSStringRelease(str);
+	return (int)JSValueToNumber(ctx, length, exception);
+}
+
 /**
  * create a JSPrivateObject for storage in a JSObjectRef
  */
@@ -367,6 +374,22 @@ JSValueRef Hyperloop<%- type %>ToJSValueRef(JSContextRef ctx, <%- type %> val) {
 <%- type %> HyperloopJSValueRefTo<%- type %>(JSContextRef ctx, JSValueRef value, JSValueRef *exception, bool *cleanup) {
 	if (JSValueIsNumber(ctx, value)) {
         return (<%- type %>)JSValueToNumber(ctx, value, exception);
+	}
+    return 0;
+}
+JSValueRef Hyperloop<%- type %>ArrayToJSValueRef(JSContextRef ctx, <%- type %>* val, int length) {
+	throw ref new Exception(0, "Hyperloop<%- type %>ArrayToJSValueRef has not been implemented yet!");
+}
+<%- type %>* HyperloopJSValueRefTo<%- type %>Array(JSContextRef ctx, JSValueRef value, JSValueRef *exception, bool *cleanup) {
+	if (JSValueIsObject(ctx, value)) {
+		JSObjectRef objRef = JSValueToObject(ctx, value, exception);
+		int length = HyperloopGetLength(ctx, objRef, exception);
+		auto result = new <%- type %>[length];
+		for (int i = 0; i < length; i++) {
+			JSValueRef val = JSObjectGetPropertyAtIndex(ctx, objRef, i, exception);
+			result[i] = HyperloopJSValueRefTo<%- type %>(ctx, val, exception, 0);
+		}
+        return result;
 	}
     return 0;
 }

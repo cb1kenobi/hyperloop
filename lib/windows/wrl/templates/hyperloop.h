@@ -32,6 +32,8 @@ if (exception != nullptr) {\
 JSValueRef HyperloopundefinedToJSValueRef(JSContextRef, Object^);
 JSValueRef HyperloopundefinedToJSValueRef(JSContextRef, void*);
 
+int HyperloopGetLength(JSContextRef ctx, JSObjectRef objRef, JSValueRef *exception);
+
 /**
  * create a JSPrivateObject for storage in a JSObjectRef where the object is an id
  */
@@ -119,6 +121,8 @@ String^ HyperloopToStringFromString(JSContextRef ctx, JSStringRef value);
 	.forEach(function(type) { %>
 JSValueRef Hyperloop<%- type %>ToJSValueRef(JSContextRef ctx, <%- type %> val);
 <%- type %> HyperloopJSValueRefTo<%- type %>(JSContextRef ctx, JSValueRef value, JSValueRef *exception, bool *cleanup);
+JSValueRef Hyperloop<%- type %>ArrayToJSValueRef(JSContextRef ctx, <%- type %>* val, int length);
+<%- type %>* HyperloopJSValueRefTo<%- type %>Array(JSContextRef ctx, JSValueRef value, JSValueRef *exception, bool *cleanup);
 <% }) %>
 
 JSValueRef HyperloopboolToJSValueRef(JSContextRef ctx, bool boolean);
