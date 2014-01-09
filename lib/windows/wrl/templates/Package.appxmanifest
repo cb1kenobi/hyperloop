@@ -1,24 +1,45 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<% if (options.sdk === '8.0') { %>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
   <Identity Name="1c9e58c7-7724-40dd-aa68-984d280a3602" Publisher="CERTNAME" Version="1.0.0.0" />
+<% } else { %>
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
+  <Identity Name="1c9e58c7-7724-40dd-aa68-984d280a3602" Publisher="CERTNAME" Version="1.1.0.0" />
+<% } %>
   <Properties>
     <DisplayName>APPNAME</DisplayName>
     <PublisherDisplayName>PUBLISHERNAME</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Prerequisites>
+<% if (options.sdk === '8.0') { %>
     <OSMinVersion>6.2.1</OSMinVersion>
     <OSMaxVersionTested>6.2.1</OSMaxVersionTested>
+<% } else { %>
+    <OSMinVersion>6.3</OSMinVersion>
+    <OSMaxVersionTested>6.3</OSMaxVersionTested>
+<% } %>
   </Prerequisites>
   <Resources>
     <Resource Language="x-generate" />
   </Resources>
   <Applications>
     <Application Id="APPNAME" Executable="$targetnametoken$.exe" EntryPoint="APPNAME.App">
-      <VisualElements DisplayName="APPNAME" Logo="Assets\Logo.png" SmallLogo="Assets\SmallLogo.png" Description="APPNAME" ForegroundText="light" BackgroundColor="#464646">
+<% if (options.sdk === '8.0') { %>
+      <VisualElements DisplayName="APPNAME" Description="APPNAME" BackgroundColor="#464646" ForegroundText="light" Logo="Assets\Logo.png" SmallLogo="Assets\SmallLogo.png">
         <DefaultTile ShowName="allLogos" />
         <SplashScreen Image="Assets\SplashScreen.png" />
       </VisualElements>
+<% } else { %>
+      <m2:VisualElements DisplayName="APPNAME" Description="APPNAME" BackgroundColor="#464646" ForegroundText="light" Square150x150Logo="Assets\Logo.png" Square30x30Logo="Assets\SmallLogo.png">
+        <m2:DefaultTile>
+          <m2:ShowNameOnTiles>
+            <m2:ShowOn Tile="square150x150Logo" />
+          </m2:ShowNameOnTiles>
+        </m2:DefaultTile>
+        <m2:SplashScreen Image="Assets\SplashScreen.png" />
+      </m2:VisualElements>
+<% } %>
     </Application>
   </Applications>
   <Capabilities>

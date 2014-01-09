@@ -1,6 +1,6 @@
 #include "hyperloop.h"
+#include "nan.h"
 
-static double NAN = std::numeric_limits<double>::quiet_NaN();
 
 std::wstring hyperloop::getWString(JSStringRef sValue) {
 	size_t sLength = JSStringGetMaximumUTF8CStringSize(sValue);

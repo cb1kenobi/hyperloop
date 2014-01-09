@@ -8,16 +8,12 @@
  */
 
 #include "JSBuffer.h"
+#include "nan.h"
 
 static JSClassDefinition ClassDefinitionForJSBufferConstructor;
 static JSClassDefinition ClassDefinitionForJSBuffer;
 static JSClassRef JSBufferClassDefForConstructor;
 static JSClassRef JSBufferClassDef;
-static double NAN = std::numeric_limits<double>::quiet_NaN();
-
-#ifndef isnan
-  #define isnan(a) (a != a)
-#endif
 
 #define BUFFER(name) \
 JSBuffer *name = (JSBuffer*)HyperloopGetPrivateObjectAsJSBuffer(object);\

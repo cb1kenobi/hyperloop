@@ -9,6 +9,7 @@
     <ClCompile Include="Generated/<%- implementations[i] %>"><Filter>Generated</Filter></ClCompile><% } %>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="nan.h" />
     <ClInclude Include="hyperloop.h" />
     <ClInclude Include="JSBuffer.h" />
     <ClInclude Include="JSPrivateObject.h" />
