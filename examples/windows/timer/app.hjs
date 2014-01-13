@@ -13,20 +13,25 @@ window.Activate();
 @class('TickHandler', null, [], [
 	{
 		name: 'Tick',
-		forHandler: 'EventHandler',
+		// TODO: The "forHandler" below might use the at-generic syntax, too.
+		forHandler: 'EventHandler$Object$',
 		returnType: 'void',
 		arguments: [
 			{ name: 'sender', type: 'Object^' },
-			{ name: 'e', type: 'EventArgs^' }
+			{ name: 'e', type: 'Object^' }
 		],
-		action: function (params) {
+		action: function(params) {
 			console.log('Tick...');
 		}
 	}
 ]);
 
 var timer = new DispatcherTimer(),
-	tickHandler = new TickHandler();
-timer.Interval = new TimeSpan(0, 0, 1); // Once a second.
-timer.add_Tick(new @generic(EventHandler, Object)(tickHandler));
+	tickHandler = new TickHandler(),
+	timeSpan = new TimeSpan();
+
+timeSpan.Duration = 1000; // Once a second.
+
+timer.Interval = timeSpan;
+timer.add_Tick(new (@generic(EventHandler, 'Object^'))(tickHandler, 'Tick'));
 timer.Start();
