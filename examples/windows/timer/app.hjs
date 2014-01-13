@@ -28,10 +28,10 @@ window.Activate();
 
 var timer = new DispatcherTimer(),
 	tickHandler = new TickHandler(),
-	timeSpan = new TimeSpan();
+	timeSpan = new TimeSpan(),
+	handler = new (@generic(EventHandler, 'Object^'))(tickHandler, 'Tick');
 
 timeSpan.Duration = 1000; // Once a second.
-
 timer.Interval = timeSpan;
-timer.add_Tick(new (@generic(EventHandler, 'Object^'))(tickHandler, 'Tick'));
+timer.add_Tick(handler);
 timer.Start();
