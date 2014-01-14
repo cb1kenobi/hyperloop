@@ -1,7 +1,9 @@
 var window = Window.Current,
 	text = new TextBlock();
 
-text.Text = "Loading...";
+var wins = 0;
+
+text.Text = "Wins: " + wins;
 text.TextAlignment = TextAlignment.Center;
 text.VerticalAlignment = VerticalAlignment.Center;
 text.HorizontalAlignment = HorizontalAlignment.Center;
@@ -21,7 +23,7 @@ window.Activate();
 			{ name: 'e', type: 'Object^' }
 		],
 		action: function(params) {
-			console.log('Tick...');
+			text.Text = "Wins: " + (++wins);
 		}
 	}
 ]);
@@ -31,7 +33,7 @@ var timer = new DispatcherTimer(),
 	timeSpan = new TimeSpan(),
 	handler = new (@generic(EventHandler, 'Object^'))(tickHandler, 'Tick');
 
-timeSpan.Duration = 1000; // Once a second.
+timeSpan.Duration = 10000000; // Unit is 100-nanoseconds. Once a second.
 timer.Interval = timeSpan;
 timer.add_Tick(handler);
 timer.Start();
