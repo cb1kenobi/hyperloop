@@ -39,6 +39,8 @@ public abstract class JavaScriptActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        long benchmarkStart = System.currentTimeMillis();
+        
         try {
             JSContextRef context = vm.getDefaultContext();
             JSObjectRef globalObject = jsc.JSContextGetGlobalObject(context);
@@ -70,6 +72,8 @@ public abstract class JavaScriptActivity extends Activity {
         } catch (Exception e) {
             new AlertDialog.Builder(this).setTitle("OnCreate Error").setMessage(e.getMessage()).setNeutralButton("Close", null).show();
         }
+        
+        android.util.Log.d("JavaScriptCore", String.format("onCreate is done by %d msec", (System.currentTimeMillis() - benchmarkStart)));
     }
     
     private void registerJS_java_lang(JSContextRef context, JSObjectRef globalObject) {
