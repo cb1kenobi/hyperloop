@@ -1,6 +1,5 @@
 package com.appcelerator.javascriptcore.java;
 
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -64,34 +63,45 @@ public class JS_android_view_View_OnTouchListener extends JSClassDefinition impl
             JSObjectRef param0 = arguments.get(context, 0).castToObject();
             final JSObjectRef onTouchFunc = jsc.JSObjectGetProperty(context, param0, "onTouch", null).castToObject();
             if (jsc.JSObjectIsFunction(context, onTouchFunc)) {
-                OnTouchListener jobject = new OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        try {
-                            // TODO need safer way to get global current context reference (Singleton etc)
-                            JavaScriptActivity main = (JavaScriptActivity)v.getContext();
-                            JSContextRef currentContext = main.getJSContext();
-
-                            JSValueRef exception = JSValueRef.Null();
-                            JSValueArrayRef argv = new JSValueArrayRef(2);
-
-                            argv.set(0, JS_android_view_View.createJSObject(currentContext, v));
-                            argv.set(1, JS_android_view_MotionEvent.createJSObject(currentContext, event));
-
-                            JSValueRef result = jsc.JSObjectCallAsFunction(currentContext, onTouchFunc, jsObject, argv, exception);
-                            JSJavaObjectUtil.checkJSException(currentContext, exception);
-                            
-                            return result.toBoolean();
-                        } catch (Exception e) {
-                            Log.d("JavaScriptActivity", "Exception during onTouch", e);
-                        }
-                        return false;
-                    }
-                };
-                jsc.JSObjectSetPrivate(jsObject, jobject);
+                jsc.JSObjectSetPrivate(jsObject, new HyperloopOnTouchListener(context, jsObject, onTouchFunc));
             }
             return jsObject;
         }
         return jsObject;
+    }
+    
+    private class HyperloopOnTouchListener implements OnTouchListener {
+        
+        JSObjectRef thisObject;
+        JSObjectRef onTouchFunc;
+        JSValueRef onTouchException = JSValueRef.Null();
+        JSContextRef currentContext = null;
+        JSValueArrayRef argv = new JSValueArrayRef(2);
+        JSObjectRef arg0;
+        JSObjectRef arg1;
+        
+        public HyperloopOnTouchListener(JSContextRef context, JSObjectRef thisObject, JSObjectRef onTouchFunc) {
+            // prepare argument objects
+            arg0 = JS_android_view_View.createJSObject(context, null);
+            arg1 = JS_android_view_MotionEvent.createJSObject(context, null);
+            argv.set(0, arg0);
+            argv.set(1, arg1);
+            
+            this.thisObject = thisObject;
+            this.onTouchFunc = onTouchFunc;
+        }
+        
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            // TODO need safer way to get global current context reference (Singleton etc)
+            if (currentContext == null) {
+                currentContext = ((JavaScriptActivity)v.getContext()).getJSContext();
+            }
+
+            jsc.JSObjectSetPrivate(arg0, v);
+            jsc.JSObjectSetPrivate(arg1, event);
+
+            return jsc.JSObjectCallAsFunction(currentContext, onTouchFunc, thisObject, argv, onTouchException).toBoolean();
+        }
     }
 }
