@@ -12,11 +12,12 @@ text.FontSize = 60;
 window.Content = text;
 window.Activate();
 
+var EventHandler = @generic(EventHandler, 'Object^');
+
 @class('TickHandler', null, [], [
 	{
 		name: 'Tick',
-		// TODO: The "forHandler" below might use the at-generic syntax, too.
-		forHandler: 'EventHandler$Object$',
+		forHandler: EventHandler,
 		returnType: 'void',
 		arguments: [
 			{ name: 'sender', type: 'Object^' },
@@ -31,7 +32,7 @@ window.Activate();
 var timer = new DispatcherTimer(),
 	tickHandler = new TickHandler(),
 	timeSpan = new TimeSpan(),
-	handler = new (@generic(EventHandler, 'Object^'))(tickHandler, 'Tick');
+	handler = new EventHandler(tickHandler, 'Tick');
 
 timeSpan.Duration = 10000000; // Unit is 100-nanoseconds. Once a second.
 timer.Interval = timeSpan;
