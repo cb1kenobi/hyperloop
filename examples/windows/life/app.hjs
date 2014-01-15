@@ -1,38 +1,31 @@
-// var timer = new DispatcherTimer();
-// @class('TickHandler', null, [], [
-// 	{
-// 		name: 'Tick',
-// 		forHandler: 'EventHandler',
-// 		returnType: 'void',
-// 		arguments: [
-// 			{ name: 'sender', type: 'Object^' },
-// 			{ name: 'e', type: 'Object^' }
-// 		],
-// 		action: function(params) {
-// 			console.log('TIMER!!!');
-// 		}
-// 	}
-// ]);
-
-// var classHandler = new TickHandler();
-//	handler = new EventHandler(classHandler, 'Tick');
-
-var CELL_SIZE = 100,
+var CELL_SIZE = 25,
 	FPS_INTERVAL = 30;
 
 var window = Window.Current,
-universe = new Canvas();
+	White = new SolidColorBrush(Colors.White),
+	Black = new SolidColorBrush(Colors.Black),
+	universe = new Canvas(),
+	label = new TextBlock();
 
 // set up universe
 universe.Height = window.Bounds.Height;
 universe.Width = window.Bounds.Width;
-universe.Background = new SolidColorBrush(Colors.Black);
+universe.Background = Black;
+
+// set up label
+label.Text = 'Loading, please wait.';
+label.TextAlignment = TextAlignment.Right;
+label.VerticalAlignment = VerticalAlignment.Top;
+label.HorizontalAlignment = HorizontalAlignment.Right;
+label.FontSize = 60;
+universe.Children.Append(label);
 
 // set up the rest of the variables
 var xSize = (universe.Width / CELL_SIZE) | 0,
 	ySize = (universe.Height / CELL_SIZE) | 0;
 
 // populate cells
+console.log('populating cells...');
 var cells = [];
 for (var x = 0; x < xSize; x++) {
 	cells[x] = [];
@@ -46,7 +39,7 @@ for (var x = 0; x < xSize; x++) {
 		cellProxy.Width = CELL_SIZE;
 		Canvas.SetLeft(cellProxy, x * CELL_SIZE);
 		Canvas.SetTop(cellProxy, y * CELL_SIZE);
-		cellProxy.Fill = new SolidColorBrush(Colors.White);
+		cellProxy.Background = White;
 		cellProxy.Visibility = alive ? Visibility.Visible : Visibility.Collapsed;
 
 		// save the cell
@@ -60,6 +53,7 @@ for (var x = 0; x < xSize; x++) {
 		universe.Children.Append(cellProxy);
 	}
 }
+console.log('done populating cells.');
 
 // start app
 window.Content = universe;
@@ -67,40 +61,67 @@ window.Activate();
 
 // the render function
 var ctr = 0;
-function update(params) {
-        var x, y, cell;
+var EventHandler = @generic(EventHandler, 'Object^'),
+	lastReport = Date.now();
 
-        // render current generation
-        for (x = 0; x < xSize; x++) {
-                for (y = 0; y < ySize; y++) {
-                        cell = cells[x][y];
+@class('TickHandler', null, [], [
+	{
+		name: 'Tick',
+		forHandler: EventHandler,
+		returnType: 'void',
+		arguments: [
+			{ name: 'sender', type: 'Object^' },
+			{ name: 'e', type: 'Object^' }
+		],
+		action: function update(params) {
+			var x, y, cell;
 
-                        // minimze number of times we need to modify the proxy object
-                        if (cell.alive !== cell.lastAlive) {
-                        				cell.proxy.Visibility = cell.alive ? Visibility.Visible : Visibility.Collapsed;
-                                //cell.proxy.setHidden(!cell.alive);
-                        }
+			// render current generation
+			for (x = 0; x < xSize; x++) {
+				for (y = 0; y < ySize; y++) {
+					cell = cells[x][y];
 
-                        // save the state
-                        cell.lastAlive = cell.alive;
-                }
-        }
+					// minimize number of times we need to modify the proxy object
+					if (cell.alive !== cell.lastAlive) {
+						cell.proxy.Visibility = cell.alive ? Visibility.Visible : Visibility.Collapsed;
+						//cell.proxy.setHidden(!cell.alive);
+					}
 
-        // build next generation
-        for (x = 0; x < xSize; x++) {
-                for (y = 0; y < ySize; y++) {
-                        cell = cells[x][y];
-                        cell.alive = getNextState(x, y, cell.lastAlive);
-                }
-        }
+					// save the state
+					cell.lastAlive = cell.alive;
+				}
+			}
 
-        // show the average FPS
-        // if (!(++ctr % FPS_INTERVAL)) {
-        //         ctr = 1;
-        //         label.setText(__('FPS: ' + Math.round(FPS_INTERVAL*10*getFPS(params.sender))/10));
-        // }
+			// build next generation
+			for (x = 0; x < xSize; x++) {
+				for (y = 0; y < ySize; y++) {
+					cell = cells[x][y];
+					cell.alive = getNextState(x, y, cell.lastAlive);
+				}
+			}
 
-}
+			// show the average FPS
+			if (!(++ctr % FPS_INTERVAL)) {
+				ctr = 1;
+				var currentReport = Date.now(),
+					fps = 1.0 / (currentReport - lastReport);
+				label.Text = 'FPS: ' + Math.round(FPS_INTERVAL * 10 * fps) / 10;
+				lastReport = currentReport;
+			}
+		}
+
+	}
+]);
+
+var timer = new DispatcherTimer(),
+	tickHandler = new TickHandler(),
+	timeSpan = new TimeSpan(),
+	handler = new EventHandler(tickHandler, 'Tick');
+
+timeSpan.Duration = 10000000 / FPS_INTERVAL; // Unit is 100-nanoseconds.
+timer.Interval = timeSpan;
+timer.add_Tick(handler);
+timer.Start();
 
 // calculate the next state of each cell
 function getNextState(x, y, alive) {
