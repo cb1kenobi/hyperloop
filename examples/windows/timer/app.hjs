@@ -1,0 +1,40 @@
+var window = Window.Current,
+	text = new TextBlock();
+
+var wins = 0;
+
+text.Text = "Wins: " + wins;
+text.TextAlignment = TextAlignment.Center;
+text.VerticalAlignment = VerticalAlignment.Center;
+text.HorizontalAlignment = HorizontalAlignment.Center;
+text.FontSize = 60;
+
+window.Content = text;
+window.Activate();
+
+var EventHandler = @generic(EventHandler, 'Object^');
+
+@class('TickHandler', null, [], [
+	{
+		name: 'Tick',
+		forHandler: EventHandler,
+		returnType: 'void',
+		arguments: [
+			{ name: 'sender', type: 'Object^' },
+			{ name: 'e', type: 'Object^' }
+		],
+		action: function(params) {
+			text.Text = "Wins: " + (++wins);
+		}
+	}
+]);
+
+var timer = new DispatcherTimer(),
+	tickHandler = new TickHandler(),
+	timeSpan = new TimeSpan(),
+	handler = new EventHandler(tickHandler, 'Tick');
+
+timeSpan.Duration = 10000000; // Unit is 100-nanoseconds. Once a second.
+timer.Interval = timeSpan;
+timer.add_Tick(handler);
+timer.Start();
