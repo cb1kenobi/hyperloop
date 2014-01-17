@@ -52,9 +52,18 @@ Java_com_appcelerator_hyperloop_HyperloopJNI_HyperloopCallActivityOnCreate
     JSValueRef args[1];
     args[0] = MakeObjectForJava_android_os_Bundle(context, savedInstanceState);
 
+    JSValueRef exception = JSValueMakeNull(context);
+    
     // Call onCreate function
     if (JSObjectIsFunction(context, onCreateFunc)) {
-        JSObjectCallAsFunction(context, onCreateFunc, activityObj, 1, args, NULL);
+        JSObjectCallAsFunction(context, onCreateFunc, activityObj, 1, args, &exception);
+    }
+    if (!JSValueIsNull(context, exception)) {
+        JSStringRef string = JSValueToStringCopy(context, exception, NULL);
+        CCHAR_FROM_JSSTRINGREF(string, cstring);
+        LOGD("Java_com_appcelerator_hyperloop_HyperloopJNI_HyperloopCallActivityOnCreate '%s'", cstring);
+        free(cstring);
+        JSStringRelease(string);
     }
     
 }

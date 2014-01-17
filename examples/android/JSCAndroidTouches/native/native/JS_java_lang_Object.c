@@ -35,8 +35,11 @@ JSValueRef equalsConstructorForJava_java_lang_Object(JSContextRef ctx, JSObjectR
         jmethodID methodId = (*env)->GetMethodID(env, javaClass, "equals", "(Ljava/lang/Object;)Z");
         if (methodId == NULL) return HyperloopMakeException(ctx, "Method not found: java.lang.Object#equals", exception);
         
+        (*env)->DeleteLocalRef(env, javaClass);
+        
         jboolean result = (*env)->CallBooleanMethod(env, p->object, methodId, arg0->object);
         
+        CHECK_JAVAEXCEPTION
         JNI_ENV_EXIT
         return result == JNI_TRUE ? JSValueMakeBoolean(ctx, true) : JSValueMakeBoolean(ctx, false);
     }
@@ -57,10 +60,14 @@ JSValueRef toStringConstructorForJava_java_lang_Object(JSContextRef ctx, JSObjec
         jmethodID methodId = (*env)->GetMethodID(env, javaClass, "toString", "()Ljava/lang/String;");
         if (methodId == NULL) return HyperloopMakeException(ctx, "Method not found: java.lang.Object#toString", exception);
         
+        (*env)->DeleteLocalRef(env, javaClass);
         jobject result = (*env)->CallObjectMethod(env, p->object, methodId);
+        CHECK_JAVAEXCEPTION
+        
         JSSTRINGREF_FROM_JSTRING(result, string);
         JSValueRef value = JSValueMakeString(ctx, string);
         JSSTRING_RELEASE(string);
+        (*env)->DeleteLocalRef(env, result);
         JNI_ENV_EXIT
         return value;
     }
@@ -110,6 +117,7 @@ bool IsInstanceForJava_java_lang_Object(JSContextRef ctx, JSObjectRef constructo
         JNI_ENV_ENTER
         jclass  javaClass = (*env)->FindClass(env, "java/lang/Object");
         jboolean result = (*env)->IsInstanceOf(env, p->object, javaClass);
+        (*env)->DeleteLocalRef(env, javaClass);
         JNI_ENV_EXIT
         return result == JNI_TRUE ? true : false;
     }
@@ -147,13 +155,19 @@ JSObjectRef MakeInstanceForJava_java_lang_Object(JSContextRef ctx, JSObjectRef c
     }
     
     jobject javaObject = (*env)->NewObject(env, javaClass, initMethodId);
-    
-    JSPrivateObject* p = malloc(sizeof(JSPrivateObject));
-    p->object = (*env)->NewGlobalRef(env, javaObject); // retain Java Object
-    (*env)->DeleteLocalRef(env, javaObject);
     (*env)->DeleteLocalRef(env, javaClass);
+    JSObjectRef object = NULL;
     
-    JSObjectRef object = JSObjectMake(ctx, CreateClassForJava_java_lang_Object(), (void*)p);
+    CHECK_JAVAEXCEPTION
+    if  (JAVA_EXCEPTION_OCCURED) {
+        object = JSValueToObject(ctx, JSValueMakeUndefined(ctx), NULL);
+    } else {
+        JSPrivateObject* p = malloc(sizeof(JSPrivateObject));
+        p->object = (*env)->NewGlobalRef(env, javaObject); // retain Java Object
+        (*env)->DeleteLocalRef(env, javaObject);
+        object = JSObjectMake(ctx, CreateClassForJava_java_lang_Object(), (void*)p);
+    }
+    
     JNI_ENV_EXIT
     
     return object;

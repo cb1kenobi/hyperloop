@@ -17,7 +17,7 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE    := HyperloopJNI
-LOCAL_SRC_FILES := ../../HyperloopJNI.c ../../HyperloopJNIExport.c ../../JS_android_util_Log.c ../../JS_java_lang_Object.c ../../JS_java_lang_String.c ../../JS_android_app_Activity.c ../../JS_android_os_Bundle.c ../../JS_android_view_Gravity.c ../../JS_android_graphics_Color.c ../../JS_android_widget_FrameLayout.c ../../JS_android_widget_FrameLayout_LayoutParams.c ../../JS_android_view_View.c ../../JS_android_view_View_OnTouchListener.c ../../JS_android_view_MotionEvent.c
+LOCAL_SRC_FILES := ../../HyperloopJNI.c ../../HyperloopJNIExport.c ../../JS_android_util_Log.c ../../JS_java_lang_Object.c ../../JS_java_lang_String.c ../../JS_android_app_Activity.c ../../JS_android_os_Bundle.c ../../JS_android_view_Gravity.c ../../JS_android_graphics_Color.c ../../JS_android_widget_FrameLayout.c ../../JS_android_widget_FrameLayout_LayoutParams.c ../../JS_android_view_View.c ../../JS_android_view_View_OnTouchListener.c ../../JS_android_view_MotionEvent.c ../../JS_EmptyObject.c
 
 LOCAL_SHARED_LIBRARIES := JavaScriptCore_shared
 LOCAL_LDLIBS    := -llog -landroid

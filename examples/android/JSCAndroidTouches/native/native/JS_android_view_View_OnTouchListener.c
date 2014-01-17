@@ -63,12 +63,17 @@ JSObjectRef MakeInstanceForJava_android_view_View_OnTouchListener(JSContextRef c
             JSObjectRef object = JSObjectMake(ctx, CreateClassForJava_android_view_View_OnTouchListener(), NULL);
             jobject javaObject = (*env)->NewObject(env, javaClass, initMethodId, (jlong)object, (jlong)onTouchFunc);
             
-            JSPrivateObject* p = malloc(sizeof(JSPrivateObject));
-            p->object = (*env)->NewGlobalRef(env, javaObject); // retain Java Object
-            (*env)->DeleteLocalRef(env, javaObject);
-            (*env)->DeleteLocalRef(env, javaClass);
+            CHECK_JAVAEXCEPTION
+            if (JAVA_EXCEPTION_OCCURED) {
+                
+            } else {
+                JSPrivateObject* p = malloc(sizeof(JSPrivateObject));
+                p->object = (*env)->NewGlobalRef(env, javaObject); // retain Java Object
+                (*env)->DeleteLocalRef(env, javaObject);
+                (*env)->DeleteLocalRef(env, javaClass);
             
-            JSObjectSetPrivate(object, p);
+                JSObjectSetPrivate(object, p);
+            }
             JNI_ENV_EXIT
             
             return object;

@@ -36,6 +36,7 @@ JSValueRef equalsConstructorForJava_java_lang_String(JSContextRef ctx, JSObjectR
         if (methodId == NULL) return HyperloopMakeException(ctx, "Method not found: java.lang.String#equals", exception);
         
         jboolean result = (*env)->CallBooleanMethod(env, p->object, methodId, arg0->object);
+        CHECK_JAVAEXCEPTION
         JNI_ENV_EXIT
         return result == JNI_TRUE ? JSValueMakeBoolean(ctx, true) : JSValueMakeBoolean(ctx, false);
     }
@@ -54,6 +55,7 @@ JSValueRef toStringConstructorForJava_java_lang_String(JSContextRef ctx, JSObjec
         if (methodId == NULL) return HyperloopMakeException(ctx, "Method not found: java.lang.String#toString", exception);
         
         jobject result = (*env)->CallObjectMethod(env, p->object, methodId);
+        CHECK_JAVAEXCEPTION
         JSSTRINGREF_FROM_JSTRING(result, string);
         JSValueRef value = JSValueMakeString(ctx, string);
         JSSTRING_RELEASE(string);
@@ -140,7 +142,7 @@ JSObjectRef MakeInstanceForJava_java_lang_String(JSContextRef ctx, JSObjectRef c
         initMethodId = (*env)->GetMethodID(env, javaClass, "<init>", "()V");
         if (initMethodId == NULL) {
             return JSValueToObject(ctx, HyperloopMakeException(ctx,
-                            "Method not found: java.lang.Object#<init>()V", exception), exception);
+                            "Method not found: java.lang.String#<init>()V", exception), exception);
         }
         javaObject = (*env)->NewObject(env, javaClass, initMethodId);
     } else if (argumentCount == 1) {
@@ -153,7 +155,7 @@ JSObjectRef MakeInstanceForJava_java_lang_String(JSContextRef ctx, JSObjectRef c
             
             if (initMethodId == NULL) {
                 return JSValueToObject(ctx, HyperloopMakeException(ctx,
-                            "Method not found: java.lang.Object#<init>(Ljava/lang/String;)V", exception), exception);
+                            "Method not found: java.lang.String#<init>(Ljava/lang/String;)V", exception), exception);
             }
             javaObject = (*env)->NewObject(env, javaClass, initMethodId, arg0Obj);
         } else {
@@ -166,7 +168,7 @@ JSObjectRef MakeInstanceForJava_java_lang_String(JSContextRef ctx, JSObjectRef c
                     initMethodId = (*env)->GetMethodID(env, javaClass, "<init>", "(Ljava/lang/String;)V");
                     if (initMethodId == NULL) {
                         return JSValueToObject(ctx, HyperloopMakeException(ctx,
-                            "Method not found: java.lang.Object#<init>(Ljava/lang/String;)V", exception), exception);
+                            "Method not found: java.lang.String#<init>(Ljava/lang/String;)V", exception), exception);
                     }
                 }
                 /* new String from Java StringBuffer */
@@ -174,7 +176,7 @@ JSObjectRef MakeInstanceForJava_java_lang_String(JSContextRef ctx, JSObjectRef c
                     initMethodId = (*env)->GetMethodID(env, javaClass, "<init>", "(Ljava/lang/StringBuffer;)V");
                     if (initMethodId == NULL) {
                         return JSValueToObject(ctx, HyperloopMakeException(ctx,
-                            "Method not found: java.lang.Object#<init>(Ljava/lang/StringBuffer;)V", exception), exception);
+                            "Method not found: java.lang.String#<init>(Ljava/lang/StringBuffer;)V", exception), exception);
                     }
                 }
                 /* new String from Java StringBuilder */
@@ -182,20 +184,26 @@ JSObjectRef MakeInstanceForJava_java_lang_String(JSContextRef ctx, JSObjectRef c
                     initMethodId = (*env)->GetMethodID(env, javaClass, "<init>", "(Ljava/lang/StringBuilder;)V");
                     if (initMethodId == NULL) {
                         return JSValueToObject(ctx, HyperloopMakeException(ctx,
-                            "Method not found: java.lang.Object#<init>(Ljava/lang/StringBuilder;)V", exception), exception);
+                            "Method not found: java.lang.String#<init>(Ljava/lang/StringBuilder;)V", exception), exception);
                     }
                 }
                 javaObject = (*env)->NewObject(env, javaClass, initMethodId, arg0Obj->object);
             }
         }
     }
-    
-    JSPrivateObject* p = malloc(sizeof(JSPrivateObject));
-    p->object = (*env)->NewGlobalRef(env, javaObject); // retain Java Object
-    (*env)->DeleteLocalRef(env, javaObject);
     (*env)->DeleteLocalRef(env, javaClass);
+
+    JSObjectRef object = NULL;
+    CHECK_JAVAEXCEPTION
+    if (JAVA_EXCEPTION_OCCURED) {
+        object = JSValueToObject(ctx, JSValueMakeUndefined(ctx), NULL);
+    } else {
+        JSPrivateObject* p = malloc(sizeof(JSPrivateObject));
+        p->object = (*env)->NewGlobalRef(env, javaObject); // retain Java Object
+        (*env)->DeleteLocalRef(env, javaObject);
+        object = JSObjectMake(ctx, CreateClassForJava_java_lang_String(), (void*)p);
+    }
     
-    JSObjectRef object = JSObjectMake(ctx, CreateClassForJava_java_lang_String(), (void*)p);
     JNI_ENV_EXIT
 
     return object;

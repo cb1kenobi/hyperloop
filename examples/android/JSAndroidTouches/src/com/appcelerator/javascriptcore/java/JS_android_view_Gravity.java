@@ -18,9 +18,13 @@ public class JS_android_view_Gravity extends JSClassDefinition {
     private static final String[] NAMESPACE = {"android", "view"};
     private static final JavaScriptCoreLibrary jsc = JavaScriptCoreLibrary.getInstance();
     private static JSClassRef jsClassRef = null;
+    private static JSValueRef TOP;
     
     public static boolean registerClass(JSContextRef context, JSObjectRef parentObject) {
-        JSValueRef exception = JSValueRef.Null();
+    	TOP = jsc.JSValueMakeNumber(context, Gravity.TOP);
+    	jsc.JSValueProtect(context, TOP);
+
+    	JSValueRef exception = JSValueRef.Null();
         JSObjectRef object = jsc.JSObjectMake(context, getJSClass());
         jsc.JSObjectSetProperty(context, parentObject, getJSClassName(), object, JSPropertyAttribute.DontDelete, exception);
 
@@ -57,7 +61,7 @@ public class JS_android_view_Gravity extends JSClassDefinition {
         values.add("TOP", new JSObjectGetPropertyCallback() {
             public JSValueRef getProperty(JSContextRef ctx, JSObjectRef object,
                                     String propertyName, Pointer exception) {
-                return jsc.JSValueMakeNumber(ctx, Gravity.TOP);
+                return TOP;
             }
         }, null, JSPropertyAttribute.DontDelete);
         return values;

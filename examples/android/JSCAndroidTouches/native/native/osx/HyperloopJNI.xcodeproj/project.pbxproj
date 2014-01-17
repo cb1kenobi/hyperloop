@@ -13,6 +13,8 @@
 		F93302601882803C005799DE /* JS_android_view_Gravity.c in Sources */ = {isa = PBXBuildFile; fileRef = F933025F1882803C005799DE /* JS_android_view_Gravity.c */; };
 		F93302631882865E005799DE /* JS_android_graphics_Color.c in Sources */ = {isa = PBXBuildFile; fileRef = F93302611882865E005799DE /* JS_android_graphics_Color.c */; };
 		F93302641882865E005799DE /* JS_android_graphics_Color.h in Headers */ = {isa = PBXBuildFile; fileRef = F93302621882865E005799DE /* JS_android_graphics_Color.h */; };
+		F96F037218861DB20070667E /* JS_EmptyObject.c in Sources */ = {isa = PBXBuildFile; fileRef = F96F037018861DB20070667E /* JS_EmptyObject.c */; };
+		F96F037318861DB20070667E /* JS_EmptyObject.h in Headers */ = {isa = PBXBuildFile; fileRef = F96F037118861DB20070667E /* JS_EmptyObject.h */; };
 		F9B0A0A818824F9F00313803 /* HyperloopJNI.c in Sources */ = {isa = PBXBuildFile; fileRef = F9B0A09F18824F9F00313803 /* HyperloopJNI.c */; };
 		F9B0A0A918824F9F00313803 /* HyperloopJNI.h in Headers */ = {isa = PBXBuildFile; fileRef = F9B0A0A018824F9F00313803 /* HyperloopJNI.h */; };
 		F9B0A0AA18824F9F00313803 /* HyperloopJNIExport.c in Sources */ = {isa = PBXBuildFile; fileRef = F9B0A0A118824F9F00313803 /* HyperloopJNIExport.c */; };
@@ -39,6 +41,8 @@
 		F933025F1882803C005799DE /* JS_android_view_Gravity.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = JS_android_view_Gravity.c; path = ../JS_android_view_Gravity.c; sourceTree = "<group>"; };
 		F93302611882865E005799DE /* JS_android_graphics_Color.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = JS_android_graphics_Color.c; path = ../JS_android_graphics_Color.c; sourceTree = "<group>"; };
 		F93302621882865E005799DE /* JS_android_graphics_Color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JS_android_graphics_Color.h; path = ../JS_android_graphics_Color.h; sourceTree = "<group>"; };
+		F96F037018861DB20070667E /* JS_EmptyObject.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = JS_EmptyObject.c; path = ../JS_EmptyObject.c; sourceTree = "<group>"; };
+		F96F037118861DB20070667E /* JS_EmptyObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JS_EmptyObject.h; path = ../JS_EmptyObject.h; sourceTree = "<group>"; };
 		F9B0A09F18824F9F00313803 /* HyperloopJNI.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = HyperloopJNI.c; path = ../HyperloopJNI.c; sourceTree = "<group>"; };
 		F9B0A0A018824F9F00313803 /* HyperloopJNI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HyperloopJNI.h; path = ../HyperloopJNI.h; sourceTree = "<group>"; };
 		F9B0A0A118824F9F00313803 /* HyperloopJNIExport.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = HyperloopJNIExport.c; path = ../HyperloopJNIExport.c; sourceTree = "<group>"; };
@@ -104,6 +108,8 @@
 				F9BE728118836E1700E16532 /* JS_android_widget_FrameLayout.h */,
 				F9BE7285188373C500E16532 /* JS_android_widget_FrameLayout_LayoutParams.c */,
 				F9BE7284188373B700E16532 /* JS_android_widget_FrameLayout_LayoutParams.h */,
+				F96F037018861DB20070667E /* JS_EmptyObject.c */,
+				F96F037118861DB20070667E /* JS_EmptyObject.h */,
 				F9FFD088187E5ECA007328FA /* Frameworks */,
 				F9EDDCFD187E5EAB00B6295E /* Products */,
 			);
@@ -134,6 +140,7 @@
 			files = (
 				F9B0A0B018824F9F00313803 /* JS_java_lang_String.h in Headers */,
 				F9B0A0AE18824F9F00313803 /* JS_java_lang_Object.h in Headers */,
+				F96F037318861DB20070667E /* JS_EmptyObject.h in Headers */,
 				F93302641882865E005799DE /* JS_android_graphics_Color.h in Headers */,
 				F9B0A0AC18824F9F00313803 /* JS_android_util_Log.h in Headers */,
 				F933025818826BDB005799DE /* JS_android_app_Activity.h in Headers */,
@@ -197,6 +204,7 @@
 				F9B0A0AB18824F9F00313803 /* JS_android_util_Log.c in Sources */,
 				F9BE728C1883C21E00E16532 /* JS_android_view_MotionEvent.c in Sources */,
 				F93302631882865E005799DE /* JS_android_graphics_Color.c in Sources */,
+				F96F037218861DB20070667E /* JS_EmptyObject.c in Sources */,
 				F9B0A0AF18824F9F00313803 /* JS_java_lang_String.c in Sources */,
 				F9BE7286188373C500E16532 /* JS_android_widget_FrameLayout_LayoutParams.c in Sources */,
 				F9BE728318836E2700E16532 /* JS_android_widget_FrameLayout.c in Sources */,

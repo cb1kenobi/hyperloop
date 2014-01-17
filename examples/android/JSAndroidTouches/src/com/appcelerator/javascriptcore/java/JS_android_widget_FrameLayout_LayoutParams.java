@@ -23,9 +23,13 @@ public class JS_android_widget_FrameLayout_LayoutParams extends JSClassDefinitio
     private static final String[] NAMESPACE = {"android", "widget", "FrameLayout"};
     private static final JavaScriptCoreLibrary jsc = JavaScriptCoreLibrary.getInstance();
     private static JSClassRef jsClassRef = null;
+    private static JSValueRef MATCH_PARENT;
     
     public static boolean registerClass(JSContextRef context, JSObjectRef parentObject) {
-        JSValueRef exception = JSValueRef.Null();
+    	MATCH_PARENT = jsc.JSValueMakeNumber(context, LayoutParams.MATCH_PARENT);
+    	jsc.JSValueProtect(context, MATCH_PARENT);
+
+    	JSValueRef exception = JSValueRef.Null();
         JSObjectRef object = jsc.JSObjectMake(context, getJSClass());
         jsc.JSObjectSetProperty(context, parentObject, getJSClassName(), object, JSPropertyAttribute.DontDelete, exception);
 

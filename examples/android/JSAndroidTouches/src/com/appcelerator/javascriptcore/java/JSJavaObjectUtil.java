@@ -50,5 +50,4 @@ public class JSJavaObjectUtil {
         jsc.JSObjectSetProperty(context, exception_detail, "stack", javaScriptStackTrace, JSPropertyAttribute.DontDelete, null);
         exception.update(exception_detail);        
     }
-
 }

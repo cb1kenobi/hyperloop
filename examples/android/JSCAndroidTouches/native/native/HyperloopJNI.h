@@ -93,6 +93,24 @@ if(varin != NULL) {\
 #define JSSTRING_RELEASE(varin)\
 if (varin != NULL) JSStringRelease(varin);
 
+/* try-catch Java Exception and convert it to JS exception */
+#define CHECK_JAVAEXCEPTION \
+bool JAVA_EXCEPTION_OCCURED = false; \
+if ((*env)->ExceptionCheck(env)) {\
+    JAVA_EXCEPTION_OCCURED = true;\
+    jthrowable jexception = (*env)->ExceptionOccurred(env);\
+    jclass jexceptionClass = (*env)->GetObjectClass(env, jexception);\
+    jmethodID jexceptionmsgId = (*env)->GetMethodID(env, jexceptionClass, "toString", "()Ljava/lang/String;");\
+    jstring jexceptionmsgObj = (*env)->CallObjectMethod(env, jexception, jexceptionmsgId);\
+    const char* jexceptionmsgC = (*env)->GetStringUTFChars(env, jexceptionmsgObj, NULL);\
+    HyperloopUpdateExceptionByString(ctx, jexceptionmsgC, exception);\
+    (*env)->ReleaseStringUTFChars(env, jexceptionmsgObj, jexceptionmsgC);\
+    (*env)->DeleteLocalRef(env, jexceptionmsgObj);\
+    (*env)->DeleteLocalRef(env, jexception);\
+    (*env)->DeleteLocalRef(env, jexceptionClass);\
+    (*env)->ExceptionClear(env);\
+}
+
 /* Private object for JSObjectRef (taken from JavaScriptCore for Java) */
 typedef struct {
     // Java Object for callback
@@ -110,5 +128,6 @@ typedef struct {
 
 JSGlobalContextRef HyperloopCreateVM();
 JSValueRef HyperloopMakeException(JSContextRef ctx, const char *error, JSValueRef *exception);
+void HyperloopUpdateExceptionByString(JSContextRef ctx, const char *error, JSValueRef *exception);
 
 #endif

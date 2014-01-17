@@ -15,6 +15,7 @@
 #include "JS_android_view_MotionEvent.h"
 #include "JS_android_graphics_Color.h"
 #include "JS_android_widget_FrameLayout.h"
+#include "JS_EmptyObject.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -58,6 +59,14 @@ JSValueRef HyperloopMakeException(JSContextRef ctx, const char *error, JSValueRe
     return JSValueMakeUndefined(ctx);
 }
 
+void HyperloopUpdateExceptionByString(JSContextRef ctx, const char *error, JSValueRef *exception)
+{
+    JSStringRef string = JSStringCreateWithUTF8CString(error);
+    JSValueRef message = JSValueMakeString(ctx, string);
+    JSStringRelease(string);
+    *exception = JSObjectMakeError(ctx, 1, &message, 0);
+}
+
 JSGlobalContextRef HyperloopCreateVM()
 {
     JSGlobalContextRef globalContextRef = JSGlobalContextCreate(NULL);
@@ -89,6 +98,9 @@ JSGlobalContextRef HyperloopCreateVM()
                       MakeObjectConstructorForJava_android_view_View(globalContextRef)); /* android.view.View */
     JS_registerObject(globalContextRef, android_view_ObjectRef, "MotionEvent",
                       MakeObjectConstructorForJava_android_view_MotionEvent(globalContextRef)); /* android.view.MotionEvent */
+    
+    /* EmptyObject holds no Java Object, for testing */
+    JS_registerObject(globalContextRef, globalObjectRef, "EmptyObject", MakeObjectConstructorForJava_EmptyObject(globalContextRef));
     
     // retain it
     JSGlobalContextRetain(globalContextRef);
