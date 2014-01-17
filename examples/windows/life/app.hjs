@@ -1,4 +1,4 @@
-var CELL_SIZE = 25,
+var CELL_SIZE = 10,
 	FPS_INTERVAL = 30;
 
 var window = Window.Current,
