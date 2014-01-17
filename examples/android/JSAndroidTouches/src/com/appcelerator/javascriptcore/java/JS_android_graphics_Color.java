@@ -19,7 +19,20 @@ public class JS_android_graphics_Color extends JSClassDefinition {
     private static final JavaScriptCoreLibrary jsc = JavaScriptCoreLibrary.getInstance();
     private static JSClassRef jsClassRef = null;
     
+    private static JSValueRef YELLOW = null;
+    private static JSValueRef BLUE = null;
+    private static JSValueRef RED = null;
+    
     public static boolean registerClass(JSContextRef context, JSObjectRef parentObject) {
+    	YELLOW = jsc.JSValueMakeNumber(context, Color.YELLOW);
+    	jsc.JSValueProtect(context, YELLOW);
+    	
+    	BLUE = jsc.JSValueMakeNumber(context, Color.BLUE);
+    	jsc.JSValueProtect(context, BLUE);
+    	
+    	RED = jsc.JSValueMakeNumber(context, Color.RED);
+    	jsc.JSValueProtect(context, RED);
+    	
         JSValueRef exception = JSValueRef.Null();
         JSObjectRef object = jsc.JSObjectMake(context, getJSClass());
         jsc.JSObjectSetProperty(context, parentObject, getJSClassName(), object, JSPropertyAttribute.DontDelete, exception);
@@ -57,7 +70,7 @@ public class JS_android_graphics_Color extends JSClassDefinition {
         values.add("RED", new JSObjectGetPropertyCallback() {
             public JSValueRef getProperty(JSContextRef ctx, JSObjectRef object,
                                     String propertyName, Pointer exception) {
-                return jsc.JSValueMakeNumber(ctx, Color.RED);
+                return RED;
             }
         }, null, JSPropertyAttribute.DontDelete);
         
@@ -65,7 +78,7 @@ public class JS_android_graphics_Color extends JSClassDefinition {
         values.add("BLUE", new JSObjectGetPropertyCallback() {
             public JSValueRef getProperty(JSContextRef ctx, JSObjectRef object,
                                     String propertyName, Pointer exception) {
-                return jsc.JSValueMakeNumber(ctx, Color.BLUE);
+                return BLUE;
             }
         }, null, JSPropertyAttribute.DontDelete);
         
@@ -73,7 +86,7 @@ public class JS_android_graphics_Color extends JSClassDefinition {
         values.add("YELLOW", new JSObjectGetPropertyCallback() {
             public JSValueRef getProperty(JSContextRef ctx, JSObjectRef object,
                                     String propertyName, Pointer exception) {
-                return jsc.JSValueMakeNumber(ctx, Color.YELLOW);
+                return YELLOW;
             }
         }, null, JSPropertyAttribute.DontDelete);
         return values;

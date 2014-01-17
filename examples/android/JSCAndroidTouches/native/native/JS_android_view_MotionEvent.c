@@ -35,6 +35,7 @@ JSValueRef getActionForJava_android_view_MotionEvent(JSContextRef ctx, JSObjectR
         (*env)->DeleteLocalRef(env, javaClass);
         
         jint result = (*env)->CallIntMethod(env, p->object, methodId);
+        CHECK_JAVAEXCEPTION
         JNI_ENV_EXIT
         
         return JSValueMakeNumber(ctx, (int)result);
@@ -56,6 +57,7 @@ JSValueRef getRawXForJava_android_view_MotionEvent(JSContextRef ctx, JSObjectRef
         (*env)->DeleteLocalRef(env, javaClass);
         
         jfloat result = (*env)->CallFloatMethod(env, p->object, methodId);
+        CHECK_JAVAEXCEPTION
         JNI_ENV_EXIT
         
         return JSValueMakeNumber(ctx, (float)result);
@@ -77,6 +79,7 @@ JSValueRef getRawYForJava_android_view_MotionEvent(JSContextRef ctx, JSObjectRef
         (*env)->DeleteLocalRef(env, javaClass);
         
         jfloat result = (*env)->CallFloatMethod(env, p->object, methodId);
+        CHECK_JAVAEXCEPTION
         JNI_ENV_EXIT
         
         return JSValueMakeNumber(ctx, (float)result);
@@ -193,14 +196,18 @@ JSObjectRef MakeInstanceForJava_android_view_MotionEvent(JSContextRef ctx, JSObj
         int arg1 = JSValueToNumber(ctx, arguments[1], exception);
         int arg2 = JSValueToNumber(ctx, arguments[2], exception);
         jobject javaObject = (*env)->NewObject(env, javaClass, initMethodId, arg0, arg1, arg2);
-        
-        JSPrivateObject* p = malloc(sizeof(JSPrivateObject));
-        p->object = (*env)->NewGlobalRef(env, javaObject); // retain Java Object
-        
-        (*env)->DeleteLocalRef(env, javaObject);
         (*env)->DeleteLocalRef(env, javaClass);
-    
-        object = JSObjectMake(ctx, CreateClassForJava_android_view_MotionEvent(), (void*)p);
+        
+        CHECK_JAVAEXCEPTION
+        
+        if (JAVA_EXCEPTION_OCCURED) {
+            object = JSValueToObject(ctx, JSValueMakeUndefined(ctx), NULL);
+        } else {
+            JSPrivateObject* p = malloc(sizeof(JSPrivateObject));
+            p->object = (*env)->NewGlobalRef(env, javaObject); // retain Java Object
+            (*env)->DeleteLocalRef(env, javaObject);
+            object = JSObjectMake(ctx, CreateClassForJava_android_view_MotionEvent(), (void*)p);
+        }
     }
     JNI_ENV_EXIT
     

@@ -50,6 +50,7 @@ JSValueRef addViewForJava_android_widget_FrameLayout(JSContextRef ctx, JSObjectR
         (*env)->DeleteLocalRef(env, javaClass);
         
         (*env)->CallVoidMethod(env, p->object, methodId, arg0->object);
+        CHECK_JAVAEXCEPTION
         JNI_ENV_EXIT
     }
     
@@ -71,6 +72,7 @@ JSValueRef setLayoutParamsForJava_android_widget_FrameLayout(JSContextRef ctx, J
         
         (*env)->DeleteLocalRef(env, javaClass);
         (*env)->CallVoidMethod(env, p->object, methodId, arg0->object);
+        CHECK_JAVAEXCEPTION
         JNI_ENV_EXIT
     }
     
@@ -143,14 +145,17 @@ JSObjectRef MakeInstanceForJava_android_widget_FrameLayout(JSContextRef ctx, JSO
     if (argumentCount > 0 && JSValueIsObject(ctx, arguments[0])) {
         JSPrivateObject* arg0Obj = JSObjectGetPrivate(JSValueToObject(ctx, arguments[0], exception));
         jobject javaObject = (*env)->NewObject(env, javaClass, initMethodId, arg0Obj->object);
-    
-        JSPrivateObject* p = malloc(sizeof(JSPrivateObject));
-        p->object = (*env)->NewGlobalRef(env, javaObject); // retain Java Object
-    
-        (*env)->DeleteLocalRef(env, javaObject);
         (*env)->DeleteLocalRef(env, javaClass);
-        
-        object = JSObjectMake(ctx, CreateClassForJava_android_widget_FrameLayout(), (void*)p);
+    
+        CHECK_JAVAEXCEPTION
+        if (JAVA_EXCEPTION_OCCURED) {
+            object = JSValueToObject(ctx, JSValueMakeUndefined(ctx), NULL);
+        } else {
+            JSPrivateObject* p = malloc(sizeof(JSPrivateObject));
+            p->object = (*env)->NewGlobalRef(env, javaObject); // retain Java Object
+            (*env)->DeleteLocalRef(env, javaObject);
+            object = JSObjectMake(ctx, CreateClassForJava_android_widget_FrameLayout(), (void*)p);
+        }
     }
     JNI_ENV_EXIT
     

@@ -229,13 +229,16 @@ JSObjectRef MakeInstanceForJava_android_widget_FrameLayout_LayoutParams(JSContex
         int arg2 = JSValueToNumber(ctx, arguments[2], exception);
         jobject javaObject = (*env)->NewObject(env, javaClass, initMethodId, arg0, arg1, arg2);
         (*env)->DeleteLocalRef(env, javaClass);
-        
-        JSPrivateObject* p = malloc(sizeof(JSPrivateObject));
-        p->object = (*env)->NewGlobalRef(env, javaObject); // retain Java Object
-    
-        (*env)->DeleteLocalRef(env, javaObject);
-        
-        object = JSObjectMake(ctx, CreateClassForJava_android_widget_FrameLayout_LayoutParams(), (void*)p);
+
+        CHECK_JAVAEXCEPTION
+        if (JAVA_EXCEPTION_OCCURED) {
+            object = JSValueToObject(ctx, JSValueMakeUndefined(ctx), NULL);
+        } else {
+            JSPrivateObject* p = malloc(sizeof(JSPrivateObject));
+            p->object = (*env)->NewGlobalRef(env, javaObject); // retain Java Object
+            (*env)->DeleteLocalRef(env, javaObject);
+            object = JSObjectMake(ctx, CreateClassForJava_android_widget_FrameLayout_LayoutParams(), (void*)p);
+        }
     }
     JNI_ENV_EXIT
     

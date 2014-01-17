@@ -21,8 +21,16 @@ public class JS_android_view_MotionEvent extends JSClassDefinition {
     private static final String[] NAMESPACE = {"android", "view"};
     private static final JavaScriptCoreLibrary jsc = JavaScriptCoreLibrary.getInstance();
     private static JSClassRef jsClassRef = null;
+    private static JSValueRef ACTION_MOVE;
+    private static JSValueRef ACTION_UP;
     
     public static boolean registerClass(JSContextRef context, JSObjectRef parentObject) {
+    	ACTION_MOVE = jsc.JSValueMakeNumber(context, MotionEvent.ACTION_MOVE);
+    	jsc.JSValueProtect(context, ACTION_MOVE);
+    	
+    	ACTION_UP = jsc.JSValueMakeNumber(context, MotionEvent.ACTION_UP);
+    	jsc.JSValueProtect(context, ACTION_UP);
+    	
         JSValueRef exception = JSValueRef.Null();
         JSObjectRef object = jsc.JSObjectMake(context, getJSClass());
         jsc.JSObjectSetProperty(context, parentObject, getJSClassName(), object, JSPropertyAttribute.DontDelete, exception);
@@ -96,7 +104,7 @@ public class JS_android_view_MotionEvent extends JSClassDefinition {
         values.add("ACTION_MOVE", new JSObjectGetPropertyCallback() {
             public JSValueRef getProperty(JSContextRef ctx, JSObjectRef object,
                                     String propertyName, Pointer exception) {
-                return jsc.JSValueMakeNumber(ctx, MotionEvent.ACTION_MOVE);
+                return ACTION_MOVE;
             }
         }, null, JSPropertyAttribute.DontDelete);
         
@@ -104,7 +112,7 @@ public class JS_android_view_MotionEvent extends JSClassDefinition {
         values.add("ACTION_UP", new JSObjectGetPropertyCallback() {
             public JSValueRef getProperty(JSContextRef ctx, JSObjectRef object,
                                     String propertyName, Pointer exception) {
-                return jsc.JSValueMakeNumber(ctx, MotionEvent.ACTION_UP);
+                return ACTION_UP;
             }
         }, null, JSPropertyAttribute.DontDelete);
         

@@ -23,9 +23,13 @@ public class JS_android_view_View extends JSClassDefinition implements JSObjectC
     private static final String[] NAMESPACE = {"android", "view"};
     private static final JavaScriptCoreLibrary jsc = JavaScriptCoreLibrary.getInstance();
     private static JSClassRef jsClassRef = null;
-    
+    private static JSValueRef nullObject;
+
     public static boolean registerClass(JSContextRef context, JSObjectRef parentObject) {
-        JSValueRef exception = JSValueRef.Null();
+    	nullObject = jsc.JSValueMakeNull(context);
+    	jsc.JSValueProtect(context, nullObject);
+    	
+    	JSValueRef exception = JSValueRef.Null();
         JSObjectRef object = jsc.JSObjectMake(context, getJSClass());
         
         /* View.OnTouchListener */
@@ -94,7 +98,7 @@ public class JS_android_view_View extends JSClassDefinition implements JSObjectC
                         jobject.setLayoutParams(params);
                     }
                 }
-                return jsc.JSValueMakeNull(context);
+                return nullObject;
             }
         }, JSPropertyAttribute.DontDelete) ;
         
@@ -120,7 +124,7 @@ public class JS_android_view_View extends JSClassDefinition implements JSObjectC
                         JSJavaObjectUtil.handleJSException(new IllegalArgumentException("setBackgroundColor needs int parameter"), context, exception);
                     }
                 }
-                return jsc.JSValueMakeNull(context);
+                return nullObject;
             }
         }, JSPropertyAttribute.DontDelete) ;
 
@@ -136,7 +140,7 @@ public class JS_android_view_View extends JSClassDefinition implements JSObjectC
                         jobject.setOnTouchListener(params);
                     }
                 }
-                return jsc.JSValueMakeNull(context);
+                return nullObject;
             }
         }, JSPropertyAttribute.DontDelete) ;
         

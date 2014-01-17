@@ -34,6 +34,7 @@ JSValueRef setContentViewForJava_android_app_Activity(JSContextRef ctx, JSObject
             if (methodId == NULL) return HyperloopMakeException(ctx, "Method not found: android.app.Activity#setContentView", exception);
             
             (*env)->CallVoidMethod(env, p->object, methodId, arg0Obj->object);
+            CHECK_JAVAEXCEPTION
             JNI_ENV_EXIT
         }
     }

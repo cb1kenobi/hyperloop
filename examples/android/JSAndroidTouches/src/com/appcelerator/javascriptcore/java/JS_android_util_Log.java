@@ -20,8 +20,12 @@ public class JS_android_util_Log extends JSClassDefinition {
     private static final String[] NAMESPACE = {"android", "util"};
     private static final JavaScriptCoreLibrary jsc = JavaScriptCoreLibrary.getInstance();
     private static JSClassRef jsClassRef = null;
+    private static JSValueRef nullObject;
 
     public static boolean registerClass(JSContextRef context, JSObjectRef parentObject) {
+    	nullObject = jsc.JSValueMakeNull(context);
+    	jsc.JSValueProtect(context, nullObject);
+    	
         JSValueRef exception = JSValueRef.Null();
         JSObjectRef object = jsc.JSObjectMake(context, getJSClass());
         jsc.JSObjectSetProperty(context, parentObject, getJSClassName(), object, JSPropertyAttribute.DontDelete, exception);
@@ -59,7 +63,7 @@ public class JS_android_util_Log extends JSClassDefinition {
                 } else {
                     JSJavaObjectUtil.handleJSException(new IllegalArgumentException("Log.d needs 2 params at least"), context, exception);
                 }
-                return jsc.JSValueMakeNull(context);
+                return nullObject;
             }
         }, JSPropertyAttribute.DontDelete) ;
 

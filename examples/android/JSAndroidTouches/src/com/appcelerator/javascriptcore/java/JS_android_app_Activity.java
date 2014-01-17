@@ -20,6 +20,7 @@ public class JS_android_app_Activity extends JSClassDefinition {
     private static final String[] NAMESPACE = {"android", "app"};
     private static final JavaScriptCoreLibrary jsc = JavaScriptCoreLibrary.getInstance();
     private static JSClassRef jsClassRef = null;
+    private static JSValueRef nullObject;
     
     public static JSClassRef getJSClass() {
         if (jsClassRef == null) {
@@ -34,6 +35,9 @@ public class JS_android_app_Activity extends JSClassDefinition {
     }
     
     public static JSObjectRef createJSObject(JSContextRef context, Activity mine) {
+    	nullObject = jsc.JSValueMakeNull(context);
+    	jsc.JSValueProtect(context, nullObject);
+    	
         return jsc.JSObjectMake(context, getJSClass(), mine);
     }
     
@@ -59,7 +63,7 @@ public class JS_android_app_Activity extends JSClassDefinition {
                         jobject.setContentView(params);
                     }
                 }
-                return jsc.JSValueMakeNull(context);
+                return nullObject;
             }
         }, JSPropertyAttribute.DontDelete) ;
 
