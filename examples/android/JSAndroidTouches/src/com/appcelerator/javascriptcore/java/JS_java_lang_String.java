@@ -41,6 +41,12 @@ public class JS_java_lang_String extends JSClassDefinition implements JSObjectCa
         }
         return jsClassRef;
     }
+    
+    @Override
+    public void dispose() {
+    	super.dispose();
+    	jsClassRef = null;
+    }
 
     public static String getJSClassName() {
         return "String";

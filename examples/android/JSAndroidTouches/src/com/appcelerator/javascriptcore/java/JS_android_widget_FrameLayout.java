@@ -20,12 +20,9 @@ public class JS_android_widget_FrameLayout extends JSClassDefinition implements 
     private static final String[] NAMESPACE = {"android", "widget"};
     private static final JavaScriptCoreLibrary jsc = JavaScriptCoreLibrary.getInstance();
     private static JSClassRef jsClassRef = null;
-    private static JSValueRef nullObject;
+    private static JSValueRef nullObject = null;
     
     public static boolean registerClass(JSContextRef context, JSObjectRef parentObject) {
-    	nullObject = jsc.JSValueMakeNull(context);
-    	jsc.JSValueProtect(context, nullObject);
-    	
     	JSValueRef exception = JSValueRef.Null();
         JSObjectRef object = jsc.JSObjectMake(context, getJSClass());
         
@@ -50,6 +47,13 @@ public class JS_android_widget_FrameLayout extends JSClassDefinition implements 
         return jsClassRef;
     }
     
+    @Override
+    public void dispose() {
+    	super.dispose();
+    	jsClassRef = null;
+    	nullObject = null;
+    }
+    
     public static JSObjectRef createJSObject(JSContextRef context, Object mine) {
         return jsc.JSObjectMake(context, getJSClass(), mine);
     }
@@ -62,12 +66,20 @@ public class JS_android_widget_FrameLayout extends JSClassDefinition implements 
         return NAMESPACE;
     }
     
+    protected void lazyLoadNullObject(JSContextRef context) {
+    	if (nullObject == null) {
+        	nullObject = jsc.JSValueMakeNull(context);
+        	jsc.JSValueProtect(context, nullObject);
+    	}
+    }
+    
     protected JSStaticFunctions createStaticFunctions() {
         JSStaticFunctions functions = new JSStaticFunctions();
         functions.add("setLayoutParams", new JSObjectCallAsFunctionCallback() {
             public JSValueRef callAsFunction(JSContextRef context, JSObjectRef function,
                                              JSObjectRef thisObject, int argumentCount,
                                              JSValueArrayRef arguments, Pointer exception) {
+            	lazyLoadNullObject(context);
                 if (argumentCount > 0) {
                     FrameLayout jobject = (FrameLayout)thisObject.getPrivateObject();
                     Object param0 = arguments.get(context, 0).castToObject().getPrivateObject();
@@ -84,6 +96,7 @@ public class JS_android_widget_FrameLayout extends JSClassDefinition implements 
             public JSValueRef callAsFunction(JSContextRef context, JSObjectRef function,
                                              JSObjectRef thisObject, int argumentCount,
                                              JSValueArrayRef arguments, Pointer exception) {
+            	lazyLoadNullObject(context);
                 if (argumentCount > 0) {
                     FrameLayout jobject = (FrameLayout)thisObject.getPrivateObject();
                     Object param0 = arguments.get(context, 0).castToObject().getPrivateObject();

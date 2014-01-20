@@ -42,6 +42,12 @@ public class JS_android_view_View_OnTouchListener extends JSClassDefinition impl
         return jsClassRef;
     }
     
+    @Override
+    public void dispose() {
+    	super.dispose();
+    	jsClassRef = null;
+    }
+    
     public static JSObjectRef createJSObject(JSContextRef context, Object mine) {
         return jsc.JSObjectMake(context, getJSClass(), mine);
     }

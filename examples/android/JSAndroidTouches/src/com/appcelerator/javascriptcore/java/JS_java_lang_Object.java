@@ -46,6 +46,12 @@ public class JS_java_lang_Object extends JSClassDefinition
         }
         return jsClassRef;
     }
+    
+    @Override
+    public void dispose() {
+    	super.dispose();
+    	jsClassRef = null;
+    }
 
     public static String getJSClassName() {
         return "Object";

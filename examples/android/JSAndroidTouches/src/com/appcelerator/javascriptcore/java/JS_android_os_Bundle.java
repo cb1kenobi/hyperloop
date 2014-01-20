@@ -28,6 +28,12 @@ public class JS_android_os_Bundle extends JSClassDefinition {
         return jsc.JSObjectMake(context, getJSClass(), mine);
     }
     
+    @Override
+    public void dispose() {
+    	super.dispose();
+    	jsClassRef = null;
+    }
+    
     public static String getJSClassName() {
         return "Bundle";
     }
