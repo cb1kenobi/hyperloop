@@ -14,7 +14,9 @@ import com.appcelerator.javascriptcore.java.JS_android_util_Log;
 import com.appcelerator.javascriptcore.java.JS_android_view_Gravity;
 import com.appcelerator.javascriptcore.java.JS_android_view_MotionEvent;
 import com.appcelerator.javascriptcore.java.JS_android_view_View;
+import com.appcelerator.javascriptcore.java.JS_android_view_View_OnTouchListener;
 import com.appcelerator.javascriptcore.java.JS_android_widget_FrameLayout;
+import com.appcelerator.javascriptcore.java.JS_android_widget_FrameLayout_LayoutParams;
 import com.appcelerator.javascriptcore.java.JS_java_lang_Object;
 import com.appcelerator.javascriptcore.java.JS_java_lang_String;
 import com.appcelerator.javascriptcore.opaquetypes.JSContextRef;
@@ -112,8 +114,31 @@ public abstract class JavaScriptActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        
+        /*
+         * JSVirtualMachine should be released *before* unloading JS class definition.
+         * This releases global JavaScript context which also invokes finalize callback for the JS objects.
+         */
         vm.release();
         vm = null;
+        
+        /* 
+         * Cleanup class definitions: this is needed to release native memory otherwise memory leaks.
+         * TODO: Need simpler way to do this (manager class or something like that) 
+         */
+        JS_android_app_Activity.getJSClass().getDefinition().dispose();
+        JS_android_graphics_Color.getJSClass().getDefinition().dispose();
+        JS_android_os_Bundle.getJSClass().getDefinition().dispose();
+        JS_android_util_Log.getJSClass().getDefinition().dispose();
+        JS_android_view_Gravity.getJSClass().getDefinition().dispose();
+        JS_android_view_MotionEvent.getJSClass().getDefinition().dispose();
+        JS_android_view_View.getJSClass().getDefinition().dispose();
+        JS_android_view_View_OnTouchListener.getJSClass().getDefinition().dispose();
+        JS_android_widget_FrameLayout_LayoutParams.getJSClass().getDefinition().dispose();
+        JS_android_widget_FrameLayout.getJSClass().getDefinition().dispose();
+        JS_java_lang_Object.getJSClass().getDefinition().dispose();
+        JS_java_lang_String.getJSClass().getDefinition().dispose();
+        
     }
 
     protected String createStringWithContentsOfFile(String fileName) {

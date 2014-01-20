@@ -85,8 +85,23 @@ public class JavaScriptCoreJavaActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        
+        /*
+         * JSVirtualMachine should be released *before* unloading JS class definition.
+         * This releases global JavaScript context which also invokes finalize callback for the JS objects.
+         */
         vm.release();
         vm = null;
+        
+        /* 
+         * Cleanup class definitions: this is needed to release native memory otherwise memory leaks.
+         * TODO: Need simpler way to do this (manager class or something like that) 
+         */
+        JS_java_lang_Object.getJSClass().getDefinition().dispose();
+        JS_java_lang_String.getJSClass().getDefinition().dispose();
+        JS_android_util_Log.getJSClass().getDefinition().dispose();
+        JS_EmptyObject.getJSClass().getDefinition().dispose();
+        
     }
 
     protected String createStringWithContentsOfFile(String fileName) {
