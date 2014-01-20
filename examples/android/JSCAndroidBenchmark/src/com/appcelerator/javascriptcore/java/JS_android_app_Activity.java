@@ -34,8 +34,16 @@ public class JS_android_app_Activity extends JSClassDefinition {
         return jsClassRef;
     }
     
+    @Override
+    public void dispose() {
+    	super.dispose();
+    	jsClassRef = null;
+    	nullObject = null;
+    }
+    
     public static JSObjectRef createJSObject(JSContextRef context, Activity mine) {
-    	nullObject = jsc.JSValueMakeNull(context);
+    	jsc.JSValueProtect(context, nullObject);
+    	
         return jsc.JSObjectMake(context, getJSClass(), mine);
     }
     
@@ -53,6 +61,10 @@ public class JS_android_app_Activity extends JSClassDefinition {
             public JSValueRef callAsFunction(JSContextRef context, JSObjectRef function,
                                              JSObjectRef thisObject, int argumentCount,
                                              JSValueArrayRef arguments, Pointer exception) {
+            	if (nullObject == null) {
+                	nullObject = jsc.JSValueMakeNull(context);
+                	jsc.JSValueProtect(context, nullObject);
+            	}
                 if (argumentCount > 0) {
                     Activity jobject = (Activity)thisObject.getPrivateObject();
                     Object paramObj = arguments.get(context, 0).castToObject().getPrivateObject();

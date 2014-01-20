@@ -24,20 +24,20 @@ public class JS_android_graphics_Color extends JSClassDefinition {
     private static JSValueRef RED = null;
     
     public static boolean registerClass(JSContextRef context, JSObjectRef parentObject) {
-    	YELLOW = jsc.JSValueMakeNumber(context, Color.YELLOW);
-    	jsc.JSValueProtect(context, YELLOW);
-    	
-    	BLUE = jsc.JSValueMakeNumber(context, Color.BLUE);
-    	jsc.JSValueProtect(context, BLUE);
-    	
-    	RED = jsc.JSValueMakeNumber(context, Color.RED);
-    	jsc.JSValueProtect(context, RED);
-    	
         JSValueRef exception = JSValueRef.Null();
         JSObjectRef object = jsc.JSObjectMake(context, getJSClass());
         jsc.JSObjectSetProperty(context, parentObject, getJSClassName(), object, JSPropertyAttribute.DontDelete, exception);
 
         return jsc.JSValueIsNull(context, exception);
+    }
+    
+    @Override
+    public void dispose() {
+    	super.dispose();
+    	jsClassRef = null;
+    	YELLOW = null;
+    	BLUE = null;
+    	RED = null;
     }
 
     public static JSClassRef getJSClass() {
@@ -70,6 +70,11 @@ public class JS_android_graphics_Color extends JSClassDefinition {
         values.add("RED", new JSObjectGetPropertyCallback() {
             public JSValueRef getProperty(JSContextRef ctx, JSObjectRef object,
                                     String propertyName, Pointer exception) {
+            	// Lazy loading
+            	if (RED == null) {
+                	RED = jsc.JSValueMakeNumber(ctx, Color.RED);
+                	jsc.JSValueProtect(ctx, RED);
+            	}
                 return RED;
             }
         }, null, JSPropertyAttribute.DontDelete);
@@ -78,6 +83,11 @@ public class JS_android_graphics_Color extends JSClassDefinition {
         values.add("BLUE", new JSObjectGetPropertyCallback() {
             public JSValueRef getProperty(JSContextRef ctx, JSObjectRef object,
                                     String propertyName, Pointer exception) {
+            	// Lazy loading
+            	if (BLUE == null) {
+            		BLUE = jsc.JSValueMakeNumber(ctx, Color.BLUE);
+                	jsc.JSValueProtect(ctx, BLUE);
+            	}
                 return BLUE;
             }
         }, null, JSPropertyAttribute.DontDelete);
@@ -86,6 +96,11 @@ public class JS_android_graphics_Color extends JSClassDefinition {
         values.add("YELLOW", new JSObjectGetPropertyCallback() {
             public JSValueRef getProperty(JSContextRef ctx, JSObjectRef object,
                                     String propertyName, Pointer exception) {
+            	// Lazy loading
+            	if (YELLOW == null) {
+            		YELLOW = jsc.JSValueMakeNumber(ctx, Color.YELLOW);
+                	jsc.JSValueProtect(ctx, YELLOW);
+            	}
                 return YELLOW;
             }
         }, null, JSPropertyAttribute.DontDelete);

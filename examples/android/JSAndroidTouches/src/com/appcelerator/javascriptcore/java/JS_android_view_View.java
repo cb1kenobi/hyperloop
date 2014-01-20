@@ -23,12 +23,9 @@ public class JS_android_view_View extends JSClassDefinition implements JSObjectC
     private static final String[] NAMESPACE = {"android", "view"};
     private static final JavaScriptCoreLibrary jsc = JavaScriptCoreLibrary.getInstance();
     private static JSClassRef jsClassRef = null;
-    private static JSValueRef nullObject;
+    private static JSValueRef nullObject = null;
 
     public static boolean registerClass(JSContextRef context, JSObjectRef parentObject) {
-    	nullObject = jsc.JSValueMakeNull(context);
-    	jsc.JSValueProtect(context, nullObject);
-    	
     	JSValueRef exception = JSValueRef.Null();
         JSObjectRef object = jsc.JSObjectMake(context, getJSClass());
         
@@ -53,6 +50,13 @@ public class JS_android_view_View extends JSClassDefinition implements JSObjectC
         return jsClassRef;
     }
     
+    @Override
+    public void dispose() {
+    	super.dispose();
+    	jsClassRef = null;
+    	nullObject = null;
+    }
+    
     public static JSObjectRef createJSObject(JSContextRef context, View mine) {
         return jsc.JSObjectMake(context, getJSClass(), mine);
     }
@@ -65,6 +69,13 @@ public class JS_android_view_View extends JSClassDefinition implements JSObjectC
         return NAMESPACE;
     }
 
+    protected void lazyLoadNullObject(JSContextRef context) {
+    	if (nullObject == null) {
+        	nullObject = jsc.JSValueMakeNull(context);
+        	jsc.JSValueProtect(context, nullObject);
+    	}
+    }
+    
     protected JSStaticFunctions createStaticFunctions() {
         JSStaticFunctions functions = new JSStaticFunctions();
         
@@ -90,6 +101,7 @@ public class JS_android_view_View extends JSClassDefinition implements JSObjectC
             public JSValueRef callAsFunction(JSContextRef context, JSObjectRef function,
                                              JSObjectRef thisObject, int argumentCount,
                                              JSValueArrayRef arguments, Pointer exception) {
+            	lazyLoadNullObject(context);
                 if (argumentCount > 0) {
                     View jobject = (View)thisObject.getPrivateObject();
                     Object param0 = arguments.get(context, 0).castToObject().getPrivateObject();
@@ -115,6 +127,7 @@ public class JS_android_view_View extends JSClassDefinition implements JSObjectC
             public JSValueRef callAsFunction(JSContextRef context, JSObjectRef function,
                                              JSObjectRef thisObject, int argumentCount,
                                              JSValueArrayRef arguments, Pointer exception) {
+            	lazyLoadNullObject(context);
                 if (argumentCount > 0) {
                     View jobject = (View)thisObject.getPrivateObject();
                     JSValueRef param0 = arguments.get(context, 0);
@@ -132,6 +145,7 @@ public class JS_android_view_View extends JSClassDefinition implements JSObjectC
             public JSValueRef callAsFunction(JSContextRef context, JSObjectRef function,
                                              JSObjectRef thisObject, int argumentCount,
                                              JSValueArrayRef arguments, Pointer exception) {
+            	lazyLoadNullObject(context);
                 if (argumentCount > 0) {
                     View jobject = (View)thisObject.getPrivateObject();
                     Object param0 = arguments.get(context, 0).castToObject().getPrivateObject();

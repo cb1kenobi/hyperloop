@@ -20,12 +20,9 @@ public class JS_android_util_Log extends JSClassDefinition {
     private static final String[] NAMESPACE = {"android", "util"};
     private static final JavaScriptCoreLibrary jsc = JavaScriptCoreLibrary.getInstance();
     private static JSClassRef jsClassRef = null;
-    private static JSValueRef nullObject;
+    private static JSValueRef nullObject = null;
 
     public static boolean registerClass(JSContextRef context, JSObjectRef parentObject) {
-    	nullObject = jsc.JSValueMakeNull(context);
-    	jsc.JSValueProtect(context, nullObject);
-    	
         JSValueRef exception = JSValueRef.Null();
         JSObjectRef object = jsc.JSObjectMake(context, getJSClass());
         jsc.JSObjectSetProperty(context, parentObject, getJSClassName(), object, JSPropertyAttribute.DontDelete, exception);
@@ -45,6 +42,13 @@ public class JS_android_util_Log extends JSClassDefinition {
         }
         return jsClassRef;
     }
+    
+    @Override
+    public void dispose() {
+    	super.dispose();
+    	jsClassRef = null;
+    	nullObject = null;
+    }
 
     public static String getJSClassName() {
         return "Log";
@@ -56,6 +60,10 @@ public class JS_android_util_Log extends JSClassDefinition {
             public JSValueRef callAsFunction(JSContextRef context, JSObjectRef function,
                                              JSObjectRef thisObject, int argumentCount,
                                              JSValueArrayRef arguments, Pointer exception) {
+            	if (nullObject == null) {
+                	nullObject = jsc.JSValueMakeNull(context);
+                	jsc.JSValueProtect(context, nullObject);
+            	}
                 if (argumentCount >= 2) {
                     return jsc.JSValueMakeNumber(context,
                             Log.d(arguments.get(context, 0).toString(),

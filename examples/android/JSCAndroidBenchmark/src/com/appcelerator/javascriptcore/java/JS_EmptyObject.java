@@ -23,6 +23,7 @@ public class JS_EmptyObject extends JSClassDefinition
     private static final String[] NAMESPACE = {};
     private static final JavaScriptCoreLibrary jsc = JavaScriptCoreLibrary.getInstance();
     private static JSClassRef jsClassRef = null;
+    private static JSValueRef nullObject = null;
 
     public static boolean registerClass(JSContextRef context, JSObjectRef parentObject) {
         JSValueRef exception = JSValueRef.Null();
@@ -46,7 +47,14 @@ public class JS_EmptyObject extends JSClassDefinition
         }
         return jsClassRef;
     }
-
+    
+    @Override
+    public void dispose() {
+    	super.dispose();
+    	jsClassRef = null;
+    	nullObject = null;
+    }
+    
     public static String getJSClassName() {
         return "EmptyObject";
     }
@@ -69,9 +77,6 @@ public class JS_EmptyObject extends JSClassDefinition
         return jsc.JSValueMakeNull(context);
     }
 
-    private static long contextForNullObject = 0;
-    private static JSValueRef nullObject = null;
-
     protected JSStaticFunctions createStaticFunctions() {
         JSStaticFunctions functions = new JSStaticFunctions();
 
@@ -79,8 +84,9 @@ public class JS_EmptyObject extends JSClassDefinition
             public JSValueRef callAsFunction(JSContextRef context, JSObjectRef function,
                                              JSObjectRef thisObject, int argumentCount,
                                              JSValueArrayRef arguments, Pointer exception) {
-                if (context.p() != contextForNullObject) {
+                if (nullObject == null) {
                     nullObject = jsc.JSValueMakeNull(context);
+                	jsc.JSValueProtect(context, nullObject);
                 }
                 return nullObject;
             }
