@@ -14,6 +14,10 @@ namespace life
 	public:
 		MainPage();
 
+	private:
+		bool getNextState(int x, int y, bool alive);
+		void OnTick(Object^ sender, Object^ e);
+
 	protected:
 		virtual void OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventArgs^ e) override;
 	};
