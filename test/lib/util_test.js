@@ -252,7 +252,7 @@ describe('lib/util.js', function() {
 			util.downloadResourceIfNecessary(NAME, VERSION, URL, CHECKSUM, DIR, function(err) {
 				should.not.exist(err);
 
-				util.downloadResourceIfNecessary(NAME, VERSION, URL, CHECKSUM, DIR, function(err) {
+				util.downloadResourceIfNecessary(NAME, VERSION, URL, BAD_CHECKSUM, DIR, function(err) {
 					should.not.exist(err);
 					done();
 				});
