@@ -1,0 +1,26 @@
+var window = Window.Current,
+	resultOut = @memory(100);
+
+text.Text = "Parsing JSON:";
+
+// Good JSON should TryParse successfully.
+if (!JsonObject.TryParse('{"good":"JSON"}', resultOut)) {
+	text.Text += '\nERROR: TryParse failed with good JSON.';
+}
+else {
+	var resultJSON = @cast('JsonObject^', resultOut.toObject());
+	if (resultJSON && resultJSON.good && resultJSON.good === 'JSON') {
+		text.Text += '\nParsed Good JSON.';
+	}
+}
+
+// And bad JSON shouldn't.
+if (!JsonObject.TryParse('{bad:js0n}', resultOut)) {
+	text.Text += '\nTried parsing Bad JSON w/o Exception.';
+}
+else {
+	text.Text += '\nERROR: TryParse succeeded with bad JSON.';
+}
+
+window.Content = text;
+window.Activate();
