@@ -1,14 +1,25 @@
 @import("math.h");
+@import("stdio.h");
 
 var window = Window.Current,
 	text = new TextBlock(),
-	pi = fabs(Math.PI);
+	pi = pow(fabs(Math.PI), 3),
+	formatString = 'PI^3 = %s',
+	buffer = @memory(27);
+/*
+A couple of things to note about our use of sprintf_s here:
+- printf won't redirect to the Visual Studio console, so we can't use it.
+- sprintf isn't "safe", so we need to use the _s version.
+- sprintf_s is passed its arguments as strings, by a current limitation in hyperloop. So we can only %s, not %d, etc.
+For normal cases, just use console.log with a string you've built. It's so much easier...
+ */
+sprintf_s(buffer, 26, formatString, pi);
 
-text.Text = "PI is:\n\n"+pi;
+text.Text = buffer.toCharArray();
 text.TextAlignment = TextAlignment.Center;
 text.VerticalAlignment = VerticalAlignment.Center;
 text.HorizontalAlignment = HorizontalAlignment.Center;
-text.FontSize = 24;
+text.FontSize = 60;
 
 window.Content = text;
 window.Activate();

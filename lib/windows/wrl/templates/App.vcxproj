@@ -170,7 +170,7 @@
     <ClCompile Include="JSBuffer.cpp" />
     <ClCompile Include="GeneratedApp.cpp" />
     <% for (var i = 0, iL = implementations.length; i < iL; i++) { %>
-    <ClCompile Include="Generated/<%= implementations[i] %>" /><% } %>
+    <ClCompile Include="<%= implementations[i] %>" /><% } %>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="nan.h"/>
@@ -179,7 +179,12 @@
     <ClInclude Include="JSPrivateObject.h"/>
     <ClInclude Include="GeneratedApp.h"/>
     <% for (var j = 0, jL = headers.length; j < jL; j++) { %>
-    <ClInclude Include="Generated/<%= headers[j] %>" /><% } %>
+    <ClInclude Include="<%= headers[j] %>" /><% } %>
+  </ItemGroup>
+  <ItemGroup><% for (var k = 0, kL = fxCompile.length; k < kL; k++) { %>
+    <FxCompile Include="<%- fxCompile[k].file %>">
+      <ShaderType><%- fxCompile[k].type %></ShaderType>
+    </FxCompile><% } %>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

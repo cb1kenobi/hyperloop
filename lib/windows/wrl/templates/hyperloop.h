@@ -3,8 +3,6 @@
 #include <Windows.h>
 #include <JavaScriptCore/JavaScript.h>
 #include "JSPrivateObject.h"
-using namespace Platform;
-using namespace Platform::Details;
 
 class hyperloop
 {
@@ -113,8 +111,10 @@ void HyperloopDestroyVM(JSGlobalContextRef ctx);
  * attempt to convert a JSString to a String
  */
 String^ HyperloopToStringFromString(JSContextRef ctx, JSStringRef value);
+void *HyperloopJSValueRefTovoid(JSContextRef ctx, JSValueRef value, JSValueRef *exception, bool *cleanup);
 
 <% [ 'float64', 'float32', 'float',
+		'double',
 		'int64', 'int32', 'int16', 'int8', 'int',
 		'uint8', 'uint16', 'uint32', 'uint64'
 	]
@@ -128,8 +128,8 @@ JSValueRef Hyperloop<%- type %>ArrayToJSValueRef(JSContextRef ctx, <%- type %>* 
 JSValueRef HyperloopboolToJSValueRef(JSContextRef ctx, bool boolean);
 bool HyperloopJSValueRefTobool(JSContextRef ctx, JSValueRef value, JSValueRef *exception, bool *cleanup);
 
-JSValueRef HyperloopstringToJSValueRef(JSContextRef ctx, String^ string);
-String^ HyperloopJSValueRefTostring(JSContextRef ctx, JSValueRef value, JSValueRef *exception, bool *cleanup);
+JSValueRef HyperloopStringToJSValueRef(JSContextRef ctx, String^ string);
+String^ HyperloopJSValueRefToString(JSContextRef ctx, JSValueRef value, JSValueRef *exception, bool *cleanup);
 
 JSObjectRef MakeObjectForObject(JSContextRef ctx, Object^ instance);
 JSClassRef CreateClassForObject();

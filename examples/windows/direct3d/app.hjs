@@ -1,0 +1,161 @@
+@compiler({
+	manual_bootstrap: true,
+	using_namespaces: [
+		'Windows::UI::Core'
+	]
+});
+@import("d3d11_1.h");
+@import("DirectXMath.h");
+@import("memory.h");
+@import("agile.h");
+@import("BasicTimer.h");
+@import("CubeRenderer.h");
+
+var windowClosed = false,
+	windowVisible = true,
+	app,
+	renderer,
+	window;
+
+var ActivatedHandlerType = @generic(TypedEventHandler, 'Windows::ApplicationModel::Core::CoreApplicationView^', 'Windows::ApplicationModel::Activation::IActivatedEventArgs^'),
+	activatedHandler,
+	SizeChangedHandlerType = @generic(TypedEventHandler, 'Windows::UI::Core::CoreWindow^', 'Windows::UI::Core::WindowSizeChangedEventArgs^'),
+	sizeChangedHandler,
+	VisibilityChangedHandlerType = @generic(TypedEventHandler, 'Windows::UI::Core::CoreWindow^', 'Windows::UI::Core::VisibilityChangedEventArgs^'),
+	visibilityChangedHandler;
+
+@class('Direct3DApp', 'Windows::ApplicationModel::Core::IFrameworkView', [], [
+	/*
+	 IFrameworkView Methods.
+	 */
+	{
+		name: 'Initialize',
+		returnType: 'void',
+		arguments: [
+			{ name: 'applicationView', type: 'Windows::ApplicationModel::Core::CoreApplicationView^' }
+		],
+		action: function(params) {
+			activatedHandler = new ActivatedHandlerType(app, 'OnActivated');
+			params.applicationView.add_Activated(activatedHandler);
+			renderer = new CubeRenderer();
+		}
+	},
+	{
+		name: 'SetWindow',
+		returnType: 'void',
+		arguments: [
+			{ name: 'window', type: 'Windows::UI::Core::CoreWindow^' }
+		],
+		action: function(params) {
+			sizeChangedHandler = new SizeChangedHandlerType(app, 'OnWindowSizeChanged');
+			visibilityChangedHandler = new VisibilityChangedHandlerType(app, 'OnVisibilityChanged');
+			window = params.window;
+			window.add_SizeChanged(sizeChangedHandler);
+			window.add_VisibilityChanged(visibilityChangedHandler);
+			renderer.Initialize(window);
+		}
+	},
+	{
+		name: 'Load',
+		returnType: 'void',
+		arguments: [
+			{ name: 'entryPoint', type: 'Platform::String^' }
+		],
+		action: function(params) {}
+	},
+	{
+		name: 'Run',
+		returnType: 'void',
+		arguments: [],
+		action: function() {
+			var timer = new BasicTimer();
+			
+			while (!windowClosed)
+			{
+				if (windowVisible)
+				{
+					timer.Update();
+					window.Dispatcher.ProcessEvents(CoreProcessEventsOption.ProcessAllIfPresent);
+					renderer.Update(timer.Total(), timer.Delta());
+					renderer.Render();
+					renderer.Present(); // This call is synchronized to the display frame rate.
+				}
+				else
+				{
+					window.Dispatcher.ProcessEvents(CoreProcessEventsOption.ProcessOneAndAllPending);
+				}
+			}
+		}
+	},
+	{
+		name: 'Uninitialize',
+		returnType: 'void',
+		arguments: [],
+		action: function(params) {}
+	},
+	/*
+	 Event Handlers.
+	 */
+	{
+		name: 'OnWindowSizeChanged',
+		forHandler: SizeChangedHandlerType,
+		returnType: 'void',
+		arguments: [
+			{ name: 'sender', type: 'Windows::UI::Core::CoreWindow^' },
+			{ name: 'args', type: 'Windows::UI::Core::WindowSizeChangedEventArgs^' }
+		],
+		action: function(params) {
+			renderer.UpdateForWindowSizeChange();
+		}
+	},
+	{
+		name: 'OnActivated',
+		forHandler: ActivatedHandlerType,
+		returnType: 'void',
+		arguments: [
+			{ name: 'applicationView', type: 'Windows::ApplicationModel::Core::CoreApplicationView^' },
+			{ name: 'args', type: 'Windows::ApplicationModel::Activation::IActivatedEventArgs^' }
+		],
+		action: function(params) {
+			window.Activate();
+		}
+	},
+	{
+		name: 'OnWindowClosed',
+		returnType: 'void',
+		arguments: [
+			{ name: 'sender', type: 'Windows::UI::Core::CoreWindow^' },
+			{ name: 'args', type: 'Windows::UI::Core::CoreWindowEventArgs^' }
+		],
+		action: function(params) {
+			windowClosed = true;
+		}
+	},
+	{
+		name: 'OnVisibilityChanged',
+		forHandler: VisibilityChangedHandlerType,
+		returnType: 'void',
+		arguments: [
+			{ name: 'sender', type: 'Windows::UI::Core::CoreWindow^' },
+			{ name: 'args', type: 'Windows::UI::Core::VisibilityChangedEventArgs^' }
+		],
+		action: function(params) {
+			windowVisible = params.args.Visible;
+		}
+	}
+]);
+
+@class('Direct3DApplicationSource', 'Windows::ApplicationModel::Core::IFrameworkViewSource', [], [
+	{
+		name: 'CreateView',
+		returnType: 'Windows::ApplicationModel::Core::IFrameworkView^',
+		arguments: [],
+		action: function() {
+			app = new Direct3DApp();
+			return app;
+		}
+	}
+]);
+
+var direct3DApplicationSource = new Direct3DApplicationSource();
+CoreApplication.Run(direct3DApplicationSource);

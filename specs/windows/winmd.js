@@ -15,20 +15,21 @@ describe("ilparser", function() {
 	if (process.platform === 'win32')
 	it("should parse Windows.winmd", function(done) {
 		this.timeout(30000);
-		finder.find('Windows.winmd', function(ref) {
-			should.exist(ref, 'Windows.winmd not found at ' + ref);
-			programs.ildasm(ref, 'windows.il', function(ref) {
-				should.exist(ref, 'windows.il does not exist at ' + ref);
-				ilparser.parseFile(ref, function(err, ast) {
-					if (err) return done(err);
-					ast.should.not.be.null;
-					ast.should.have.property('metatype','toplevel');
-					ast.should.have.property('children');
-					var json = ast.toJSON();
-					json.should.not.be.null;
-					json.should.have.property('classes');
-					done();
-				});
+		var ref = finder.find('Windows.winmd');
+		should.exist(ref, 'Windows.winmd not found at ' + ref);
+		programs.ildasm(ref, 'windows.il', function(ref) {
+			should.exist(ref, 'windows.il does not exist at ' + ref);
+			ilparser.parseFile(ref, function(err, ast) {
+				if (err) {
+					return done(err);
+				}
+				ast.should.not.be.null;
+				ast.should.have.property('metatype', 'toplevel');
+				ast.should.have.property('children');
+				var json = ast.toJSON();
+				json.should.not.be.null;
+				json.should.have.property('classes');
+				done();
 			});
 		});
 	});
