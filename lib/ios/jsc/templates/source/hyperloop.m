@@ -15,7 +15,7 @@
 /**
  * implementation of JSPrivateObject
  */
-@implementation JSPrivateObject 
+@implementation JSPrivateObject
 
 @synthesize object=object;
 @synthesize value=value;
@@ -102,7 +102,7 @@ JSPrivateObject* HyperloopMakePrivateObjectForNumber(double value)
 void HyperloopDestroyPrivateObject(JSObjectRef object)
 {
     JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
-#ifdef USE_TIJSCORE        
+#ifdef USE_TIJSCORE
     if (![p isKindOfClass:[JSPrivateObject class]])
     {
         return;
@@ -123,7 +123,7 @@ id HyperloopGetPrivateObjectAsID(JSObjectRef object)
     if (object!=NULL)
     {
         JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
-#ifdef USE_TIJSCORE        
+#ifdef USE_TIJSCORE
         if (![p isKindOfClass:[JSPrivateObject class]])
         {
             return nil;
@@ -148,7 +148,7 @@ Class HyperloopGetPrivateObjectAsClass(JSObjectRef object)
     if (object!=NULL)
     {
         JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
-#ifdef USE_TIJSCORE        
+#ifdef USE_TIJSCORE
         if (![p isKindOfClass:[JSPrivateObject class]])
         {
             return nil;
@@ -173,7 +173,7 @@ JSBuffer* HyperloopGetPrivateObjectAsJSBuffer(JSObjectRef object)
     if (object!=NULL)
     {
         JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
-#ifdef USE_TIJSCORE        
+#ifdef USE_TIJSCORE
         if (![p isKindOfClass:[JSPrivateObject class]])
         {
             return NULL;
@@ -198,7 +198,7 @@ void* HyperloopGetPrivateObjectAsPointer(JSObjectRef object)
     if (object!=NULL)
     {
         JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
-#ifdef USE_TIJSCORE        
+#ifdef USE_TIJSCORE
         if (![p isKindOfClass:[JSPrivateObject class]])
         {
             return NULL;
@@ -223,7 +223,7 @@ double HyperloopGetPrivateObjectAsNumber(JSObjectRef object)
     if (object!=NULL)
     {
         JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
-#ifdef USE_TIJSCORE        
+#ifdef USE_TIJSCORE
         if (![p isKindOfClass:[JSPrivateObject class]])
         {
             return NAN;
@@ -249,7 +249,7 @@ bool HyperloopPrivateObjectIsType(JSObjectRef object, JSPrivateObjectType type)
     if (object!=NULL)
     {
         JSPrivateObject *p = (JSPrivateObject*)JSObjectGetPrivate(object);
-#ifdef USE_TIJSCORE        
+#ifdef USE_TIJSCORE
         if (![p isKindOfClass:[JSPrivateObject class]])
         {
             return false;
@@ -424,7 +424,7 @@ NSString* HyperloopToNSString(JSContextRef ctx, JSValueRef value)
         if (JSObjectHasProperty(ctx,objectRef,toStringProp)) {
             JSValueRef resultRef = JSObjectGetProperty(ctx,objectRef,toStringProp,0);
             JSStringRelease(toStringProp);
-            if (JSValueIsObject(ctx,resultRef)) 
+            if (JSValueIsObject(ctx,resultRef))
             {
                 JSObjectRef functionRef = JSValueToObject(ctx,resultRef,0);
                 resultRef = JSObjectCallAsFunction(ctx,functionRef,objectRef,0,0,0);
@@ -500,7 +500,7 @@ HyperloopJS* HyperloopRunInVM (JSGlobalContextRef globalContextRef, NSString *na
 
     HyperloopJS *result = HyperloopLoadJSWithLogger(globalContextRef,nil,name,prefix,consoleObject);
 
-    if (initializer) 
+    if (initializer)
     {
         initializer(globalContextRef,result.exports);
     }
@@ -541,14 +541,14 @@ JSGlobalContextRef HyperloopCreateVM (NSString *name, NSString *prefix)
 
     // see if we need to load any custom js (these are JS files that are common across platform)
     id customJS =  NSClassFromString([NSString stringWithFormat:@"%@CustomJS",prefix]);
-    if (customJS) 
+    if (customJS)
     {
         // will be nil in cases we didn't load any of the classes, which is perfectly OK
         NSData* compressedBuf = [customJS performSelector:@selector(buffer)];
-        if (compressedBuf && [compressedBuf length] > 0) 
+        if (compressedBuf && [compressedBuf length] > 0)
         {
             BOOL usesArrayBuffer = (BOOL) [customJS performSelector:@selector(useArrayBuffer)];
-            if (usesArrayBuffer) 
+            if (usesArrayBuffer)
             {
                 JSStringRef bufProperty = JSStringCreateWithUTF8CString("JSBuffer");
                 JSObjectRef jsobject = MakeObjectForJSBufferConstructor (globalContextRef);
@@ -858,7 +858,7 @@ void HyperloopRaiseNativetoJSException(JSContextRef ctx, JSValueRef *exception, 
 /**
  * for a given JS filename and line, turn it into to a source map result
  */
-NSDictionary* HyperloopSourceMap(JSContextRef context, NSString *prefix, NSString *filename, NSString *line, NSString *column) 
+NSDictionary* HyperloopSourceMap(JSContextRef context, NSString *prefix, NSString *filename, NSString *line, NSString *column)
 {
     if ([filename hasPrefix:@"./"])
     {
@@ -869,13 +869,13 @@ NSDictionary* HyperloopSourceMap(JSContextRef context, NSString *prefix, NSStrin
         filename = [filename substringToIndex:[filename length]-3];
     }
     id sourceMap =  NSClassFromString([NSString stringWithFormat:@"%@_source_map",prefix]);
-    if (sourceMap) 
+    if (sourceMap)
     {
         NSData* compressedBuf = [sourceMap performSelector:@selector(buffer)];
-        if (compressedBuf && [compressedBuf length] > 0) 
+        if (compressedBuf && [compressedBuf length] > 0)
         {
-            NSData *buffer = HyperloopDecompressBuffer(compressedBuf);  
-            NSString *sourceMapSource = [[[NSString alloc] initWithData:buffer encoding:NSUTF8StringEncoding] autorelease]; 
+            NSData *buffer = HyperloopDecompressBuffer(compressedBuf);
+            NSString *sourceMapSource = [[[NSString alloc] initWithData:buffer encoding:NSUTF8StringEncoding] autorelease];
 
             NSString *filePath = [filename stringByAppendingString:@"_sm"];
             id sourceMapJSON =  NSClassFromString([NSString stringWithFormat:@"%@%@",prefix,filePath]);
@@ -884,7 +884,7 @@ NSDictionary* HyperloopSourceMap(JSContextRef context, NSString *prefix, NSStrin
                 return nil;
             }
             compressedBuf = [sourceMapJSON performSelector:@selector(buffer)];
-            if (compressedBuf && [compressedBuf length] > 0) 
+            if (compressedBuf && [compressedBuf length] > 0)
             {
                 // load up the buffer
                 buffer = HyperloopDecompressBuffer(compressedBuf);
@@ -950,7 +950,7 @@ JSValueRef HyperloopNativeErrorProcessor (JSContextRef ctx, JSObjectRef function
 #undef DEBUG_STACKTRACE
 
     JSObjectRef exObject = JSValueToObject(ctx,arguments[0],exception);
-    if (!exObject) 
+    if (!exObject)
     {
         return exObject;
     }
@@ -958,7 +958,7 @@ JSValueRef HyperloopNativeErrorProcessor (JSContextRef ctx, JSObjectRef function
     NSString *classPrefix = HyperloopToNSString(ctx,arguments[2]);
     JSStringRef property = JSStringCreateWithUTF8CString("stack");
 
-    if (JSObjectHasProperty(ctx,exObject,property)) 
+    if (JSObjectHasProperty(ctx,exObject,property))
     {
         JSValueRef value = JSObjectGetProperty(ctx,exObject,property,exception);
         NSString *str = HyperloopToNSString(ctx,value);
@@ -974,16 +974,16 @@ JSValueRef HyperloopNativeErrorProcessor (JSContextRef ctx, JSObjectRef function
         JSStringRelease(colProp);
 
         // fetch the source map details for this JS line
-        NSDictionary *sourceMap = HyperloopSourceMap(ctx,classPrefix,fn,line,column); 
+        NSDictionary *sourceMap = HyperloopSourceMap(ctx,classPrefix,fn,line,column);
 
     #ifdef DEBUG_STACKTRACE
         NSLog(@"[INFO] sourceMap=%@",sourceMap);
     #endif
-        
+
         NSString *top;
         NSMutableArray *stack;
 
-        if (sourceMap!=nil) 
+        if (sourceMap!=nil)
         {
             // create a stack array
             stack = [NSMutableArray array];
@@ -995,7 +995,7 @@ JSValueRef HyperloopNativeErrorProcessor (JSContextRef ctx, JSObjectRef function
     #endif
             top = [stack objectAtIndex:0];
             // fix the top of the stack to convert native entry point into JS
-            top = [top stringByReplacingOccurrencesOfString:@"@[native code]" 
+            top = [top stringByReplacingOccurrencesOfString:@"@[native code]"
                 withString:[NSString stringWithFormat:@"@%@:%@:%@",
                 [sourceMap objectForKey:@"sourceURL"],
                 [sourceMap objectForKey:@"line"],
@@ -1016,14 +1016,14 @@ JSValueRef HyperloopNativeErrorProcessor (JSContextRef ctx, JSObjectRef function
                 NSLog(@"requireLine=%@",requireLine);
                 NSLog(@"LINE[%d]=%@",c,line);
     #endif
-                if ([line hasPrefix:requireLine]==NO) 
+                if ([line hasPrefix:requireLine]==NO)
                 {
                     NSRange range = [line rangeOfString:@"@"];
                     if (range.location != NSNotFound)
                     {
                         //should look like this: require@./app.js:4:20
                         NSArray *parts = [[line substringFromIndex:range.location+1] componentsSeparatedByString:@":"];
-                        if ([parts count] > 2) 
+                        if ([parts count] > 2)
                         {
                             NSString *pm = [line substringToIndex:range.location];
                             NSString *pfn = [parts objectAtIndex:0];
@@ -1049,7 +1049,7 @@ JSValueRef HyperloopNativeErrorProcessor (JSContextRef ctx, JSObjectRef function
                 }
                 else
                 {
-                    // since require@./<fn> is a wrapped common JS which isn't in the 
+                    // since require@./<fn> is a wrapped common JS which isn't in the
                     // dev's source file, let's set the line number to <generated code> to indicate
                     // that this was generated source
                     [stack setObject:[NSString stringWithFormat:@"%@[generated code]",requireLine] atIndexedSubscript:c];
@@ -1063,19 +1063,19 @@ JSValueRef HyperloopNativeErrorProcessor (JSContextRef ctx, JSObjectRef function
             JSStringRef p = JSStringCreateWithUTF8CString("nativeSource");
             JSValueRef v = JSObjectGetProperty(ctx,exObject,p,exception);
             fn = HyperloopToNSString(ctx,v);
-            JSStringRelease(p);            
+            JSStringRelease(p);
         }
         {
             JSStringRef p = JSStringCreateWithUTF8CString("nativeFunction");
             JSValueRef v = JSObjectGetProperty(ctx,exObject,p,exception);
             func = HyperloopToNSString(ctx,v);
-            JSStringRelease(p);            
+            JSStringRelease(p);
         }
         {
             JSStringRef p = JSStringCreateWithUTF8CString("nativeLine");
             JSValueRef v = JSObjectGetProperty(ctx,exObject,p,exception);
             line = HyperloopToNSString(ctx,v);
-            JSStringRelease(p);            
+            JSStringRelease(p);
         }
         if (sourceMap!=nil)
         {
@@ -1089,14 +1089,14 @@ JSValueRef HyperloopNativeErrorProcessor (JSContextRef ctx, JSObjectRef function
         {
             JSStringRef p = JSStringCreateWithUTF8CString("message");
             exargs[0] = JSObjectGetProperty(ctx,exObject,p,0);
-            JSStringRelease(p);            
+            JSStringRelease(p);
         }
         JSObjectRef newError = JSObjectMakeError(ctx,1,exargs,0);
         size_t count = JSPropertyNameArrayGetCount(pa);
         for (size_t c=0;c<count;c++)
         {
             JSStringRef p = JSPropertyNameArrayGetNameAtIndex(pa,c);
-            if (!JSStringIsEqualToUTF8CString(p,"stack")) 
+            if (!JSStringIsEqualToUTF8CString(p,"stack"))
             {
                 JSValueRef v = JSObjectGetProperty(ctx,exObject,p,0);
                 JSObjectSetProperty(ctx,newError,p,v,0,0);
@@ -1115,7 +1115,7 @@ JSValueRef HyperloopNativeErrorProcessor (JSContextRef ctx, JSObjectRef function
 /**
  * register a try/catch handler which will process special native exceptions
  */
-void HyperloopRegisterTryCatchHandler(JSContextRef ctx) 
+void HyperloopRegisterTryCatchHandler(JSContextRef ctx)
 {
     JSObjectRef object = JSContextGetGlobalObject(ctx);
     JSStringRef property = JSStringCreateWithUTF8CString("HL$ProcessEx");
