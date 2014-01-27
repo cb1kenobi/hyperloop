@@ -1,0 +1,103 @@
+﻿// Note that this is a .txt so that it won't be compiled.
+// This is the original, native version of the code that we translated to the JS in app.hjs.
+
+#include <d3d11_1.h>
+#include <DirectXMath.h>
+#include <memory>
+#include <agile.h>
+#include "BasicTimer.h"
+#include "CubeRenderer.h"
+
+using namespace Windows::ApplicationModel::Core;
+using namespace Windows::ApplicationModel::Activation;
+using namespace Windows::UI::Core;
+using namespace Windows::Foundation;
+
+
+ref class Direct3DApp2 sealed : public Windows::ApplicationModel::Core::IFrameworkView
+{
+public:
+	Direct3DApp2() : m_windowClosed(false), m_windowVisible(true) {}
+
+	// IFrameworkView Methods.
+	virtual void Initialize(Windows::ApplicationModel::Core::CoreApplicationView^ applicationView)
+	{
+		applicationView->Activated +=
+			ref new TypedEventHandler<CoreApplicationView^, IActivatedEventArgs^>(this, &Direct3DApp2::OnActivated);
+
+		m_renderer = ref new CubeRenderer();
+	}
+	virtual void SetWindow(Windows::UI::Core::CoreWindow^ window)
+	{
+		window->SizeChanged += 
+			ref new TypedEventHandler<CoreWindow^, WindowSizeChangedEventArgs^>(this, &Direct3DApp2::OnWindowSizeChanged);
+
+		window->VisibilityChanged +=
+			ref new TypedEventHandler<CoreWindow^, VisibilityChangedEventArgs^>(this, &Direct3DApp2::OnVisibilityChanged);
+
+		m_renderer->Initialize(CoreWindow::GetForCurrentThread());
+	}
+	virtual void Load(Platform::String^ entryPoint) {}
+	virtual void Run()
+	{
+		BasicTimer^ timer = ref new BasicTimer();
+
+		while (!m_windowClosed)
+		{
+			if (m_windowVisible)
+			{
+				timer->Update();
+				CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
+				m_renderer->Update(timer->Total, timer->Delta);
+				m_renderer->Render();
+				m_renderer->Present(); // This call is synchronized to the display frame rate.
+			}
+			else
+			{
+				CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessOneAndAllPending);
+			}
+		}
+	}
+	virtual void Uninitialize() {}
+
+	// Event Handlers.
+	void OnWindowSizeChanged(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::WindowSizeChangedEventArgs^ args)
+	{
+		m_renderer->UpdateForWindowSizeChange();
+	}
+	void OnActivated(Windows::ApplicationModel::Core::CoreApplicationView^ applicationView, Windows::ApplicationModel::Activation::IActivatedEventArgs^ args)
+	{
+		CoreWindow::GetForCurrentThread()->Activate();
+	}
+	void OnWindowClosed(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::CoreWindowEventArgs^ args)
+	{
+		m_windowClosed = true;
+	}
+	void OnVisibilityChanged(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::VisibilityChangedEventArgs^ args)
+	{
+		m_windowVisible = args->Visible;
+	}
+
+private:
+	CubeRenderer^ m_renderer;
+	bool m_windowClosed;
+	bool m_windowVisible;
+};
+
+ref class Direct3DApplicationSource sealed : Windows::ApplicationModel::Core::IFrameworkViewSource
+{
+public:
+	virtual Windows::ApplicationModel::Core::IFrameworkView^ CreateView()
+	{
+		return ref new Direct3DApp2();
+	}
+};
+
+
+[Platform::MTAThread]
+int main(Platform::Array<Platform::String^>^)
+{
+	auto direct3DApplicationSource = ref new Direct3DApplicationSource();
+	CoreApplication::Run(direct3DApplicationSource);
+	return 0;
+}

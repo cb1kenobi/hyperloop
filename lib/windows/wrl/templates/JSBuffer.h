@@ -27,7 +27,7 @@ JSObjectRef MakeObjectForJSBuffer(JSContextRef ctx, JSBuffer *instance);
 JSObjectRef MakeObjectForJSBufferConstructor(JSContextRef ctx);
 void RegisterJSBuffer(JSContextRef ctx, JSObjectRef global);
 void DestroyJSBuffer(JSBuffer *buffer);
-void SetJSBufferValue(JSContextRef ctx, JSObjectRef objectRef, JSValueRef source);
+void SetJSBufferValue(JSContextRef ctx, JSObjectRef object, JSValueRef source);
 
 
 /**
@@ -38,4 +38,4 @@ JSPrivateObject* HyperloopMakePrivateObjectForJSBuffer(JSBuffer *buffer);
 /**
  * return a JSPrivateObject as a JSBuffer (or NULL if not of type JSPrivateObjectTypeJSBuffer)
  */
-JSBuffer* HyperloopGetPrivateObjectAsJSBuffer(JSObjectRef objectRef);
+JSBuffer* HyperloopGetPrivateObjectAsJSBuffer(JSObjectRef object);

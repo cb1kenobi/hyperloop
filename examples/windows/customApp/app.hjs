@@ -1,10 +1,7 @@
 /**
- * In this example, we're going to create a new AppDelegate class and install
- * it using the @compiler setting
+ * In this example, we're going to bootstrap the app entirely in JavaScript.
  */
-@compiler({
-	App: 'CustomApp'
-});
+@compiler({ manual_bootstrap: true });
 
 @class('CustomApp', Application, [], [
 	{
@@ -28,4 +25,19 @@
 	}
 ]);
 
-var CustomApp = new CustomApp();
+@class('ApplicationInitializationHandler', null, [], [
+	{
+		name: 'Initialized',
+		forHandler: 'ApplicationInitializationCallback',
+		returnType: 'void',
+		arguments: [
+			{ name: 'params', type: 'ApplicationInitializationCallbackParams^' }
+		],
+		action: function(params) {
+			new CustomApp();
+		}
+	}
+]);
+
+var handler = new ApplicationInitializationHandler();
+Application.Start(new ApplicationInitializationCallback(handler));
