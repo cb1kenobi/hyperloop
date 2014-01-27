@@ -103,6 +103,7 @@
 #define JSPropertyNameAccumulatorRef TiPropertyNameAccumulatorRef
 #define JSPropertyNameArrayGetCount TiPropertyNameArrayGetCount
 #define JSPropertyNameArrayGetNameAtIndex TiPropertyNameArrayGetNameAtIndex
+#define JSPropertyNameArrayRelease TiPropertyNameArrayRelease
 #define JSType TiType
 #define kJSTypeUndefined kTITypeUndefined
 #define kJSTypeNull kTITypeNull
