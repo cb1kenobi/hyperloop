@@ -1,0 +1,12 @@
+var window = Window.Current,
+	text = new TextBlock(),
+	string = 'Hello, world!',
+	buffer = CryptographicBuffer.ConvertStringToBinary(string, BinaryStringEncoding.Utf8);
+text.FontSize = 60;
+
+text.Text += 'Raw: ' + string;
+text.Text += '\nBase64: ' + CryptographicBuffer.EncodeToBase64String(buffer);
+text.Text += '\nHex: ' + CryptographicBuffer.EncodeToHexString(buffer);
+
+window.Content = text;
+window.Activate();

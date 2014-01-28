@@ -19,6 +19,12 @@ text.Text = buffer.toCharArray();
 text.TextAlignment = TextAlignment.Center;
 text.VerticalAlignment = VerticalAlignment.Center;
 text.HorizontalAlignment = HorizontalAlignment.Center;
+
+var quotient = @memory(),
+	remainder = remquo(29.0, 3.0, quotient);
+console.log('remainder: -1 == ' + remainder);
+console.log('quotient: 10 == ' + quotient.toInt());
+
 text.FontSize = 60;
 
 window.Content = text;
