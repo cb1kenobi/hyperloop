@@ -59,7 +59,7 @@
 #define JSStringGetUTF8CString TiStringGetUTF8CString
 #define JSValueToStringCopy TiValueToStringCopy
 #define JSStringGetMaximumUTF8CStringSize TiStringGetMaximumUTF8CStringSize
-#define JSStringGetCharactersPtr TiStringGetCharactersPtr 
+#define JSStringGetCharactersPtr TiStringGetCharactersPtr
 #define JSStringCreateWithCharacters TiStringCreateWithCharacters
 #define JSStringRetain TiStringRetain
 #define JSStringGetLength TiStringGetLength
@@ -103,6 +103,7 @@
 #define JSPropertyNameAccumulatorRef TiPropertyNameAccumulatorRef
 #define JSPropertyNameArrayGetCount TiPropertyNameArrayGetCount
 #define JSPropertyNameArrayGetNameAtIndex TiPropertyNameArrayGetNameAtIndex
+#define JSPropertyNameArrayRelease TiPropertyNameArrayRelease
 #define JSType TiType
 #define kJSTypeUndefined kTITypeUndefined
 #define kJSTypeNull kTITypeNull
