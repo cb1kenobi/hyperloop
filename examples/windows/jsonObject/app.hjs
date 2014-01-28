@@ -1,26 +1,21 @@
 var window = Window.Current,
-	resultOut = @memory(100);
+	jsonObject = new JsonObject(),
+	text = new TextBlock();
 
+text.FontSize = 30;
 text.Text = "Parsing JSON:";
 
-// Good JSON should TryParse successfully.
-if (!JsonObject.TryParse('{"good":"JSON"}', resultOut)) {
-	text.Text += '\nERROR: TryParse failed with good JSON.';
-}
-else {
-	var resultJSON = @cast('JsonObject^', resultOut.toObject());
-	if (resultJSON && resultJSON.good && resultJSON.good === 'JSON') {
-		text.Text += '\nParsed Good JSON.';
+assert(!JsonObject.TryParse('{bad:js0n}', jsonObject), 'Parsing bad JSON should return false');
+if (assert(JsonObject.TryParse('{"test":"val"}', jsonObject), 'Parsing good JSON should return true')) {
+	if (assert(jsonObject.HasKey('test'), 'jsonObject HasKey("test")')) {
+		assert(jsonObject.GetNamedString('test') === 'val', 'jsonObject GetNamedString("test") === "val"');
 	}
-}
-
-// And bad JSON shouldn't.
-if (!JsonObject.TryParse('{bad:js0n}', resultOut)) {
-	text.Text += '\nTried parsing Bad JSON w/o Exception.';
-}
-else {
-	text.Text += '\nERROR: TryParse succeeded with bad JSON.';
 }
 
 window.Content = text;
 window.Activate();
+
+function assert(condition, message) {
+	text.Text += '\n' + (condition ? 'PASS' : 'FAIL') + ': ' + message;
+	return condition;
+}
