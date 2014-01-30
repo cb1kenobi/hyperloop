@@ -949,6 +949,11 @@ JSValueRef HyperloopNativeErrorProcessor (JSContextRef ctx, JSObjectRef function
 {
 #undef DEBUG_STACKTRACE
 
+    // Ti.current's TiValueToObject can't handle it when the "value" passed in is null
+    if (!arguments[0])
+    {
+        return NULL;
+    }
     JSObjectRef exObject = JSValueToObject(ctx,arguments[0],exception);
     if (!exObject)
     {
