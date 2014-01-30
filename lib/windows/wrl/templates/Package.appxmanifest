@@ -40,6 +40,11 @@
         <m2:SplashScreen Image="Assets\SplashScreen.png" />
       </m2:VisualElements>
 <% } %>
+      <Extensions>
+        <Extension Category="windows.protocol">
+          <Protocol Name="app" />
+        </Extension>
+      </Extensions>
     </Application>
   </Applications>
   <Capabilities>

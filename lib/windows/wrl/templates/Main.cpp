@@ -28,11 +28,29 @@ ref class HyperloopApp sealed : public Application
 {
 public:
 	virtual void OnLaunched(LaunchActivatedEventArgs^ args) override;
+	virtual void OnActivated(IActivatedEventArgs^ args) override;
 private:
+	void Boot();
 	JSContextRef context;
+	bool booted;
 };
 void HyperloopApp::OnLaunched(LaunchActivatedEventArgs^ args)
 {
+	Boot();
+}
+void HyperloopApp::OnActivated(IActivatedEventArgs^ args)
+{
+	if (args->Kind == Windows::ApplicationModel::Activation::ActivationKind::Protocol)
+	{
+		Boot();
+	}
+}
+void HyperloopApp::Boot()
+{
+	if (booted) {
+		return;
+	}
+	booted = true;
 	<% boot() %>
 }
 <% } %>
