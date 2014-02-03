@@ -29,6 +29,7 @@ MyApp::MyApp(){}
 
 void MyApp::DispatcherTimer_Tick(Platform::Object^ sender, Platform::Object^ e)
 {
+	OutputDebugString(L"Tick!\n");
    // Do your timer callback stuff here. Dispatcher run on UI thread so safe to update the UI...
 }
 
@@ -48,7 +49,7 @@ void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 	DispatcherTimer^ timer = ref new DispatcherTimer;
     timer->Tick += ref new Windows::Foundation::EventHandler<Object^>(this, &MyApp::DispatcherTimer_Tick);
     TimeSpan t;
-    t.Duration=1000;
+    t.Duration = 1e7;
     timer->Interval = t;
     timer->Start();
 
