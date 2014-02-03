@@ -1,7 +1,9 @@
 @compiler({
 	manual_bootstrap: true,
 	using_namespaces: [
-		'Windows::UI::Core'
+		'Windows::UI::Core',
+		'Windows::ApplicationModel::Core',
+		'Windows::ApplicationModel::Activation'
 	]
 });
 @import("d3d11_1.h");
@@ -17,14 +19,14 @@ var windowClosed = false,
 	renderer,
 	window;
 
-var ActivatedHandlerType = @generic(TypedEventHandler, 'Windows::ApplicationModel::Core::CoreApplicationView^', 'Windows::ApplicationModel::Activation::IActivatedEventArgs^'),
+var ActivatedHandlerType = @generic(TypedEventHandler, 'CoreApplicationView^', 'IActivatedEventArgs^'),
 	activatedHandler,
-	SizeChangedHandlerType = @generic(TypedEventHandler, 'Windows::UI::Core::CoreWindow^', 'Windows::UI::Core::WindowSizeChangedEventArgs^'),
+	SizeChangedHandlerType = @generic(TypedEventHandler, 'CoreWindow^', 'WindowSizeChangedEventArgs^'),
 	sizeChangedHandler,
-	VisibilityChangedHandlerType = @generic(TypedEventHandler, 'Windows::UI::Core::CoreWindow^', 'Windows::UI::Core::VisibilityChangedEventArgs^'),
+	VisibilityChangedHandlerType = @generic(TypedEventHandler, 'CoreWindow^', 'VisibilityChangedEventArgs^'),
 	visibilityChangedHandler;
 
-@class('Direct3DApp', 'Windows::ApplicationModel::Core::IFrameworkView', [], [
+@class('Direct3DApp', 'IFrameworkView', [], [
 	/*
 	 IFrameworkView Methods.
 	 */
@@ -32,7 +34,7 @@ var ActivatedHandlerType = @generic(TypedEventHandler, 'Windows::ApplicationMode
 		name: 'Initialize',
 		returnType: 'void',
 		arguments: [
-			{ name: 'applicationView', type: 'Windows::ApplicationModel::Core::CoreApplicationView^' }
+			{ name: 'applicationView', type: 'CoreApplicationView^' }
 		],
 		action: function(params) {
 			activatedHandler = new ActivatedHandlerType(app, 'OnActivated');
@@ -44,7 +46,7 @@ var ActivatedHandlerType = @generic(TypedEventHandler, 'Windows::ApplicationMode
 		name: 'SetWindow',
 		returnType: 'void',
 		arguments: [
-			{ name: 'window', type: 'Windows::UI::Core::CoreWindow^' }
+			{ name: 'window', type: 'CoreWindow^' }
 		],
 		action: function(params) {
 			sizeChangedHandler = new SizeChangedHandlerType(app, 'OnWindowSizeChanged');
@@ -59,7 +61,7 @@ var ActivatedHandlerType = @generic(TypedEventHandler, 'Windows::ApplicationMode
 		name: 'Load',
 		returnType: 'void',
 		arguments: [
-			{ name: 'entryPoint', type: 'Platform::String^' }
+			{ name: 'entryPoint', type: 'String^' }
 		],
 		action: function(params) {}
 	},
@@ -101,8 +103,8 @@ var ActivatedHandlerType = @generic(TypedEventHandler, 'Windows::ApplicationMode
 		forHandler: SizeChangedHandlerType,
 		returnType: 'void',
 		arguments: [
-			{ name: 'sender', type: 'Windows::UI::Core::CoreWindow^' },
-			{ name: 'args', type: 'Windows::UI::Core::WindowSizeChangedEventArgs^' }
+			{ name: 'sender', type: 'CoreWindow^' },
+			{ name: 'args', type: 'WindowSizeChangedEventArgs^' }
 		],
 		action: function(params) {
 			renderer.UpdateForWindowSizeChange();
@@ -113,8 +115,8 @@ var ActivatedHandlerType = @generic(TypedEventHandler, 'Windows::ApplicationMode
 		forHandler: ActivatedHandlerType,
 		returnType: 'void',
 		arguments: [
-			{ name: 'applicationView', type: 'Windows::ApplicationModel::Core::CoreApplicationView^' },
-			{ name: 'args', type: 'Windows::ApplicationModel::Activation::IActivatedEventArgs^' }
+			{ name: 'applicationView', type: 'CoreApplicationView^' },
+			{ name: 'args', type: 'IActivatedEventArgs^' }
 		],
 		action: function(params) {
 			window.Activate();
@@ -124,8 +126,8 @@ var ActivatedHandlerType = @generic(TypedEventHandler, 'Windows::ApplicationMode
 		name: 'OnWindowClosed',
 		returnType: 'void',
 		arguments: [
-			{ name: 'sender', type: 'Windows::UI::Core::CoreWindow^' },
-			{ name: 'args', type: 'Windows::UI::Core::CoreWindowEventArgs^' }
+			{ name: 'sender', type: 'CoreWindow^' },
+			{ name: 'args', type: 'CoreWindowEventArgs^' }
 		],
 		action: function(params) {
 			windowClosed = true;
@@ -136,8 +138,8 @@ var ActivatedHandlerType = @generic(TypedEventHandler, 'Windows::ApplicationMode
 		forHandler: VisibilityChangedHandlerType,
 		returnType: 'void',
 		arguments: [
-			{ name: 'sender', type: 'Windows::UI::Core::CoreWindow^' },
-			{ name: 'args', type: 'Windows::UI::Core::VisibilityChangedEventArgs^' }
+			{ name: 'sender', type: 'CoreWindow^' },
+			{ name: 'args', type: 'VisibilityChangedEventArgs^' }
 		],
 		action: function(params) {
 			windowVisible = params.args.Visible;
@@ -145,10 +147,10 @@ var ActivatedHandlerType = @generic(TypedEventHandler, 'Windows::ApplicationMode
 	}
 ]);
 
-@class('Direct3DApplicationSource', 'Windows::ApplicationModel::Core::IFrameworkViewSource', [], [
+@class('Direct3DApplicationSource', 'IFrameworkViewSource', [], [
 	{
 		name: 'CreateView',
-		returnType: 'Windows::ApplicationModel::Core::IFrameworkView^',
+		returnType: 'IFrameworkView^',
 		arguments: [],
 		action: function() {
 			app = new Direct3DApp();
