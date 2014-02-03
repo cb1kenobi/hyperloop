@@ -42,7 +42,7 @@
 <% } %>
       <Extensions>
         <Extension Category="windows.protocol">
-          <Protocol Name="app" />
+          <Protocol Name="<%- options.name.toLowerCase() %>" />
         </Extension>
       </Extensions>
     </Application>
