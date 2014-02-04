@@ -3,7 +3,6 @@
  */
 #include <Windows.h>
 #include <ppltasks.h>
-
 using namespace concurrency;
 using namespace Platform;
 using namespace Windows::Web::Http;
@@ -26,7 +25,6 @@ MyApp::MyApp(){}
 void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 {
 	Window^ window = Window::Current;
-
 	tb = ref new TextBlock();
 	tb->Text = "Downloading, please wait...";
 	tb->FontSize = 40;
@@ -34,14 +32,16 @@ void MyApp::OnLaunched(LaunchActivatedEventArgs^ args)
 	tb->VerticalAlignment = VerticalAlignment::Center;
 	tb->HorizontalAlignment = HorizontalAlignment::Center;
 	window->Content = tb;
-
 	window->Activate();
 
 	auto uri = ref new Uri("http://api.openweathermap.org/data/2.5/weather?lat=37.389587&lon=-122.05037");
 	auto client = ref new HttpClient();
-	task<String ^>(client->GetStringAsync(uri)).then([&](String ^result) {
+	auto ga = client->GetStringAsync(uri);
+	auto t = task<String^>(ga);
+	auto cb = [&](String^ result) {
 		tb->Text = result;
-	});
+	};
+	t.then(cb);
 }
 
 int main(Platform::Array<Platform::String^>^)

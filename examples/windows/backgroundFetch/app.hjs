@@ -1,7 +1,3 @@
-// Coordinates of Appcelerator HQ.
-var latitude = "37.389587",
-	longitude = "-122.05037";
-
 /*
  Create our simple UI.
  */
@@ -15,22 +11,19 @@ text.FontSize = 60;
 window.Content = text;
 window.Activate();
 
-var weatherUrl = 'http://api.openweathermap.org/data/2.5/weather?lat=' + latitude + '&lon=' + longitude,
-	uri = new Uri(weatherUrl),
-	downloader = new BackgroundDownloader();
-console.log('Weather URL =', weatherUrl);
+/*
+ Hit the REST API.
+ */
+var client = new HttpClient(),
+	latitude = "37.389587", // Coordinates of
+	longitude = "-122.05037", // Appcelerator HQ.
+	uri = new Uri('http://api.openweathermap.org/data/2.5/weather?lat=' + latitude + '&lon=' + longitude);
 
-DownloadsFolder.CreateFileAsync('weather.json').done(function(file) {
-	var download = downloader.createDownload(uri, file),
-		downloading = download.StartAsync();
+client.GetStringAsync(uri).then(function handleResult(body) {
+	console.log('Completed with:', body);
+	var result = JSON.parse(body);
+	console.log(result);
+	var weather = 'The weather in\nMountain View:\n\n' + result.weather[0].description;
+	console.log(weather);
+	text.Text = weather;
 });
-
-function handleResponse(response) {
-		var body = response.body();
-		console.log('completed with', body);
-		var result = JSON.parse(body);
-		console.log(result);
-		var weather = 'The weather in\nMountain View:\n\n' + result.weather[0].description;
-		console.log('weather', weather);
-		text.Text = weather;
-	}
