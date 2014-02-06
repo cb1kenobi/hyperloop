@@ -1,0 +1,15 @@
+var window = Window.Current,
+	list = new ListView();
+
+for (var i = 1; i <= 20; i++) {
+	var text = new TextBlock();
+	text.Text = 'Row ' + i + '!';
+	text.TextAlignment = TextAlignment.Center;
+	text.VerticalAlignment = VerticalAlignment.Center;
+	text.HorizontalAlignment = HorizontalAlignment.Center;
+	text.FontSize = 60;
+	list.Items.Append(text);
+}
+
+window.Content = list;
+window.Activate();
