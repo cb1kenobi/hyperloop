@@ -472,10 +472,11 @@ Object^ HyperloopJSValueRefToobject(JSContextRef ctx, JSValueRef value, JSValueR
 		JSObjectRef object = JSValueToObject(ctx, value, exception);
 		return HyperloopGetPrivateObjectAsID(object);
 	}
-	else
+	if (JSValueIsString(ctx, value) || JSValueIsBoolean(ctx, value) || JSValueIsNumber(ctx, value))
 	{
-		return nullptr;
+		return hyperloop::getPlatformString(ctx, value);
 	}
+	return nullptr;
 }
 void InitializerForObject (JSContextRef ctx, JSObjectRef object)
 {
