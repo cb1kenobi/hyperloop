@@ -2,7 +2,7 @@ var path = require('path'),
 	fs = require('fs'),
 	child_process = require('child_process');
 
-var CMD = path.join(process.cwd(), 'bin', 'hyperloop') + ' --no-colors',
+var CMD = '"' + path.join(process.cwd(), 'bin', 'hyperloop') + '" --no-colors',
 	VERSION = require('../../package').version;
 
 describe('`hyperloop`', function() {
