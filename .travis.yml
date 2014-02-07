@@ -5,3 +5,6 @@ before_install:
   - sudo apt-get install libzip-dev
 before_script:
   - npm install -g grunt-cli
+notifications:
+  flowdock:
+    secure: "eZdpveq0c5BjLD8/muJaKiP1ynUi5hXXlqCNgtMfWENiqyh2mtcI3IxJZV2ted+JiO9XCSxO4iQDv4OwgNrhiXeMa7hnkp/m7ILdfAa7xrEl8b28Nm0/YIGQQvg7ZAUfAj+30lsWvEj805K5+Yv0kkcQ53SqLv01d9ENEdNlEBM="
