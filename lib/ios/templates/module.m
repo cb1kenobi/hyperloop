@@ -26,7 +26,7 @@ extern NSString* HyperloopToNSStringFromString(TiStringRef);
 // in KrollObject
 extern id TiValueToId(KrollContext* context, TiValueRef v);
 
-void TiObjectPropertyIterator(TiContextRef context, TiObjectRef object, void(^visitor)(NSString *property, TiStringRef propertyName, TiValueRef propertyValue))
+static void TiObjectPropertyIterator(TiContextRef context, TiObjectRef object, void(^visitor)(NSString *property, TiStringRef propertyName, TiValueRef propertyValue))
 {
 	TiPropertyNameArrayRef properties = TiObjectCopyPropertyNames(context,object);
 	size_t count = TiPropertyNameArrayGetCount(properties);
