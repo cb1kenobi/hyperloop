@@ -129,6 +129,10 @@ processor.on('log-level', function(v) {
 	log.level = v;
 });
 
+processor.on('report', function(v) {
+	log.report = true;
+});
+
 processor.parse(function(err,options,args){
 	if (args.length < 1 || args[0] === 'help') {
 		return processor.emit('help');
