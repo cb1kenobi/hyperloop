@@ -1,0 +1,12 @@
+try {
+	// "Window" has no public constructor,
+	// so this will throw a native exception.
+	new Window();
+}
+catch (exc) {
+	console.log('Caught native exception in JS!');
+	console.log(exc);
+	console.log('nativeSource:', exc.nativeSource);
+	console.log('nativeFunction:', exc.nativeFunction);
+	console.log('nativeLine:', exc.nativeLine);
+}
