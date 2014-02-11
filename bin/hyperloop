@@ -34,6 +34,14 @@ function Processor() {
 
 Processor.prototype.__proto__ = EventEmitter.prototype;
 
+function padRight(s,l) {
+	var ns = s;
+	for (var c=s.length;c<l;c++) {
+		ns+=' ';
+	}
+	return ns;
+}
+
 /**
  * parse out the command line into a specific set of options and
  * arguments.
@@ -83,8 +91,8 @@ processor.on('help',function(){
 
 	hyperloop.getCommands().forEach(function(cmd){
 		var help = cmd.getHelp(),
-			name = cmd.getName();
-		log.log("  "+name.magenta+"                "+help.grey);
+			name = padRight(cmd.getName(),22);
+		log.log("  "+name.magenta+" "+help.grey);
 	});
 
 	log.log("");
@@ -119,6 +127,10 @@ processor.on('debug',function(v){
 
 processor.on('log-level', function(v) {
 	log.level = v;
+});
+
+processor.on('report', function(v) {
+	log.report = true;
 });
 
 processor.parse(function(err,options,args){

@@ -13,6 +13,7 @@
 #import <KSCrash/KSCrash.h>
 #endif
 
+//#define DEBUG_LOGGING 1
 #ifdef DEBUG_LOGGING
 	#define DEBUGLOG(...) NSLog(__VA_ARGS__)
 #else
@@ -239,6 +240,7 @@ HyperloopJS* HyperloopLoadJSWithLogger (JSContextRef ctx, HyperloopJS *parent, N
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	NSString *filepath = path;
 	HyperloopJS *module = nil;
+	NSString *modulekey = nil;
 
 	if ([path hasPrefix:@"./"] || [path hasPrefix:@"/"] || [path hasPrefix:@"../"])
 	{
@@ -344,6 +346,18 @@ HyperloopJS* HyperloopLoadJSWithLogger (JSContextRef ctx, HyperloopJS *parent, N
 			}
 		}
 	}
+	else
+	{
+		// this is a class module, make sure the module key is unique
+		modulekey = [filepath stringByAppendingString:prefix];
+
+		// check and see if we have already loaded the module, then
+		// go ahead and return it
+		if ((module=[modules objectForKey:modulekey]))
+		{
+			return module;
+		}
+	}
 
 	if (cls!=nil)
 	{
@@ -361,7 +375,12 @@ HyperloopJS* HyperloopLoadJSWithLogger (JSContextRef ctx, HyperloopJS *parent, N
 		module.exports = JSObjectMake(ctx, 0, 0);
 		module.prefix = prefix;
 
-		[modules setObject:module forKey:filepath];
+		if (modulekey==nil)
+		{
+			modulekey = filepath;
+		}
+
+		[modules setObject:module forKey:modulekey];
 
 		JSObjectRef moduleObjectRef = HyperloopMakeJSObject(ctx,module);
 		JSStringRef exportsProperty = JSStringCreateWithUTF8CString("exports");

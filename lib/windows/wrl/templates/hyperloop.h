@@ -30,7 +30,16 @@ if (exception != nullptr) {\
 JSValueRef HyperloopundefinedToJSValueRef(JSContextRef, Object^);
 JSValueRef HyperloopundefinedToJSValueRef(JSContextRef, void*);
 
+/**
+ * for a given JSObject, return the value of its length property.
+ */
 int HyperloopGetLength(JSContextRef ctx, JSObjectRef objRef, JSValueRef *exception);
+
+/**
+ * function will properly convert a native exception into a JS Error and throw it back
+ * into the JSContext by setting the Error in the exception passed
+ */
+void HyperloopRaiseNativeToJSException(JSContextRef ctx, JSValueRef *exception, Exception ^ex, const char *file, const char *fnName, int lineNumber);
 
 /**
  * create a JSPrivateObject for storage in a JSObjectRef where the object is an id
