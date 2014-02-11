@@ -13,7 +13,7 @@
 #import <KSCrash/KSCrash.h>
 #endif
 
-#define DEBUG_LOGGING 1
+//#define DEBUG_LOGGING 1
 #ifdef DEBUG_LOGGING
 	#define DEBUGLOG(...) NSLog(__VA_ARGS__)
 #else
