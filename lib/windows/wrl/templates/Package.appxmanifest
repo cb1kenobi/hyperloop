@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <% if (options.sdk === '8.0') { %>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
-  <Identity Name="1c9e58c7-7724-40dd-aa68-984d280a3602" Publisher="CERTNAME" Version="1.0.0.0" />
+  <Identity Name="NAMEGUID" Publisher="CERTNAME" Version="1.0.0.0" />
 <% } else { %>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
-  <Identity Name="1c9e58c7-7724-40dd-aa68-984d280a3602" Publisher="CERTNAME" Version="1.1.0.0" />
+  <Identity Name="NAMEGUID" Publisher="CERTNAME" Version="1.1.0.0" />
 <% } %>
   <Properties>
     <DisplayName>APPNAME</DisplayName>
