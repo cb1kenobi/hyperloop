@@ -1,0 +1,5 @@
+global.assert(module.filename === 'bar/bar.js', "module.filename should be 'bar/bar.js'", module.filename);
+global.assert(module.parent.id === 'app', "module.parent.id should be 'app'", module.parent.id);
+global.assert(module.parent.loaded === false, "module.parent.loaded should be false", module.parent.loaded);
+
+global.assert(__dirname === './bar/', "__dirname should be './bar'", __dirname);

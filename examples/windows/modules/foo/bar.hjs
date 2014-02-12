@@ -1,0 +1,8 @@
+var mod2 = require('../mod2');
+
+global.assert(module.filename === 'foo/bar.js', "module.filename should be 'foo/bar.js'", module.filename);
+global.assert(module.parent.id === 'app', "module.parent.id should be 'app'", module.parent.id);
+global.assert(module.parent.loaded === false, "module.parent.loaded should be false", module.parent.loaded);
+
+
+exports.bar = 1;

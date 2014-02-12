@@ -1,0 +1,4 @@
+global.assert(module.filename === 'mod.js', "module.filename should be 'mod.js'", module.filename);
+global.assert(module.parent.id === 'app', "module.parent.id should be 'app'", module.parent.id);
+global.assert(module.parent.loaded === false, "module.parent.loaded should be false", module.parent.loaded);
+

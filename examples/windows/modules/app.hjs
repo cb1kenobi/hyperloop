@@ -1,0 +1,48 @@
+/**
+ * require tests
+ */
+function assert(value, test, msg) {
+	console.log(
+		(value ? '\033[32m✓\033[39m\033[0m ' : '\033[31m✘\033[39m\033[0m') +
+			'  ' + test + ' ' +
+			(!value ? ('\t(received: ' + msg + ')') : '')
+	);
+}
+
+global.assert = assert;
+
+
+var mod = require('./mod'),					// local directory
+	bar = require('./bar/bar.js'),			// absolute with js file extension
+	barcat = require('./bar/cat'),			// module from folder with index.js
+	cat = require('./cat'),					// module from package.json
+	foo = require('./foo/bar'),				// multi-directory
+	mymodule = require('mymodule'),			// module from node_modules
+	nested = require('./nested'),			// nested with node_modules
+	foo2 = require('/foo/bar');				// absolute directory from top
+
+assert(foo.bar === 1, "foo.bar should be 1", foo.bar);
+assert(cat.name === 'shelby', "cat.name should be shelby", cat.name);
+
+
+try {
+	// test trying to load a bad module
+	require('badname');
+	console.log("should have raised an exception and it didn't = 0");
+}
+catch (e) {
+	// check message to make sure it's correct
+	assert(e.message === "cannot find module 'badname'", "bad require raised exception", e.message);
+	assert(e.code === "MODULE_NOT_FOUND", "exception code property", e.code);
+}
+
+// test making sure modules are only ever loaded once
+nested.count++;
+nested = require('./nested');
+
+assert(nested.count === 2, 'nested count should be 2', nested.count);
+assert(global.foobar === 123, 'global.foobar should be 123', global.foobar);
+assert(false === module.loaded, 'module should not be loaded yet', module.loaded);
+assert(module.parent === null, 'module should not have a parent', module.parent);
+
+assert(__dirname === './', "__dirname should be './'", __dirname);
