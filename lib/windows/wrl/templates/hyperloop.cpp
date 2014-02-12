@@ -352,7 +352,7 @@ JSGlobalContextRef HyperloopCreateVM ()
 	JSStringRelease(prop);
 
 	// setup our globals object
-	JSStringRef globalProperty = JSStringCreateWithUTF8CString("globals");
+	JSStringRef globalProperty = JSStringCreateWithUTF8CString("global");
 	JSObjectSetProperty(globalContextRef, globalObjectref, globalProperty, globalObjectref, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete, 0);
 	JSStringRelease(globalProperty);
 
