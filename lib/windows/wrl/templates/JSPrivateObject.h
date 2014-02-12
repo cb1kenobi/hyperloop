@@ -1,4 +1,5 @@
 #pragma once
+<%- renderTemplate('jsc/templates/doc.ejs') %>
 #include <JavaScriptCore/JavaScript.h>
 
 using namespace Platform;

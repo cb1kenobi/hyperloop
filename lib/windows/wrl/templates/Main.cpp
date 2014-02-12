@@ -1,7 +1,4 @@
-/*
- * Hyperloop on Windows. 
- * (Note that this will not yet run on Windows Phone.)
- */
+<%- renderTemplate('jsc/templates/doc.ejs') %>
 using namespace Platform;
 using namespace Windows::UI::Xaml;
 using namespace Windows::ApplicationModel::Activation;

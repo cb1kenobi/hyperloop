@@ -1,4 +1,5 @@
 #pragma once
+<%- renderTemplate('jsc/templates/doc.ejs') %>
 #include <string>
 #include <Windows.h>
 #include <JavaScriptCore/JavaScript.h>

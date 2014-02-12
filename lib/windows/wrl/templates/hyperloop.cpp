@@ -1,3 +1,4 @@
+<%- renderTemplate('jsc/templates/doc.ejs') %>
 #include "hyperloop.h"
 #include "nan.h"
 using namespace Platform;
