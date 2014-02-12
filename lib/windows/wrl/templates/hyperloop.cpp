@@ -328,7 +328,7 @@ JSValueRef HyperloopLogger (JSContextRef ctx, JSObjectRef function, JSObjectRef 
  * create a hyperloop VM
  */
  
-JSGlobalContextRef HyperloopCreateVM ()
+JSGlobalContextRef HyperloopCreateVM(String ^name, String ^prefix)
 {
 	JSGlobalContextRef globalContextRef = JSGlobalContextCreate(nullptr);
 	JSObjectRef globalObjectref = JSContextGetGlobalObject(globalContextRef);
@@ -360,11 +360,11 @@ JSGlobalContextRef HyperloopCreateVM ()
 	JSGlobalContextRetain(globalContextRef);
 
 	// load the app into the context
-	//HyperloopJS *module = HyperloopLoadJS(globalContextRef,nullptr,name,prefix);
-	//if (module==nullptr)
-	//{
-	 //   return nullptr;
-	//}
+	/*HyperloopJS *module = HyperloopLoadJS(globalContextRef, nullptr, name, prefix);
+	if (module == nullptr)
+	{
+		return nullptr;
+	}*/
 
 	return globalContextRef;
 }

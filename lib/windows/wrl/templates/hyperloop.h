@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include <JavaScriptCore/JavaScript.h>
 #include "JSPrivateObject.h"
+#include "JSModule.h"
 
 class hyperloop
 {
@@ -90,12 +91,12 @@ JSValueRef HyperloopMakeException(JSContextRef ctx, const char *message, JSValue
 /**
  * return a string representation as a JSValueRef for an Object^
  */
-JSValueRef HyperloopToString(JSContextRef ctx, Object^ object);
+JSValueRef HyperloopToString(JSContextRef ctx, Object ^object);
 
 /**
  * return a string representation as a JSValueRef for a void*
  */
-JSValueRef HyperloopToString(JSContextRef ctx, void* object);
+JSValueRef HyperloopToString(JSContextRef ctx, void *object);
 
 /**
  * attempt to convert a JSValueRef to a String
@@ -105,7 +106,7 @@ String^ HyperloopToString(JSContextRef ctx, JSValueRef value);
 /**
  * create a hyperloop VM
  */
-JSGlobalContextRef HyperloopCreateVM ();
+JSGlobalContextRef HyperloopCreateVM(String ^name, String ^prefix);
 
 /**
  * given a context, get the global context

@@ -8,11 +8,12 @@ using namespace Windows::ApplicationModel::Activation;
 #include "hyperloop.h"
 #include "GeneratedApp.h"
 <% function boot() { %>
-	JSGlobalContextRef ctx = HyperloopCreateVM();
+	GeneratedApp::loadSources();
+	JSGlobalContextRef ctx = HyperloopCreateVM("./<%=main_js%>", "<%=prefix%>");
 	JSObjectRef global = JSContextGetGlobalObject(ctx);
 	GeneratedApp::loadWithObject(ctx, global);
-	JSStringRef script = GeneratedApp::source(),
-		sourceURL = JSStringCreateWithUTF8CString("app.hjs");
+	JSStringRef script = GeneratedApp::sources["<%=main_js%>"],
+		sourceURL = JSStringCreateWithUTF8CString("<%=main_js%>");
 	JSValueRef exception = NULL;
 	JSValueRef result = JSEvaluateScript(ctx, script, global, sourceURL, 0, &exception);
 	CHECK_EXCEPTION(ctx, exception);

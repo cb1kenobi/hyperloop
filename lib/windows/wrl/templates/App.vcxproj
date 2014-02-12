@@ -173,6 +173,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="hyperloop.cpp" />
     <ClCompile Include="JSBuffer.cpp" />
+    <ClCompile Include="JSModule.cpp" />
     <ClCompile Include="GeneratedApp.cpp" />
     <% for (var i = 0, iL = implementations.length; i < iL; i++) { %>
     <ClCompile Include="<%= implementations[i] %>" /><% } %>
@@ -181,6 +182,7 @@
     <ClInclude Include="nan.h"/>
     <ClInclude Include="hyperloop.h"/>
     <ClInclude Include="JSBuffer.h"/>
+    <ClInclude Include="JSModule.h"/>
     <ClInclude Include="JSPrivateObject.h"/>
     <ClInclude Include="GeneratedApp.h"/>
     <% for (var j = 0, jL = headers.length; j < jL; j++) { %>
