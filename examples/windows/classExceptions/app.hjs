@@ -39,7 +39,7 @@ function log() {
 try {
 	var mine = new MyClass();
 	mine.doSomething();
-	log('FAIL: Exception did not prevent code from continuing on.');
+	log('FAIL: Exception did not prevent code from continuing on. See issue #259.');
 }
 catch (err) {
 	log('PASS: caught exception');
