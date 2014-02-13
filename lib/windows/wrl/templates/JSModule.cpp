@@ -1,5 +1,13 @@
 <%- renderTemplate('jsc/templates/doc.ejs') %>
+#include <map>
 #include "JSModule.h"
+#include "hyperloop.h"
+#include "GeneratedApp.h"
+
+using namespace std;
+using namespace Platform;
+using namespace Windows::Data::Json;
+
 
 static map<string, HyperloopJS*> modules;
 
