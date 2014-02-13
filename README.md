@@ -1,13 +1,8 @@
 # Hyperloop ∞ [![Build Status](https://travis-ci.org/appcelerator/hyperloop.png)](https://travis-ci.org/appcelerator/hyperloop)
 
-Hyperloop is a next-generation compiler that converts JavaScript source code into native code for targeting different native OS platforms.
+Hyperloop is a next-generation compiler that converts JavaScript source code into native code for targeting different native OS platforms. Currently supports iOS and WinRT development.
 
 > **EXPERIMENTAL: DO NOT USE IN PRODUCTION YET.**
-
-## Supports
-
-* iOS 7+ development on Mac OSX
-* WinRT development on Windows 8+
 
 ## Requirements
 
@@ -31,42 +26,30 @@ Hyperloop is a next-generation compiler that converts JavaScript source code int
 [sudo] npm install -g git://github.com/appcelerator/hyperloop.git
 ```
 
-#### fork, clone, and install locally
-
-Assuming your Github username is `hyperloopdev`, fork this repo and execute the following:
+#### clone and install
 
 ```bash
-# create a local cloned repo
-git clone https://github.com/hyperloopdev/hyperloop.git
-
-# change to the new directory
+git clone https://github.com/appcelerator/hyperloop.git
 cd hyperloop
-
-# add the appcelerator repo as a remote
-git remote add appcelerator https://github.com/appcelerator/hyperloop.git
-
-# install dependencies locally
 npm install
-
-# link your PATH to the locally installed hyperloop. This removes the need to `npm install` after changes
 sudo npm link
 ```
 
 ## Quick Start
 
-To get started with iOS, check out the [Quick Start Guide](https://github.com/appcelerator/hyperloop/wiki/Getting-started-with-iOS-and-Hyperloop).  You can see a number of examples under the [examples directory](https://github.com/appcelerator/hyperloop/tree/master/examples).
+Assuming you have already satisfied the [requirements](Requirements) for your target platform, launching a basic example app (lots more [here]()) can be done like this:
 
-To compile, package and launch for iOS, use an example of the following command-line:
+```
+# let's launch the windows "helloworld" on Windows
+hyperloop launch --src="examples\windows\helloworld"
 
-```bash
-hyperloop package --platform=ios --src=examples/ios/simple/ --dest=build --name=foo --appid=com.foo --launch
+# or try the ios spritekit example on OSX
+hyperloop launch --src="examples\ios\spritekit"
 ```
 
-The initial compile will take a minute or so to generate the AST for the system frameworks. However, subsequent compiles will be almost instantaneous as it will be cached.  In the future, we plan on speeding this up greatly.
+Based on your target platform, you may be asked to create certificates, licenses, etc... Hyperloop should walk you through that. The initial compile will take a minute or so to generate the AST for the system frameworks. However, subsequent compiles will be almost instantaneous as it will be cached.  In the future, we plan on speeding this up greatly. If all goes well you'll see this on your local machine (Windows) or iOS simulator (Mac OSX), respectively.
 
-If all goes well, this should compile the application source code and the native application and launch it in the iOS Simulator.
-
-*Note:* Add the `--clean` command to clean the `build` dir before building a different example. You can also specify a different `--dest` folder to build multiple different examples.
+This shows only the most basic workflow for launching an app with hyperloop. Be sure to check out the wiki for _many_ more details on creating, developing, building, and launching apps with hyperloop using both purely CLI and the native tooling of your target platform. Also, be sure to check out the full [listing of examples](https://github.com/appcelerator/hyperloop/tree/master/examples).
 
 ## Documentation & Community
 
