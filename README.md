@@ -37,7 +37,7 @@ sudo npm link
 
 ## Quick Start
 
-Assuming you have already satisfied the [requirements](Requirements) for your target platform, launching a basic example app (lots more [here]()) can be done like this:
+Assuming you have already satisfied the [requirements](https://github.com/appcelerator/hyperloop#requirements) for your target platform, launching a basic example app can be done like this:
 
 ```
 # let's launch the windows "helloworld" on Windows
