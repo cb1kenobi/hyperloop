@@ -27,3 +27,4 @@ _tmp
 tmp
 $RECYCLE.BIN
 windows.il
+*.pdb
