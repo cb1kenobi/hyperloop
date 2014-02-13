@@ -108,6 +108,11 @@ processor.on('help',function(){
 	log.log("  --src=<s>".cyan+"              native source file to include in compile".grey);
 	log.log("  --dest=<d>".cyan+"             destination directory to write output".grey);
 	log.log("  --log-level=<l>".cyan+"        set the logging level (default 'info')".grey);
+
+	if (/^win/.test(process.platform)) {
+		log.log("  --identity-name=<n>".cyan+"    set Package.appxmanifest Identity Name (default 'hyperlooptest.NAME.GUID')".grey);
+	}
+
 	log.log("");
 	process.exit(0);
 });

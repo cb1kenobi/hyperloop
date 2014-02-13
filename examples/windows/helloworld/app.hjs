@@ -10,23 +10,59 @@ buffer.putString('world');
 // create a String from the buffer
 var message = '' + buffer;
 
+// create basic UI elements
+var win = Window.Current,
+	White = new SolidColorBrush(Colors.White),
+	Black = new SolidColorBrush(Colors.Black),
+	canvas = new Canvas(),
+	label = new TextBlock();
+
+// set up canvas
+canvas.Height = win.Bounds.Height;
+canvas.Width = win.Bounds.Width;
+canvas.Background = Black;
+
+// set up label
+label.Text = '';
+label.Height = win.Bounds.Height;
+label.Width = win.Bounds.Width;
+label.TextAlignment = TextAlignment.Center;
+label.VerticalAlignment = VerticalAlignment.Top;
+label.HorizontalAlignment = HorizontalAlignment.Center;
+label.FontSize = 32;
+label.Background = White;
+canvas.Children.Append(label);
+
+// start UI
+win.Content = canvas;
+win.Activate();
+
+// log to screen and console
+function log() {
+	var args = Array.prototype.slice.call(arguments, 0);
+	label.Text += args.reduce(function(previous, current) {
+		return previous + ' ' + current.toString();
+	}) + '\n';
+	console.log.apply(console, arguments);
+}
+
 // log with both String
-console.log(hello, message);
+log(hello, message);
 
 // log with buffer as argument
-console.log(hello, buffer);
+log(hello, buffer);
 
 // log with buffer.toCharArray() as argument
-console.log(hello, buffer.toCharArray());
+log(hello, buffer.toCharArray());
 
 // log with primitive
-console.log(hello, 1);
+log(hello, 1);
 
 // log with boolean
-console.log(hello, true);
+log(hello, true);
 
 // log with object
-console.log(hello, { a: 1 });
+log(hello, { a: 1 });
 
 // log with string
-console.log(hello, 'world');
+log(hello, 'world');
