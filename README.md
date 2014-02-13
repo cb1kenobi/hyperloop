@@ -90,24 +90,27 @@ To protect the interests of the Hyperloop contributors, Appcelerator, customers 
 The original source and design for this project was developed by [Jeff Haynie](http://github.com/jhaynie) ([@jhaynie](http://twitter.com/jhaynie)).
 
 ```
-project  : hyperloop
- repo age : 8 weeks ago
- commits  : 325
- active   : 46 days
- files    : 259
+ project  : hyperloop
+ repo age : 6 months
+ active   : 138 days
+ commits  : 766
+ files    : 855
  authors  :
-   198	Jeff Haynie             60.9%
-    68	Tony Lukasavage         20.9%
-    22	matt-langston           6.8%
-    15	Dawson Toth             4.6%
-     5	Allen Yeung             1.5%
-     4	Fokke Zandbergen        1.2%
-     4	Matt Langston           1.2%
-     3	Kota Iguchi             0.9%
-     2	Olivier Morandi         0.6%
-     2	Chris Barber            0.6%
-     1	ewmailing               0.3%
-     1	Eric Wing               0.3%
+   302  Jeff Haynie              39.4%
+   176  Dawson Toth              23.0%
+   169  Tony Lukasavage          22.1%
+    32  Kota Iguchi              4.2%
+    30  Matt Langston            4.0%
+    23  Russ McMahon             3.0%
+     7  Olivier Morandi          0.9%
+     7  Fokke Zandbergen         0.9%
+     5  Allen Yeung              0.7%
+     5  Eric Wing                0.6%
+     3  Pier Paolo Ramon         0.4%
+     2  Chris Barber             0.3%
+     2  Drew Fyock               0.3%
+     2  jonalter                 0.3%
+     1  U-dev-vm\Thomas Anderson 0.1%
 ```
 
 ## Legal
