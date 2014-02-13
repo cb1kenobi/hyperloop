@@ -2,30 +2,34 @@
 
 Hyperloop is a next-generation compiler that converts JavaScript source code into native code for targeting different native OS platforms.
 
-> **THIS IS UNSTABLE, UNRELEASED CODE. DO NOT USE IN PRODUCTION YET.**
+> **EXPERIMENTAL: DO NOT USE IN PRODUCTION YET.**
+
+## Supports
+
+* iOS 7+ development on Mac OSX
+* WinRT development on Windows 8+
 
 ## Requirements
 
-Hyperloop currently only builds for iOS. It requires the following:
-
 * [Node.js](http://nodejs.org/) >= 0.10.13
-* iOS SDK 7.0.
-
-> Currently, hyperloop is only being developed and tested on OSX. Windows and Linux will eventually be supported officially.
+* [iOS development requirements](https://github.com/appcelerator/hyperloop/wiki/Getting-started-with-iOS-and-Hyperloop)
+* [Windows development requirements](https://github.com/appcelerator/hyperloop/wiki/Running-Hyperloop-on-Windows)
 
 ## Install
 
-#### from npm
+#### from npm [![NPM version](https://badge.fury.io/js/hyperloop.png)](http://badge.fury.io/js/hyperloop)
 
-coming soon...
+> **NOT YET AVAILABLE**
 
-#### from github
-
-```bash
-sudo npm install -g git://github.com/appcelerator/hyperloop.git
+```
+[sudo] npm install -g hyperloop
 ```
 
-If you have chown-ed the NPM folder to your local user (`sudo chown -R $USER /usr/local`) you can leave out the `sudo` bit.
+#### from github (cutting edge)
+
+```bash
+[sudo] npm install -g git://github.com/appcelerator/hyperloop.git
+```
 
 #### fork, clone, and install locally
 
@@ -69,18 +73,6 @@ If all goes well, this should compile the application source code and the native
 - [Wiki](https://github.com/appcelerator/hyperloop/wiki)
 - [Mailing List](https://groups.google.com/forum/#!forum/tinext)
 
-## Design
-
-Hyperloop works by using a high-level [DSL](http://en.wikipedia.org/wiki/Domain-specific_language) written in JavaScript and compiling that into native code using an [AOT](http://en.wikipedia.org/wiki/AOT_compiler) compiler.
-
-The compiler is broken into two subsystems: _backend_ and _frontend_.  The _frontend_ will parse the input JavaScript source code and transform it into an [AST](http://en.wikipedia.org/wiki/Abstract_syntax_tree) and will resolve special reserved JavaScript keywords which instruct the compiler to perform specific code transformations (we call this CNI, short for Common Native Interface).  Once CNI instructions are encountered, the _backend_ compiler will emit the appropriate language and OS specific code for the target platform.  The _backend_ compiler is specific to each OS while the _frontend_ compiler is generic for all platforms.
-
-#### Generating Code
-
-The backend compiler will turn the appropriate CNI into the target language of that platform. For example, for iOS, the backend will generate Objective-C source code.  For Android, the backend will generate Java, and so forth.
-
-The backend code will generate JS VM specific code, depending on the engine specified.  By default, the backend will generate code for the [JavaScriptCore](http://trac.webkit.org/wiki/JavaScriptCore) engine (or "JSCore") which is part of the [WebKit](http://en.wikipedia.org/wiki/WebKit) opensource project.  Currently, Hyperloop only supports JSCore. However, we intend to support [V8](https://code.google.com/p/v8/) eventually as well.
-
 ## Reporting Bugs or submitting fixes
 
 If you run into problems, and trust us, there are likely plenty of them at this point -- please create an [Issue](https://github.com/appcelerator/hyperloop/issues) or, even better, send us a pull request. You should also check out the [Mailing List](https://groups.google.com/forum/#!forum/tinext).
@@ -120,7 +112,7 @@ project  : hyperloop
 
 ## Legal
 
-Copyright (c) 2013 by [Appcelerator, Inc](http://www.appcelerator.com). All Rights Reserved.
+Copyright (c) 2014 by [Appcelerator, Inc](http://www.appcelerator.com). All Rights Reserved.
 This code contains patents and/or patents pending by Appcelerator, Inc.
 Hyperloop is a trademark of Appcelerator, Inc.
 This project is licensed under the Apache Public License, version 2.  Please see details in the LICENSE file.
