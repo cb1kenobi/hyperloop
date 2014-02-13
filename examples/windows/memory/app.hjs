@@ -23,19 +23,38 @@ function log() {
 }
 
 /*
- Demonstrate catching native exceptions in JavaScript.
+ Demonstrate @memory.
  */
+// create a String from JS string
+var hello = 'Hello';
+
+// create a direct memory buffer
+var buffer = @memory();
+
+// write a string into the buffer
+buffer.putString('world');
+
+// create a String from the buffer
+var message = '' + buffer;
 
 
-try {
-	// "Window" has no public constructor,
-	// so this will throw a native exception.
-	new Window();
-}
-catch (exc) {
-	log('Caught native exception in JS!');
-	log(exc);
-	log('nativeSource:', exc.nativeSource);
-	log('nativeFunction:', exc.nativeFunction);
-	log('nativeLine:', exc.nativeLine);
-}
+// log with both String
+log(hello, message);
+
+// log with buffer as argument
+log(hello, buffer);
+
+// log with buffer.toCharArray() as argument
+log(hello, buffer.toCharArray());
+
+// log with primitive
+log(hello, 1);
+
+// log with boolean
+log(hello, true);
+
+// log with object
+log(hello, { a: 1 });
+
+// log with string
+log(hello, 'world');

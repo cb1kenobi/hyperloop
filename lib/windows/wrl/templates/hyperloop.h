@@ -108,7 +108,7 @@ String^ HyperloopToString(JSContextRef ctx, JSValueRef value);
 /**
  * create a hyperloop VM
  */
-JSGlobalContextRef HyperloopCreateVM(String ^name, String ^prefix);
+JSGlobalContextRef HyperloopCreateVM(JSGlobalContextRef globalContextRef, JSObjectRef globalObjectref, String ^name, String ^prefix);
 
 /**
  * given a context, get the global context

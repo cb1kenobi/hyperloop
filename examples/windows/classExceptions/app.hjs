@@ -1,3 +1,30 @@
+/*
+ Create a basic UI for showing the results of our code below.
+ */
+var win = Window.Current,
+	text = new TextBlock();
+text.Text = '';
+text.TextAlignment = TextAlignment.Center;
+text.VerticalAlignment = VerticalAlignment.Center;
+text.HorizontalAlignment = HorizontalAlignment.Center;
+text.FontSize = 32;
+win.Content = text;
+win.Activate();
+
+/**
+ * Log to the screen and to the console.
+ */
+function log() {
+	var args = Array.prototype.slice.call(arguments, 0);
+	text.Text += args.reduce(function(previous, current) {
+		return previous + ' ' + current.toString();
+	}) + '\n';
+	console.log.apply(console, arguments);
+}
+
+/*
+ Demonstrate catching exceptions from custom classes.
+ */
 @class('MyClass', null, [], [
 	{
 		name: 'doSomething',
@@ -9,5 +36,12 @@
 	}
 ]);
 
-var mine = new MyClass();
-mine.doSomething();
+try {
+	var mine = new MyClass();
+	mine.doSomething();
+	log('FAIL: Exception did not prevent code from continuing on.');
+}
+catch (err) {
+	log('PASS: caught exception');
+	log(err);
+}

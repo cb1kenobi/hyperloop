@@ -1,8 +1,33 @@
-/**
- * require tests
+/*
+ Create a basic UI for showing the results of our code below.
  */
+var win = Window.Current,
+	text = new TextBlock();
+text.Text = '';
+text.TextAlignment = TextAlignment.Center;
+text.VerticalAlignment = VerticalAlignment.Center;
+text.HorizontalAlignment = HorizontalAlignment.Center;
+text.FontSize = 32;
+win.Content = text;
+win.Activate();
+
+/**
+ * Log to the screen and to the console.
+ */
+function log() {
+	var args = Array.prototype.slice.call(arguments, 0);
+	text.Text += args.reduce(function(previous, current) {
+		return previous + ' ' + current.toString();
+	}) + '\n';
+	console.log.apply(console, arguments);
+}
+
+/*
+ Demonstrate modules.
+ */
+
 function assert(value, test, msg) {
-	console.log(
+	log(
 		(value ? 'PASS' : 'FAIL') +
 			':  ' + test + ' ' +
 			(!value ? ('\t(received: ' + msg + ')') : '')
@@ -10,7 +35,6 @@ function assert(value, test, msg) {
 }
 
 global.assert = assert;
-
 
 var mod = require('./mod'),					// local directory
 	bar = require('./bar/bar.js'),			// absolute with js file extension
@@ -24,11 +48,10 @@ var mod = require('./mod'),					// local directory
 assert(foo.bar === 1, "foo.bar should be 1", foo.bar);
 assert(cat.name === 'shelby', "cat.name should be shelby", cat.name);
 
-
 try {
 	// test trying to load a bad module
 	require('badname');
-	console.log("should have raised an exception and it didn't = 0");
+	assert(false, "should have raised an exception and it didn't", "");
 }
 catch (e) {
 	// check message to make sure it's correct

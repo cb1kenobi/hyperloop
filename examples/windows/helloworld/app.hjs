@@ -1,68 +1,11 @@
-// create a String from JS string
-var hello = 'Hello';
+var window = Window.Current,
+	text = new TextBlock();
 
-// create a direct memory buffer
-var buffer = @memory();
+text.Text = "Hello, world!";
+text.TextAlignment = TextAlignment.Center;
+text.VerticalAlignment = VerticalAlignment.Center;
+text.HorizontalAlignment = HorizontalAlignment.Center;
+text.FontSize = 60;
 
-// write a string into the buffer
-buffer.putString('world');
-
-// create a String from the buffer
-var message = '' + buffer;
-
-// create basic UI elements
-var win = Window.Current,
-	White = new SolidColorBrush(Colors.White),
-	Black = new SolidColorBrush(Colors.Black),
-	canvas = new Canvas(),
-	label = new TextBlock();
-
-// set up canvas
-canvas.Height = win.Bounds.Height;
-canvas.Width = win.Bounds.Width;
-canvas.Background = Black;
-
-// set up label
-label.Text = '';
-label.Height = win.Bounds.Height;
-label.Width = win.Bounds.Width;
-label.TextAlignment = TextAlignment.Center;
-label.VerticalAlignment = VerticalAlignment.Top;
-label.HorizontalAlignment = HorizontalAlignment.Center;
-label.FontSize = 32;
-label.Background = White;
-canvas.Children.Append(label);
-
-// start UI
-win.Content = canvas;
-win.Activate();
-
-// log to screen and console
-function log() {
-	var args = Array.prototype.slice.call(arguments, 0);
-	label.Text += args.reduce(function(previous, current) {
-		return previous + ' ' + current.toString();
-	}) + '\n';
-	console.log.apply(console, arguments);
-}
-
-// log with both String
-log(hello, message);
-
-// log with buffer as argument
-log(hello, buffer);
-
-// log with buffer.toCharArray() as argument
-log(hello, buffer.toCharArray());
-
-// log with primitive
-log(hello, 1);
-
-// log with boolean
-log(hello, true);
-
-// log with object
-log(hello, { a: 1 });
-
-// log with string
-log(hello, 'world');
+window.Content = text;
+window.Activate();
