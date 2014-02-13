@@ -3,19 +3,94 @@
 
 static map<string, HyperloopJS*> modules;
 
-HyperloopJS::~HyperloopJS() {
+/*
+ String manipulation utility functions.
+ */
+
+bool hasPrefix(string path, string prefix)
+{
+	return path.substr(0, prefix.length()) == prefix;
+}
+string stringByDeletingLastPathComponent(string path)
+{
+	auto index = path.find_last_of('/');
+	if (index == -1)
+	{
+		return "";
+	}
+	else
+	{
+		return path.substr(0, index);
+	}
+}
+string stringByAppendingPathComponent(string path, string component)
+{
+	if (path.find_last_of('/') == path.length())
+	{
+		return path + component;
+	}
+	else
+	{
+		return path + '/' + component;
+	}
+}
+void replaceAll(std::string& str, const std::string& from, const std::string& to)
+{
+	if (from.empty())
+	{
+		return;
+	}
+	size_t start_pos = 0;
+	while ((start_pos = str.find(from, start_pos)) != std::string::npos)
+	{
+		str.replace(start_pos, from.length(), to);
+		start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+	}
+}
+string stringByStandardizingPath(string path)
+{
+	replaceAll(path, "//", "/");
+	replaceAll(path, "/./", "/");
+	// TODO: "In absolute paths, resolution of references to the parent directory (Ã¢â‚¬Å“..Ã¢â‚¬Â) to the real parent directory;"
+	return path;
+}
+string stringByDeletingPathExtension(string path)
+{
+	auto dotIndex = path.find_last_of('.');
+	auto slashIndex = path.find_last_of('/');
+	if (dotIndex == std::string::npos || (slashIndex != std::string::npos && slashIndex > dotIndex))
+	{
+		return path;
+	}
+	else
+	{
+		return path.substr(0, dotIndex);
+	}
+}
+
+/*
+ Implementation.
+ */
+HyperloopJS::~HyperloopJS()
+{
 }
 
 JSValueRef JSGetId(JSContextRef ctx, JSObjectRef object, JSStringRef propertyName, JSValueRef *exception)
 {
 	HyperloopJS *module = (HyperloopJS *)JSObjectGetPrivate(object);
-	return HyperloopToString(ctx, module->id);
+	auto str = JSStringCreateWithUTF8CString(module->id.c_str());
+	auto retVal = JSValueMakeString(ctx, str);
+	JSStringRelease(str);
+	return retVal;
 }
 
 JSValueRef JSGetFilename(JSContextRef ctx, JSObjectRef object, JSStringRef propertyName, JSValueRef *exception)
 {
 	HyperloopJS *module = (HyperloopJS *)JSObjectGetPrivate(object);
-	return HyperloopToString(ctx, module->filename);
+	auto str = JSStringCreateWithUTF8CString(module->filename.c_str());
+	auto retVal = JSValueMakeString(ctx, str);
+	JSStringRelease(str);
+	return retVal;
 }
 
 JSValueRef JSGetParent(JSContextRef ctx, JSObjectRef object, JSStringRef propertyName, JSValueRef *exception)
@@ -36,32 +111,35 @@ JSValueRef JSGetLoaded(JSContextRef ctx, JSObjectRef object, JSStringRef propert
 
 JSValueRef JSGetDirname(JSContextRef ctx, JSObjectRef object, JSStringRef propertyName, JSValueRef *exception)
 {
-	/*HyperloopJS *module = (HyperloopJS *)JSObjectGetPrivate(object);
-	NSString *dir = [module->filename stringByDeletingLastPathComponent];
-	dir = [NSString stringWithFormat:@"./%@",dir];
-	if ([dir hasSuffix:@"/"]==NO)
+	HyperloopJS *module = (HyperloopJS *)JSObjectGetPrivate(object);
+	auto path = module->filename;
+	auto dir = "./" + stringByDeletingLastPathComponent(path);
+	if (dir.find_last_of('/') != dir.length())
 	{
-		dir = [dir stringByAppendingString:@"/"];
+		dir += '/';
 	}
-	return HyperloopToString(ctx, dir);*/
-	return nullptr;
+	dir = stringByStandardizingPath(dir);
+	auto str = JSStringCreateWithUTF8CString(dir.c_str());
+	auto retVal = JSValueMakeString(ctx, str);
+	JSStringRelease(str);
+	return retVal;
 }
 
 JSValueRef JSRequire(JSContextRef ctx, JSObjectRef function, JSObjectRef object, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception)
 {
-	/*HyperloopJS *module = (HyperloopJS *)JSObjectGetPrivate(object);
+	HyperloopJS *module = (HyperloopJS *)JSObjectGetPrivate(object);
 
 	if (argumentCount != 1)
 	{
 		return HyperloopMakeException(ctx, "path must be a string", exception);
 	}
 
-	NSString *path = HyperloopToNSString(ctx, arguments[0]);
-	HyperloopJS *js = HyperloopLoadJS(ctx, module, path, module->prefix);
+	auto path = HyperloopToString(ctx, arguments[0]);
+	HyperloopJS *js = HyperloopLoadJS(ctx, module, hyperloop::getSStr(path), module->prefix);
 
 	if (js == nullptr)
 	{
-		HyperloopMakeException(ctx, "cannot find module '" + path + "'", exception);
+		HyperloopMakeException(ctx, hyperloop::getCStr("cannot find module '" + path + "'"), exception);
 		JSStringRef codeProperty = JSStringCreateWithUTF8CString("code");
 		JSStringRef msgProperty = JSStringCreateWithUTF8CString("MODULE_NOT_FOUND");
 		JSObjectRef exceptionObject = JSValueToObject(ctx, *exception, 0);
@@ -71,8 +149,7 @@ JSValueRef JSRequire(JSContextRef ctx, JSObjectRef function, JSObjectRef object,
 		return JSValueMakeUndefined(ctx);
 	}
 
-	return js->exports;*/
-	return nullptr;
+	return js->exports;
 }
 
 /**
@@ -136,13 +213,10 @@ static JSStaticFunction StaticFunctionArrayForJS [] = {
 	{ 0, 0, 0 }
 };
 
-//Class HyperloopPathToClass(NSString *path, NSString *prefix)
-//{
-//	NSString *modulename = [path stringByReplacingOccurrencesOfString:@".js" withString:@""];
-//	modulename = [modulename stringByReplacingOccurrencesOfString:@"/" withString:@"_"];
-//	modulename = [prefix stringByAppendingString:modulename];
-//	return NSClassFromString(modulename);
-//}
+std::string HyperloopPathToSource(std::string path, std::string prefix)
+{
+	return GeneratedApp::sources[stringByDeletingPathExtension(path.substr(1))];
+}
 
 static JSClassDefinition classDef;
 static JSClassRef classRef;
@@ -164,40 +238,26 @@ JSObjectRef HyperloopMakeJSObject(JSContextRef ctx, HyperloopJS *module)
 	return JSObjectMake(ctx, classRef, (void *)module);
 }
 
-HyperloopJS *HyperloopLoadJSWithLogger(JSContextRef ctx, HyperloopJS *parent, String ^path, String ^prefix, JSObjectRef logger)
+HyperloopJS *HyperloopLoadJSWithLogger(JSContextRef ctx, HyperloopJS *parent, string path, string prefix, JSObjectRef logger)
 {
-	/*OutputDebugString(@"HyperloopLoadJS called with ctx=%p, parent=%p, path=%@, prefix=%@", ctx, parent, path, prefix);
-
-	if (!modules)
-	{
-		modules = [[NSMutableDictionary alloc] init];
-	}
-
 	// For the logic, we follow node.js logic here: http://nodejs.org/api/modules.html#modules_module_filename
-
-	NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
-	NSFileManager *fileManager = [NSFileManager defaultManager];
-	NSString *filepath = path;
+	string jscode;
+	string filepath = path;
 	HyperloopJS *module = nullptr;
-	NSString *modulekey = nullptr;
+	string modulekey;
 
-	if ([path hasPrefix:@"./"] || [path hasPrefix:@"/"] || [path hasPrefix:@"../"])
+	if (hasPrefix(path, "./") || hasPrefix(path, "/") || hasPrefix(path, "../"))
 	{
 		filepath = path;
-		if (parent!=nullptr)
+		if (parent != nullptr)
 		{
-			NSString *dir = [[parent filename] stringByDeletingLastPathComponent];
-			filepath = [dir stringByAppendingPathComponent:path];
+			auto dir = stringByDeletingLastPathComponent(parent->filename);
+			filepath = stringByAppendingPathComponent(dir, path);
 		}
-		filepath = [[resourcePath stringByAppendingPathComponent:filepath] stringByStandardizingPath];
-		if ([filepath length] <= [resourcePath length])
-		{
-			// they have tried to ../ passed top of the root, just return nullptr
-			return nullptr;
-		}
-		filepath = [filepath substringFromIndex:[resourcePath length]+1];
+		filepath = stringByStandardizingPath(filepath);
 
-		if ((module = [modules objectForKey:[filepath stringByDeletingPathExtension]]))
+		module = modules[stringByDeletingPathExtension(filepath)];
+		if (module)
 		{
 			return module;
 		}
@@ -205,123 +265,98 @@ HyperloopJS *HyperloopLoadJSWithLogger(JSContextRef ctx, HyperloopJS *parent, St
 	else if (parent == nullptr)
 	{
 		// not a specific path, must look at node_modules according to node spec (step 3)
-		filepath = [@"./node_modules" stringByAppendingPathComponent:path];
-		if ((module = [modules objectForKey:[filepath stringByDeletingPathExtension]]))
+		filepath = stringByAppendingPathComponent("./node_modules", path);
+		module = modules[stringByDeletingPathExtension(filepath)];
+		if (module)
 		{
 			return module;
 		}
-		return HyperloopLoadJS(ctx, parent, filepath, prefix);
+		return HyperloopLoadJSWithLogger(ctx, parent, filepath, prefix, nullptr);
 	}
 
-	Class cls = HyperloopPathToClass(filepath, prefix);
+	jscode = HyperloopPathToSource(path, prefix);
 
-	DEBUGLOG(@"HyperloopLoadJS::HyperloopPathToClass filepath=%@, prefix=%@, cls=%@",filepath,prefix,cls);
-
-	if (cls == nullptr)
+	if (jscode.empty())
 	{
-		// check to see if a directory with package.json
-		NSString *subpath = [path stringByAppendingPathComponent:@"/package.json"];
-		NSString *packagePath = [resourcePath stringByAppendingPathComponent:subpath];
-		BOOL isDirectory = NO;
-		if ([fileManager fileExistsAtPath:packagePath isDirectory:&isDirectory] && !isDirectory)
+		auto subpath = stringByAppendingPathComponent(path, "package.json");
+		auto packagePath = subpath;
+		auto fileData = HyperloopPathToSource(path, prefix);
+		if (!fileData.empty())
 		{
-			NSError *error = nullptr;
-			NSString *fileContents = [NSString stringWithContentsOfFile:packagePath encoding:NSUTF8StringEncoding error:&error];
-			NSData *fileData = [fileContents dataUsingEncoding:NSUTF8StringEncoding];
-			NSDictionary *json = [NSJSONSerialization JSONObjectWithData:fileData options:0 error:&error];
-			if (error == nullptr)
+			auto json = ref new JsonObject();
+			if (JsonObject::TryParse(hyperloop::getPlatformString(fileData), &json))
 			{
 				// look for main field in JSON
-				NSString *main = [json objectForKey:@"main"];
+				auto main = json->GetNamedString("main");
 				if (main != nullptr)
 				{
-					subpath = [path stringByAppendingPathComponent:main];
-					packagePath = [[resourcePath stringByAppendingPathComponent:subpath] stringByStandardizingPath];
-					filepath = [packagePath substringFromIndex:[resourcePath length]+1];
-					if ((module = [modules objectForKey:[filepath stringByDeletingPathExtension]]))
+					subpath = stringByAppendingPathComponent(path, hyperloop::getSStr(main));
+					packagePath = stringByStandardizingPath(subpath);
+					filepath = packagePath;
+					module = modules[stringByDeletingPathExtension(filepath)];
+					if (module)
 					{
 						return module;
 					}
-					cls = HyperloopPathToClass(filepath,prefix);
+					jscode = HyperloopPathToSource(filepath, prefix);
 				}
 			}
 		}
-		if (cls == nullptr)
+		if (jscode.empty())
 		{
 			// look for index.js
-			subpath = [path stringByAppendingPathComponent:@"/index.js"];
-			packagePath = [[resourcePath stringByAppendingPathComponent:subpath] stringByStandardizingPath];
-			filepath = [packagePath substringFromIndex:[resourcePath length]+1];
-			if ((module = [modules objectForKey:[filepath stringByDeletingPathExtension]]))
+			subpath = stringByAppendingPathComponent(path, "index.js");
+			packagePath = stringByStandardizingPath(subpath);
+			filepath = packagePath;
+			module = modules[stringByDeletingPathExtension(filepath)];
+			if (module)
 			{
 				return module;
 			}
-			cls = HyperloopPathToClass(filepath,prefix);
+			jscode = HyperloopPathToSource(filepath, prefix);
 		}
 
 		// if we're already inside node_modules, don't go into this block or you'll have infinite recursion
-		if (cls == nullptr && [path rangeOfString:@"node_modules/"].location == NSNotFound)
+		if (jscode.empty() && path.find("node_modules/") == -1)
 		{
 			// check node modules, by walking up from the current directory to the top of the directory
-			NSString *top = parent ? [parent.filename stringByDeletingLastPathComponent] : @"";
-			while (top != nullptr)
+			auto top = parent ? stringByDeletingLastPathComponent(parent->filename) : "";
+			while (!top.empty())
 			{
-				NSString *fp = [top stringByAppendingPathComponent:[NSString stringWithFormat:@"node_modules/%@",path]];
-				if ((module = [modules objectForKey:[fp stringByDeletingPathExtension]]))
+				auto fp = stringByAppendingPathComponent(top, "node_modules/" + path);
+				module = modules[stringByDeletingPathExtension(fp)];
+				if (module)
 				{
 					return module;
 				}
-				module = HyperloopLoadJS(ctx,parent,fp,prefix);
+				module = HyperloopLoadJS(ctx, parent, fp, prefix);
 				if (module != nullptr)
 				{
 					return module;
 				}
-				if ([top length] == 0)
-				{
-					// already at the end, now break
-					break;
-				}
-				top = [top stringByDeletingLastPathComponent];
+				top = stringByDeletingLastPathComponent(top);
 			}
 		}
+		return nullptr;
 	}
 	else
 	{
-		// this is a class module, make sure the module key is unique
-		modulekey = [filepath stringByAppendingString:prefix];
 
-		// check and see if we have already loaded the module, then
-		// go ahead and return it
-		if ((module=[modules objectForKey:modulekey]))
-		{
-			return module;
-		}
-	}
+		// load up our JS
+		auto jscode = HyperloopPathToSource(path, prefix);
 
-	if (cls != nullptr)
-	{
-		// make sure we strip it, since we're going to add it below
-		filepath = [filepath stringByDeletingPathExtension];
-
-		DEBUGLOG(@"HyperloopLoadJS::cls!=nullptr filepath=%@",filepath);
-
-		HyperloopJS *module = [HyperloopJS new];
-		module->id = [path hasPrefix:@"./"] ? [path substringFromIndex:2] : path;
-		module->filename = [filepath stringByAppendingPathExtension:@"js"];
-		module->loaded = NO;
+		HyperloopJS *module = new HyperloopJS();
+		module->id = stringByDeletingPathExtension(hasPrefix(path, "./") ? path.substr(2) : path);
+		module->filename = module->id + ".js";
+		module->loaded = false;
 		module->parent = parent;
 		module->context = HyperloopGetGlobalContext(ctx);
 		module->exports = JSObjectMake(ctx, 0, 0);
 		module->prefix = prefix;
 
-		if (modulekey == nullptr)
-		{
-			modulekey = filepath;
-		}
+		modules[path] = module;
 
-		[modules setObject:module forKey:modulekey];
-
-		JSObjectRef moduleObjectRef = HyperloopMakeJSObject(ctx,module);
+		JSObjectRef moduleObjectRef = HyperloopMakeJSObject(ctx, module);
 		JSStringRef exportsProperty = JSStringCreateWithUTF8CString("exports");
 		JSObjectSetProperty(ctx, moduleObjectRef, exportsProperty, module->exports, 0, 0);
 		JSStringRelease(exportsProperty);
@@ -334,90 +369,64 @@ HyperloopJS *HyperloopLoadJSWithLogger(JSContextRef ctx, HyperloopJS *parent, St
 			JSStringRelease(consoleProperty);
 		}
 
-		// load up our JS
-		Class <HyperloopModule> mcls = (Class<HyperloopModule>)cls;
-		DEBUGLOG(@"HyperloopLoadJS::mcls %@",mcls);
+		// load up our properties that we want to expose
+		JSPropertyNameArrayRef properties = JSObjectCopyPropertyNames(ctx, moduleObjectRef);
+		std:string propertyNames("");
+		size_t count = JSPropertyNameArrayGetCount(properties);
 
-		// load up our context
-		[mcls load:ctx withObject:JSContextGetGlobalObject(ctx)];
+		JSStringRef parameterNames[1];
+		JSValueRef arguments[1];
 
-		NSData *compressedBuf = [mcls buffer];
+		parameterNames[0] = JSStringCreateWithUTF8CString("module");
+		arguments[0] = moduleObjectRef;
 
-		// if empty, just skip the JS invocation
-		if ([compressedBuf length] > 1)
+		// loop through and put module related variables in a wrapper scope
+		for (size_t c = 0; c < count; c++)
 		{
-
-			// load up our properties that we want to expose
-			JSPropertyNameArrayRef properties = JSObjectCopyPropertyNames(ctx, moduleObjectRef);
-			NSMutableArray *propertyNames = [NSMutableArray array];
-			size_t count = JSPropertyNameArrayGetCount(properties);
-
-			JSStringRef parameterNames[1];
-			JSValueRef arguments[1];
-
-			parameterNames[0] = JSStringCreateWithUTF8CString("module");
-			arguments[0]=moduleObjectRef;
-
-			// loop through and put module related variables in a wrapper scope
-			for (size_t c = 0;c<count;c++)
+			JSStringRef propertyName = JSPropertyNameArrayGetNameAtIndex(properties, c);
+			auto sPropertyName = hyperloop::getSStr(hyperloop::getPlatformString(propertyName));
+			JSValueRef paramObject = JSObjectGetProperty(ctx, moduleObjectRef, propertyName, 0);
+			bool added = false;
+			if (JSValueIsObject(ctx, paramObject))
 			{
-				JSStringRef propertyName = JSPropertyNameArrayGetNameAtIndex(properties,c);
-				size_t buflen = JSStringGetMaximumUTF8CStringSize(propertyName);
-				char buf[buflen];
-				buflen = JSStringGetUTF8CString(propertyName, buf, buflen);
-				buf[buflen] = '\0';
-				JSValueRef paramObject = JSObjectGetProperty(ctx, moduleObjectRef, propertyName, 0);
-				BOOL added = NO;
-				if (JSValueIsObject(ctx,paramObject))
+				JSStringRef script = JSStringCreateWithUTF8CString(("(typeof this." + sPropertyName + " === 'function')").c_str());
+				JSValueRef result = JSEvaluateScript(ctx, script, moduleObjectRef, NULL, 0, 0);
+				if (JSValueToBoolean(ctx, result))
 				{
-					JSStringRef script = JSStringCreateWithUTF8CString([[NSString stringWithFormat:@"(typeof(this.%s)==='function')",buf] UTF8String]);
-					JSValueRef result = JSEvaluateScript(ctx,script,moduleObjectRef,NULL,0,0);
-					if (JSValueToBoolean(ctx,result))
-					{
-						// make sure that the right scope (this object) is set for the function
-						[propertyNames addObject:[NSString stringWithFormat:@"%s=function %s(){return $self.%s.apply($self,arguments)}",buf,buf,buf]];
-						added = YES;
-					}
-					JSStringRelease(script);
+					// make sure that the right scope (this object) is set for the function
+					propertyNames += ", " + sPropertyName + " = function " + sPropertyName + "() { return $self." + sPropertyName + ".apply($self, arguments); }";
+					added = true;
 				}
-				if (added==NO)
-				{
-					[propertyNames addObject:[NSString stringWithFormat:@"%s=this.%s",buf,buf]];
-				}
-				JSStringRelease(propertyName);
+				JSStringRelease(script);
 			}
-
-			NSData *buffer = HyperloopDecompressBuffer(compressedBuf);
-			NSString *jscode = [[[NSString alloc] initWithData:buffer encoding:NSUTF8StringEncoding] autorelease];
-			NSString *wrapper = [NSString stringWithFormat:@"var $self = this, %@;\n%@;",[propertyNames componentsJoinedByString:@", "],jscode];
-
-			JSStringRef fnName = JSStringCreateWithUTF8CString("require");
-			JSStringRef body = JSStringCreateWithUTF8CString([wrapper UTF8String]);
-
-			JSValueRef *exception = NULL;
-			JSStringRef filename = JSStringCreateWithUTF8CString(
-				[[path stringByAppendingPathExtension:@"js"] UTF8String]);
-			JSObjectRef requireFn = JSObjectMakeFunction(ctx, fnName, 1, parameterNames, body, filename, 1, &exception);
-			JSStringRelease(filename);
-			CHECK_EXCEPTION(ctx,exception,module->prefix);
-
-			JSValueRef fnResult = JSObjectCallAsFunction(ctx, requireFn, moduleObjectRef, 1, arguments, &exception);
-			JSStringRef pathRef = JSStringCreateWithUTF8CString([path UTF8String]);
-			JSStringRef prefixRef = JSStringCreateWithUTF8CString([prefix UTF8String]);
-
-			JSValueRef args[3];
-			args[0] = exception;
-			args[1] = JSValueMakeString(ctx,pathRef);
-			args[2] = JSValueMakeString(ctx,prefixRef);
-
-			JSStringRelease(pathRef);
-			JSStringRelease(prefixRef);
-			JSStringRelease(fnName);
-			JSStringRelease(body);
-			JSStringRelease(parameterNames[0]);
+			if (added == false)
+			{
+				propertyNames += ", " + sPropertyName + " = this." + sPropertyName;
+			}
+			JSStringRelease(propertyName);
 		}
 
-		module->loaded = YES;
+		auto wrapper = "var $self = this" + propertyNames + ";\n" + jscode + ";";
+
+		JSStringRef fnName = JSStringCreateWithUTF8CString("require");
+		JSStringRef body = JSStringCreateWithUTF8CString(wrapper.c_str());
+
+		JSValueRef *exception = NULL;
+		JSStringRef filename = JSStringCreateWithUTF8CString(path.c_str());
+		JSObjectRef requireFn = JSObjectMakeFunction(ctx, fnName, 1, parameterNames, body, filename, 1, exception);
+		JSStringRelease(filename);
+
+		JSValueRef fnResult = JSObjectCallAsFunction(ctx, requireFn, moduleObjectRef, 1, arguments, exception);
+		JSStringRef pathRef = JSStringCreateWithUTF8CString(path.c_str());
+		JSStringRef prefixRef = JSStringCreateWithUTF8CString(prefix.c_str());
+
+		JSStringRelease(pathRef);
+		JSStringRelease(prefixRef);
+		JSStringRelease(fnName);
+		JSStringRelease(body);
+		JSStringRelease(parameterNames[0]);
+
+		module->loaded = true;
 
 		// we need to pull the exports in case it got assigned (such as setting a Class to exports)
 		JSStringRef exportsProp = JSStringCreateWithUTF8CString("exports");
@@ -429,12 +438,10 @@ HyperloopJS *HyperloopLoadJSWithLogger(JSContextRef ctx, HyperloopJS *parent, St
 		JSStringRelease(exportsProp);
 
 		return module;
-	}*/
-
-	return nullptr;
+	}
 }
 
-HyperloopJS *HyperloopLoadJS(JSContextRef ctx, HyperloopJS *parent, String ^path, String ^prefix)
+HyperloopJS *HyperloopLoadJS(JSContextRef ctx, HyperloopJS *parent, string path, string prefix)
 {
 	return HyperloopLoadJSWithLogger(ctx, parent, path, prefix, nullptr);
 }

@@ -18,13 +18,12 @@ std::wstring hyperloop::getWString(JSContextRef ctx, JSValueRef ref) {
 	return hyperloop::getWString(sValue);
 }
 
+std::string hyperloop::getSStr(Platform::String^ string) {
+	return std::string(string->Begin(), string->End());
+}
+
 const char* hyperloop::getCStr(Platform::String^ string) {
-	std::wstring w_str(string->Begin());
-	std::string s_str(w_str.begin(), w_str.end());
-	int length = sizeof(w_str);
-	char *c_str = new char[length];
-	strcpy_s(c_str, length, s_str.c_str());
-	return c_str;
+	return std::string(string->Begin(), string->End()).c_str();
 }
 
 const char* hyperloop::getCStr(JSContextRef ctx, JSValueRef ref) {
@@ -35,6 +34,12 @@ const char* hyperloop::getCStr(JSContextRef ctx, JSValueRef ref) {
 	char *c_str = new char[length];
 	strcpy_s(c_str, length, s_str.c_str());
 	return c_str;
+}
+
+String^ hyperloop::getPlatformString(std::string s_str) {
+	std::wstring b(s_str.begin(), s_str.end());
+	const wchar_t *wcString = b.c_str();
+	return ref new String(wcString);
 }
 
 String^ hyperloop::getPlatformString(JSStringRef sValue) {
@@ -360,11 +365,11 @@ JSGlobalContextRef HyperloopCreateVM(String ^name, String ^prefix)
 	JSGlobalContextRetain(globalContextRef);
 
 	// load the app into the context
-	/*HyperloopJS *module = HyperloopLoadJS(globalContextRef, nullptr, name, prefix);
+	HyperloopJS *module = HyperloopLoadJS(globalContextRef, nullptr, hyperloop::getSStr(name), hyperloop::getSStr(prefix));
 	if (module == nullptr)
 	{
 		return nullptr;
-	}*/
+	}
 
 	return globalContextRef;
 }

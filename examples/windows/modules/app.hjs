@@ -3,8 +3,8 @@
  */
 function assert(value, test, msg) {
 	console.log(
-		(value ? '\033[32m✓\033[39m\033[0m ' : '\033[31m✘\033[39m\033[0m') +
-			'  ' + test + ' ' +
+		(value ? 'PASS' : 'FAIL') +
+			':  ' + test + ' ' +
 			(!value ? ('\t(received: ' + msg + ')') : '')
 	);
 }

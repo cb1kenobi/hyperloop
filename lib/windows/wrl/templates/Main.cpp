@@ -10,17 +10,19 @@ using namespace Windows::ApplicationModel::Activation;
 <% function boot() { %>
 	GeneratedApp::loadSources();
 	JSGlobalContextRef ctx = HyperloopCreateVM("./<%=main_js%>", "<%=prefix%>");
+	if (ctx == nullptr) {
+		OutputDebugStringA("Failed to start the Hyperloop VM; do you have a valid app.hjs?");
+		return;
+	}
 	JSObjectRef global = JSContextGetGlobalObject(ctx);
 	GeneratedApp::loadWithObject(ctx, global);
-	JSStringRef script = GeneratedApp::sources["<%=main_js%>"],
+	JSStringRef script = JSStringCreateWithUTF8CString(GeneratedApp::sources["<%=main_js%>"].c_str()),
 		sourceURL = JSStringCreateWithUTF8CString("<%=main_js%>");
 	JSValueRef exception = NULL;
-	JSValueRef result = JSEvaluateScript(ctx, script, global, sourceURL, 0, &exception);
+	JSEvaluateScript(ctx, script, global, sourceURL, 0, &exception);
 	CHECK_EXCEPTION(ctx, exception);
-	String^ sResult = hyperloop::getPlatformString(ctx, result);
 	JSStringRelease(sourceURL);
-	JSStringRelease(script);
-<% }
+	JSStringRelease(script);<% }
 if (!compiler.manual_bootstrap) { %>
 ref class HyperloopApp sealed : public Application
 {
