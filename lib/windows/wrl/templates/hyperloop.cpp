@@ -332,7 +332,7 @@ JSValueRef HyperloopLogger (JSContextRef ctx, JSObjectRef function, JSObjectRef 
 /**
  * create a hyperloop VM
  */
- 
+
 JSGlobalContextRef HyperloopCreateVM(JSGlobalContextRef globalContextRef, JSObjectRef globalObjectref, String ^name, String ^prefix)
 {
 	// inject a simple console logger
