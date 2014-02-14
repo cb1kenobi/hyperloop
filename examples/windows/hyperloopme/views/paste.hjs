@@ -1,0 +1,171 @@
+var Button = require('../controls/button.hjs');
+
+var transformOrigin = Point(.5, .5),
+	canvas,
+	deltas = [],
+	brushes = {
+		white: new SolidColorBrush(),
+		red: new SolidColorBrush(),
+		green: new SolidColorBrush(),
+		blue: new SolidColorBrush()
+	};
+
+brushes.white.Color = Colors.White;
+brushes.red.Color = Colors.Red;
+brushes.green.Color = Colors.Green;
+brushes.blue.Color = Colors.Blue;
+
+/*
+ Public API.
+ */
+exports.show = show;
+
+/*
+ Utility class.
+ */
+@class('ManipulationHandler', null, [], [
+	{
+		name: 'ManipulationDelta',
+		forHandler: 'ManipulationDeltaEventHandler',
+		returnType: 'void',
+		arguments: [
+			{ name: 'sender', type: 'Object^' },
+			{ name: 'e', type: 'ManipulationDeltaRoutedEventArgs^' }
+		],
+		action: function (params) {
+			var e = params.e,
+				view = @cast('Canvas^', e.OriginalSource),
+				transformGroup = new TransformGroup();
+
+			!this.angle && (this.angle = { R: 0 });
+			!this.translation && (this.translation = { X: 0, Y: 0 });
+
+			// Rotate.
+			view.RenderTransformOrigin = transformOrigin;
+			var rotateTransform = new RotateTransform();
+			rotateTransform.Angle = (this.angle.R += e.Delta.Rotation);
+			transformGroup.Children.Append(rotateTransform);
+
+			// Translate.
+			var translateTransform = new TranslateTransform();
+			translateTransform.X = (this.translation.X += e.Delta.Translation.X);
+			translateTransform.Y = (this.translation.Y += e.Delta.Translation.Y);
+			transformGroup.Children.Append(translateTransform);
+
+			// Scale.
+			view.Width += e.Delta.Expansion;
+			view.Height += e.Delta.Expansion;
+
+			// Apply.
+			view.RenderTransform = transformGroup;
+		}
+	}
+]);
+
+@class('PasteContinueTapHandler', null, [], [
+	{
+		name: 'PointerPressed',
+		forHandler: 'TappedEventHandler',
+		returnType: 'void',
+		arguments: [
+			{ name: 'sender', type: 'Object^' },
+			{ name: 'e', type: 'TappedRoutedEventArgs^' }
+		],
+		action: function () {
+			var bitmap = new RenderTargetBitmap();
+			bitmap.RenderAsync(canvas).then(function() {
+				require('./share.hjs').show(bitmap);
+			});
+		}
+	}
+]);
+
+var imageRoot = 'https://dl.dropboxusercontent.com/u/16441391/temp/hyperloopme/',
+	lastIndex = 0,
+	images = [
+		'logo.good.png',
+		'hearts.png',
+		'tony.png',
+		'jeff.png',
+		'matt.png',
+		'eric.png',
+		'ingo.png',
+		'neeraj.png',
+		'russ.png',
+		'unicorn.png'
+	],
+	ratios = [
+		200/200,
+		242/200,
+		200/200,
+		200/245,
+		217/200,
+		200/200,
+		200/200,
+		200/200,
+		200/200,
+		200/205
+	];
+
+@class('PasteAddTapHandler', null, [], [
+	{
+		name: 'PointerPressed',
+		forHandler: 'TappedEventHandler',
+		returnType: 'void',
+		arguments: [
+			{ name: 'sender', type: 'Object^' },
+			{ name: 'e', type: 'TappedRoutedEventArgs^' }
+		],
+		action: function() {
+			var handler = new ManipulationHandler(),
+				delta = new ManipulationDeltaEventHandler(handler, 'ManipulationDelta'),
+				background = new ImageBrush(),
+				view = new Canvas(),
+				index = lastIndex++ % images.length,
+				ratio = ratios[index],
+				height = (Math.random() * 200 + 100) | 0,
+				width = height * ratio,
+				uri = new Uri(imageRoot + images[index]);
+
+			deltas.push(delta);
+
+			background.ImageSource = new BitmapImage(uri);
+			view.Background = background;
+			view.Width = width; 
+			view.Height = height;
+			Canvas.SetTop(view, (Math.random() * (canvas.Height - view.Height)) | 0);
+			Canvas.SetLeft(view, (Math.random() * (canvas.Width - view.Width)) | 0);
+			view.ManipulationMode = ManipulationModes.All;
+			view.add_ManipulationDelta(delta);
+			canvas.Children.Append(view);
+		}
+	}
+]);
+
+/*
+ Implementation.
+ */
+function show(image) {
+	var window = Window.Current,
+		background = new ImageBrush(),
+		container = new Canvas(),
+		buttons = new StackPanel(),
+		path = image.Path,
+		uri = new Uri(path);
+
+	background.ImageSource = new BitmapImage(uri);
+
+	canvas = new Canvas();
+	deltas = [];
+
+	canvas.Width = window.Bounds.Width;
+	canvas.Height = window.Bounds.Height;
+	canvas.Background = background;
+
+	container.Children.Append(canvas);
+	buttons.Children.Append(Button.createView('Done', new TappedEventHandler(new PasteContinueTapHandler(), 'PointerPressed')));
+	buttons.Children.Append(Button.createView('Add', new TappedEventHandler(new PasteAddTapHandler(), 'PointerPressed')));
+	container.Children.Append(buttons);
+
+	window.Content = container;
+}

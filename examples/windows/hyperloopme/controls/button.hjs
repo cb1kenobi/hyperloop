@@ -1,0 +1,32 @@
+var White = new SolidColorBrush(Colors.White);
+
+/*
+ Public API.
+ */
+exports.createView = createView;
+
+/*
+ Implementation.
+ */
+function createView(text, handler) {
+	var button = new Button(),
+		textBlock = new TextBlock();
+
+	button.Width = 500;
+	button.Height = 100;
+	button.Foreground = White;
+	button.VerticalAlignment = VerticalAlignment.Center;
+	button.HorizontalAlignment = HorizontalAlignment.Center;
+	button.add_Tapped(handler);
+
+	textBlock.Text = text;
+	textBlock.TextWrapping = TextWrapping.Wrap;
+	textBlock.TextAlignment = TextAlignment.Center;
+	textBlock.VerticalAlignment = VerticalAlignment.Center;
+	textBlock.HorizontalAlignment = HorizontalAlignment.Center;
+	textBlock.FontSize = 60;
+
+	button.Content = textBlock;
+
+	return button;
+}

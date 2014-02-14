@@ -1,0 +1,18 @@
+{
+	"Windows": {
+		"Package.appxmanifest": {
+			"Package": {
+				"Capabilities": [
+					{
+						"name": "Capability",
+						"attributes": "Name=\"internetClient\""
+					},
+					{
+						"name": "DeviceCapability",
+						"attributes": "Name=\"webcam\""
+					}
+				]
+			}
+		}
+	}
+}

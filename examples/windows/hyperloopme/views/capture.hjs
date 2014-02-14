@@ -1,0 +1,21 @@
+/*
+ Public API.
+ */
+exports.show = show;
+
+/*
+ Implementation.
+ */
+function show() {
+	var captureUI = new CameraCaptureUI();
+	captureUI.CaptureFileAsync(CameraCaptureUIMode.Photo).then(capturedPhoto);
+}
+
+/*
+ Events.
+ */
+function capturedPhoto(capturedItem) {
+	if (capturedItem) {
+		require('./paste.hjs').show(capturedItem);
+	}
+}

@@ -1,0 +1,45 @@
+var Button = require('../controls/button.hjs');
+
+/*
+ Public API.
+ */
+exports.show = show;
+
+/*
+ Utility class.
+ */
+@class('LaunchTapHandler', null, [], [
+	{
+		name: 'PointerPressed',
+		forHandler: 'TappedEventHandler',
+		returnType: 'void',
+		arguments: [
+			{ name: 'sender', type: 'Object^' },
+			{ name: 'e', type: 'TappedRoutedEventArgs^' }
+		],
+		action: require('./capture.hjs').show
+	}
+]);
+
+/*
+ Implementation.
+ */
+function show() {
+	var window = Window.Current,
+		container = new StackPanel();
+	
+	container.Background = new SolidColorBrush(new Color(80, 255, 0, 0));
+
+	var canvas = new Canvas(),
+		background = new ImageBrush(),
+		uri = new Uri('https://dl.dropboxusercontent.com/u/16441391/temp/hyperloopme/logo.good.png');
+	background.ImageSource = new BitmapImage(uri);
+	canvas.Background = background;
+	canvas.Width = 217;
+	canvas.Height = 200;
+	canvas.Margin = new Thickness(20, 150, 20, 100);
+	container.Children.Append(canvas);
+	container.Children.Append(Button.createView('Hyperloop Me!', new TappedEventHandler(new LaunchTapHandler(), 'PointerPressed')));
+
+	window.Content = container;
+}
