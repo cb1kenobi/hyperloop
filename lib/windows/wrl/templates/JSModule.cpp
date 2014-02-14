@@ -77,7 +77,7 @@ string stringByDeletingPathExtension(string path)
 	}
 }
 string resolveDotDotSlash(string path) {
-	return regex_replace(path, regex("/[^/]+/.."), "");;
+	return regex_replace(path, regex("/[^/]+/\\.\\."), "");;
 }
 
 /*
@@ -270,7 +270,8 @@ HyperloopJS *HyperloopLoadJSWithLogger(JSContextRef ctx, HyperloopJS *parent, st
 			}
 			else if (hasPrefix(filepath, "../")) {
 				if (!parentDir.empty()) {
-					filepath = resolveDotDotSlash(stringByAppendingPathComponent(stringByAppendingPathComponent(".", parentDir), filepath));
+					filepath = stringByAppendingPathComponent(stringByAppendingPathComponent(".", parentDir), filepath);
+					filepath = resolveDotDotSlash(filepath);
 				}
 			}
 			else if (hasPrefix(filepath, "/")) {
