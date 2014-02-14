@@ -14,8 +14,6 @@ Hyperloop is a next-generation compiler that converts JavaScript source code int
 
 #### from npm [![NPM version](https://badge.fury.io/js/hyperloop.png)](http://badge.fury.io/js/hyperloop)
 
-> **NOT YET AVAILABLE**
-
 ```
 [sudo] npm install -g hyperloop
 ```
