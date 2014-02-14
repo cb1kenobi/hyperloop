@@ -37,7 +37,7 @@ sudo npm link
 
 ## Quick Start
 
-Assuming you have already satisfied the [requirements](https://github.com/appcelerator/hyperloop#requirements) for your target platform, launching a basic example app can be done like this:
+Assuming you have already satisfied the [requirements](https://github.com/appcelerator/hyperloop#requirements) for your target platform and [installed](https://github.com/appcelerator/hyperloop#install) hyperloop, launching a basic example app can be done like this:
 
 ```
 # let's launch the windows "helloworld" on Windows
@@ -50,6 +50,8 @@ hyperloop launch --src="examples\ios\spritekit"
 Based on your target platform, you may be asked to create certificates, licenses, etc... Hyperloop should walk you through that. The initial compile will take a minute or so to generate the AST for the system frameworks. However, subsequent compiles will be almost instantaneous as it will be cached.  In the future, we plan on speeding this up greatly. If all goes well you'll see this on your local machine (Windows) or iOS simulator (Mac OSX), respectively.
 
 This shows only the most basic workflow for launching an app with hyperloop. Be sure to check out the wiki for _many_ more details on creating, developing, building, and launching apps with hyperloop using both purely CLI and the native tooling of your target platform. Also, be sure to check out the full [listing of examples](https://github.com/appcelerator/hyperloop/tree/master/examples).
+
+For even more information regarding development, supported platforms, and even using [hyperloop code in Titanium 3.1.3+](https://github.com/appcelerator/hyperloop/wiki/Using-Hyperloop-code-in-Ti.Current-SDK), be sure to check out the [wiki](https://github.com/appcelerator/hyperloop/wiki).
 
 ## Documentation & Community
 
