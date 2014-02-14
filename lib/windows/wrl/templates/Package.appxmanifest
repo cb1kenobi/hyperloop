@@ -48,6 +48,9 @@
     </Application>
   </Applications>
   <Capabilities>
-    <Capability Name="internetClient" />
+<% packageJSON.Windows && packageJSON.Windows["Package.appxmanifest"].Package.Capabilities.forEach(function(capability) { %>
+    <<%- capability.name %> <%- capability.attributes %> />
+<% }); %>
   </Capabilities>
+    
 </Package>
