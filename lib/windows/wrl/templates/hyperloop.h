@@ -127,15 +127,15 @@ String^ HyperloopToStringFromString(JSContextRef ctx, JSStringRef value);
 void *HyperloopJSValueRefTovoid(JSContextRef ctx, JSValueRef value, JSValueRef *exception, bool *cleanup);
 
 <% [ 'float64', 'float32', 'float',
-		'double',
+		'double', 'char', 'unsigned char',
 		'int64', 'int32', 'int16', 'int8', 'int',
 		'uint8', 'uint16', 'uint32', 'uint64'
 	]
 	.forEach(function(type) { %>
-JSValueRef Hyperloop<%- type %>ToJSValueRef(JSContextRef ctx, <%- type %> val);
-<%- type %> HyperloopJSValueRefTo<%- type %>(JSContextRef ctx, JSValueRef value, JSValueRef *exception, bool *cleanup);
-JSValueRef Hyperloop<%- type %>ArrayToJSValueRef(JSContextRef ctx, <%- type %>* val, int length);
-<%- type %>* HyperloopJSValueRefTo<%- type %>Array(JSContextRef ctx, JSValueRef value, JSValueRef *exception, bool *cleanup);
+JSValueRef Hyperloop<%- type.replace(/ /g,'') %>ToJSValueRef(JSContextRef ctx, <%- type %> val);
+<%- type %> HyperloopJSValueRefTo<%- type.replace(/ /g,'') %>(JSContextRef ctx, JSValueRef value, JSValueRef *exception, bool *cleanup);
+JSValueRef Hyperloop<%- type.replace(/ /g,'') %>ArrayToJSValueRef(JSContextRef ctx, <%- type %>* val, int length);
+<%- type %>* HyperloopJSValueRefTo<%- type.replace(/ /g,'') %>Array(JSContextRef ctx, JSValueRef value, JSValueRef *exception, bool *cleanup);
 <% }) %>
 
 JSValueRef HyperloopboolToJSValueRef(JSContextRef ctx, bool boolean);

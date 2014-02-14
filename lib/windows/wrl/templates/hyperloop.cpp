@@ -442,31 +442,31 @@ bool HyperloopJSValueRefTobool(JSContextRef ctx, JSValueRef value, JSValueRef *e
 }
 
 <% [ 'float64', 'float32', 'float',
-		'double',
+		'double', 'char', 'unsigned char',
 		'int64', 'int32', 'int16', 'int8', 'int',
 		'uint8', 'uint16', 'uint32', 'uint64'
 	]
 	.forEach(function(type) { %>
-JSValueRef Hyperloop<%- type %>ToJSValueRef(JSContextRef ctx, <%- type %> val) {
+JSValueRef Hyperloop<%- type.replace(/ /g,'') %>ToJSValueRef(JSContextRef ctx, <%- type %> val) {
 	return JSValueMakeNumber(ctx, (double)val);
 }
-<%- type %> HyperloopJSValueRefTo<%- type %>(JSContextRef ctx, JSValueRef value, JSValueRef *exception, bool *cleanup) {
+<%- type %> HyperloopJSValueRefTo<%- type.replace(/ /g,'') %>(JSContextRef ctx, JSValueRef value, JSValueRef *exception, bool *cleanup) {
 	if (JSValueIsNumber(ctx, value)) {
 		return (<%- type %>)JSValueToNumber(ctx, value, exception);
 	}
 	return 0;
 }
-JSValueRef Hyperloop<%- type %>ArrayToJSValueRef(JSContextRef ctx, <%- type %>* val, int length) {
+JSValueRef Hyperloop<%- type.replace(/ /g,'') %>ArrayToJSValueRef(JSContextRef ctx, <%- type %>* val, int length) {
 	throw ref new Exception(-1, "Hyperloop<%- type %>ArrayToJSValueRef has not been implemented yet!");
 }
-<%- type %>* HyperloopJSValueRefTo<%- type %>Array(JSContextRef ctx, JSValueRef value, JSValueRef *exception, bool *cleanup) {
+<%- type %>* HyperloopJSValueRefTo<%- type.replace(/ /g,'') %>Array(JSContextRef ctx, JSValueRef value, JSValueRef *exception, bool *cleanup) {
 	if (JSValueIsObject(ctx, value)) {
 		JSObjectRef objRef = JSValueToObject(ctx, value, exception);
 		int length = HyperloopGetLength(ctx, objRef, exception);
 		auto result = new <%- type %>[length];
 		for (int i = 0; i < length; i++) {
 			JSValueRef val = JSObjectGetPropertyAtIndex(ctx, objRef, i, exception);
-			result[i] = HyperloopJSValueRefTo<%- type %>(ctx, val, exception, 0);
+			result[i] = HyperloopJSValueRefTo<%- type.replace(/ /g,'') %>(ctx, val, exception, 0);
 		}
 		return result;
 	}
