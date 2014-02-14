@@ -1,5 +1,6 @@
 <%- renderTemplate('jsc/templates/doc.ejs') %>
 #include <map>
+#include <regex>
 #include "JSModule.h"
 #include "hyperloop.h"
 #include "GeneratedApp.h"
@@ -74,6 +75,9 @@ string stringByDeletingPathExtension(string path)
 	{
 		return path.substr(0, dotIndex);
 	}
+}
+string resolveDotDotSlash(string path) {
+	return regex_replace(path, regex("/[^/]+/.."), "");;
 }
 
 /*
@@ -256,11 +260,22 @@ HyperloopJS *HyperloopLoadJSWithLogger(JSContextRef ctx, HyperloopJS *parent, st
 
 	if (hasPrefix(path, "./") || hasPrefix(path, "/") || hasPrefix(path, "../"))
 	{
-		filepath = path;
 		if (parent != nullptr)
 		{
-			auto dir = stringByDeletingLastPathComponent(parent->filename);
-			filepath = stringByAppendingPathComponent(dir, path);
+			auto parentDir = stringByDeletingLastPathComponent(parent->filename);
+			if (hasPrefix(filepath, "./")) {
+				if (!parentDir.empty()) {
+					filepath = stringByAppendingPathComponent(stringByAppendingPathComponent(".", parentDir), filepath.substr(2));
+				}
+			}
+			else if (hasPrefix(filepath, "../")) {
+				if (!parentDir.empty()) {
+					filepath = resolveDotDotSlash(stringByAppendingPathComponent(stringByAppendingPathComponent(".", parentDir), filepath));
+				}
+			}
+			else if (hasPrefix(filepath, "/")) {
+				filepath = "." + filepath;
+			}
 		}
 		filepath = stringByStandardizingPath(filepath);
 
@@ -273,7 +288,7 @@ HyperloopJS *HyperloopLoadJSWithLogger(JSContextRef ctx, HyperloopJS *parent, st
 	else if (parent == nullptr)
 	{
 		// not a specific path, must look at node_modules according to node spec (step 3)
-		filepath = stringByAppendingPathComponent("./node_modules", path);
+		filepath = stringByAppendingPathComponent("./node_modules", filepath);
 		module = modules[stringByDeletingPathExtension(filepath)];
 		if (module)
 		{
@@ -282,13 +297,13 @@ HyperloopJS *HyperloopLoadJSWithLogger(JSContextRef ctx, HyperloopJS *parent, st
 		return HyperloopLoadJSWithLogger(ctx, parent, filepath, prefix, nullptr);
 	}
 
-	jscode = HyperloopPathToSource(path, prefix);
+	jscode = HyperloopPathToSource(filepath, prefix);
 
 	if (jscode.empty())
 	{
-		auto subpath = stringByAppendingPathComponent(path, "package.json");
+		auto subpath = stringByAppendingPathComponent(filepath, "package.json");
 		auto packagePath = subpath;
-		auto fileData = HyperloopPathToSource(path, prefix);
+		auto fileData = HyperloopPathToSource(subpath, prefix);
 		if (!fileData.empty())
 		{
 			auto json = ref new JsonObject();
@@ -298,7 +313,7 @@ HyperloopJS *HyperloopLoadJSWithLogger(JSContextRef ctx, HyperloopJS *parent, st
 				auto main = json->GetNamedString("main");
 				if (main != nullptr)
 				{
-					subpath = stringByAppendingPathComponent(path, hyperloop::getSStr(main));
+					subpath = stringByAppendingPathComponent(filepath, hyperloop::getSStr(main));
 					packagePath = stringByStandardizingPath(subpath);
 					filepath = packagePath;
 					module = modules[stringByDeletingPathExtension(filepath)];
@@ -313,7 +328,7 @@ HyperloopJS *HyperloopLoadJSWithLogger(JSContextRef ctx, HyperloopJS *parent, st
 		if (jscode.empty())
 		{
 			// look for index.js
-			subpath = stringByAppendingPathComponent(path, "index.js");
+			subpath = stringByAppendingPathComponent(filepath, "index.js");
 			packagePath = stringByStandardizingPath(subpath);
 			filepath = packagePath;
 			module = modules[stringByDeletingPathExtension(filepath)];
@@ -325,13 +340,13 @@ HyperloopJS *HyperloopLoadJSWithLogger(JSContextRef ctx, HyperloopJS *parent, st
 		}
 
 		// if we're already inside node_modules, don't go into this block or you'll have infinite recursion
-		if (jscode.empty() && path.find("node_modules/") == -1)
+		if (jscode.empty() && filepath.find("node_modules/") == -1)
 		{
 			// check node modules, by walking up from the current directory to the top of the directory
 			auto top = parent ? stringByDeletingLastPathComponent(parent->filename) : "";
 			while (!top.empty())
 			{
-				auto fp = stringByAppendingPathComponent(top, "node_modules/" + path);
+				auto fp = stringByAppendingPathComponent(top, "node_modules/" + filepath);
 				module = modules[stringByDeletingPathExtension(fp)];
 				if (module)
 				{
@@ -349,12 +364,8 @@ HyperloopJS *HyperloopLoadJSWithLogger(JSContextRef ctx, HyperloopJS *parent, st
 	}
 	else
 	{
-
-		// load up our JS
-		auto jscode = HyperloopPathToSource(path, prefix);
-
 		HyperloopJS *module = new HyperloopJS();
-		module->id = stringByDeletingPathExtension(hasPrefix(path, "./") ? path.substr(2) : path);
+		module->id = stringByDeletingPathExtension(hasPrefix(filepath, "./") ? filepath.substr(2) : filepath);
 		module->filename = module->id + ".js";
 		module->loaded = false;
 		module->parent = parent;
@@ -362,7 +373,7 @@ HyperloopJS *HyperloopLoadJSWithLogger(JSContextRef ctx, HyperloopJS *parent, st
 		module->exports = JSObjectMake(ctx, 0, 0);
 		module->prefix = prefix;
 
-		modules[path] = module;
+		modules[filepath] = module;
 
 		JSObjectRef moduleObjectRef = HyperloopMakeJSObject(ctx, module);
 		JSStringRef exportsProperty = JSStringCreateWithUTF8CString("exports");
@@ -420,12 +431,12 @@ HyperloopJS *HyperloopLoadJSWithLogger(JSContextRef ctx, HyperloopJS *parent, st
 		JSStringRef body = JSStringCreateWithUTF8CString(wrapper.c_str());
 
 		JSValueRef *exception = NULL;
-		JSStringRef filename = JSStringCreateWithUTF8CString(path.c_str());
+		JSStringRef filename = JSStringCreateWithUTF8CString(filepath.c_str());
 		JSObjectRef requireFn = JSObjectMakeFunction(ctx, fnName, 1, parameterNames, body, filename, 1, exception);
 		JSStringRelease(filename);
 
 		JSValueRef fnResult = JSObjectCallAsFunction(ctx, requireFn, moduleObjectRef, 1, arguments, exception);
-		JSStringRef pathRef = JSStringCreateWithUTF8CString(path.c_str());
+		JSStringRef pathRef = JSStringCreateWithUTF8CString(filepath.c_str());
 		JSStringRef prefixRef = JSStringCreateWithUTF8CString(prefix.c_str());
 
 		JSStringRelease(pathRef);
