@@ -1,7 +1,7 @@
 {
   "name": "hyperloop",
   "preferGlobal": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Appcelerator <support@appcelerator.com>",
   "description": "hyperloop compiler",
   "license": "Apache Public License, Version 2",
