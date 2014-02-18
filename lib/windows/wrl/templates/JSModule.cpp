@@ -426,7 +426,7 @@ HyperloopJS *HyperloopLoadJSWithLogger(JSContextRef ctx, HyperloopJS *parent, st
 			JSStringRelease(propertyName);
 		}
 
-		auto wrapper = "var $self = this" + propertyNames + ";\n" + jscode + ";";
+		auto wrapper = "var $self = this" + propertyNames + ";\r\n" + jscode + ";";
 
 		JSStringRef fnName = JSStringCreateWithUTF8CString("require");
 		JSStringRef body = JSStringCreateWithUTF8CString(wrapper.c_str());

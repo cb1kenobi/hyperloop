@@ -24,7 +24,9 @@ var EventHandler = @generic(EventHandler, 'Object^');
 			{ name: 'e', type: 'Object^' }
 		],
 		action: function(params) {
-			text.Text = "Wins: " + (++wins);
+			var txt = 'Wins: ' + (++wins);
+			console.log(txt);
+			text.Text = txt;
 		}
 	}
 ]);
