@@ -1,5 +1,6 @@
 <%- renderTemplate('jsc/templates/doc.ejs') %>
 #include "hyperloop.h"
+#include "Logger.h"
 #include "nan.h"
 using namespace Platform;
 using namespace Platform::Details;
@@ -80,6 +81,10 @@ JSValueRef hyperloop::getJSValueRef(JSContextRef ctx, Platform::String^ string) 
 	JSValueRef retVal = JSValueMakeString(ctx, str);
 	JSStringRelease(str);
 	return retVal;
+}
+
+void hyperloop::log(String ^string) {
+	Logger::log(string);
 }
 
 JSValueRef HyperloopundefinedToJSValueRef(JSContextRef ctx, Object^ o) {
@@ -322,9 +327,7 @@ JSValueRef HyperloopLogger (JSContextRef ctx, JSObjectRef function, JSObjectRef 
 			out += " " + HyperloopToString(ctx, arguments[c]);
 		}
 	}
-	out += "\n";
-	std::wstring w_str(out->Begin());
-	OutputDebugString(w_str.c_str());
+	hyperloop::log(out);
 
 	return JSValueMakeUndefined(ctx);
 }

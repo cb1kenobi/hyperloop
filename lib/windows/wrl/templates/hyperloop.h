@@ -21,14 +21,14 @@ public:
 	static JSStringRef getJSStringRef(char *c_str, int length);
 	static JSStringRef getJSStringRef(Platform::String^ string);
 	static JSValueRef getJSValueRef(JSContextRef ctx, Platform::String^ string);
+	static void log(String ^string);
 private:
 	hyperloop();
 };
 
 #define CHECK_EXCEPTION(ctx, exception)\
 if (exception != nullptr) {\
-	OutputDebugString(hyperloop::getWString(ctx, exception).c_str());\
-	OutputDebugStringA("\n");\
+	hyperloop::log(hyperloop::getPlatformString(ctx, exception));\
 }
 
 JSValueRef HyperloopundefinedToJSValueRef(JSContextRef, Object^);

@@ -15,7 +15,10 @@ using namespace Windows::ApplicationModel::Activation;
 
 	JSGlobalContextRef ctx = HyperloopCreateVM(globalContextRef, globalObjectref, "./<%=main_js%>", "<%=prefix%>");
 	if (ctx == nullptr) {
-		OutputDebugStringA("Failed to start the Hyperloop VM; do you have a valid <%=main_js%>?");
+		hyperloop::log("Failed to start the Hyperloop VM; do you have a valid <%=main_js%>?");
+	}
+	else {
+		hyperloop::log("Hyperloop VM started.");
 	}<% }
 if (!compiler.manual_bootstrap) { %>
 ref class HyperloopApp sealed : public Application
