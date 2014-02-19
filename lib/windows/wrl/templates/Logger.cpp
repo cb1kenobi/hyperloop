@@ -12,10 +12,12 @@ void Logger::log(Platform::String ^string) {
 	string += "\r\n";
 	OutputDebugString(std::wstring(string->Data()).c_str());
 	if (logFileGenerating) {
+		OutputDebugString(L"Queued...\r\n");
 		logQueue[logIndex++] = string;
 	}
 	else if (logFile == nullptr) {
 		logFileGenerating = true;
+		OutputDebugString(L"Queued...\r\n");
 		logQueue[logIndex++] = string;
 		OutputDebugString(L"Creating log file...\r\n");
 		auto logFolder = Windows::Storage::ApplicationData::Current->LocalFolder;
@@ -23,8 +25,12 @@ void Logger::log(Platform::String ^string) {
 		task.then([](Windows::Storage::StorageFile ^file) {
 			OutputDebugString(std::wstring(("Created log file at " + file->Path + "\r\n")->Data()).c_str());
 			logFile = file;
-			for (auto i = 0; i < logIndex; i++) {
-				Windows::Storage::FileIO::AppendTextAsync(logFile, logQueue[i]);
+			if (logIndex > 0) {
+				auto output = logQueue[0];
+				for (int i = 1; i < logIndex; i++) {
+					output += logQueue[i];
+				}
+				Windows::Storage::FileIO::AppendTextAsync(logFile, output);
 			}
 			logIndex = 0;
 			logQueue = nullptr;
