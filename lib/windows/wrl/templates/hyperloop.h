@@ -5,6 +5,7 @@
 #include <JavaScriptCore/JavaScript.h>
 #include "JSPrivateObject.h"
 #include "JSModule.h"
+#include "ObjectGuid.h"
 
 class hyperloop
 {
@@ -143,11 +144,3 @@ bool HyperloopJSValueRefTobool(JSContextRef ctx, JSValueRef value, JSValueRef *e
 
 JSValueRef HyperloopStringToJSValueRef(JSContextRef ctx, String^ string);
 String^ HyperloopJSValueRefToString(JSContextRef ctx, JSValueRef value, JSValueRef *exception, bool *cleanup);
-
-JSObjectRef MakeObjectForObject(JSContextRef ctx, Object^ instance);
-JSClassRef CreateClassForObject();
-JSClassRef CreateClassForObjectConstructor();
-JSValueRef HyperloopObjectToJSValueRef(JSContextRef ctx, Object^ instance);
-Object^ HyperloopJSValueRefToObject(JSContextRef ctx, JSValueRef instance);
-Object^ HyperloopJSValueRefToobject(JSContextRef ctx, JSValueRef instance, JSValueRef *exception, bool *cleanup);
-JSValueRef HyperloopobjectToJSValueRef(JSContextRef ctx, Object^ instance);

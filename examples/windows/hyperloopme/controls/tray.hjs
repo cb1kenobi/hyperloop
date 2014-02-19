@@ -1,0 +1,35 @@
+var Black = new SolidColorBrush(new Color(80, 0, 0, 0)),
+	Button = require('./button.hjs');
+
+/*
+ Public API.
+ */
+module.exports = _constructor;
+
+/*
+ Implementation.
+ */
+function _constructor(options) {
+	var window = Window.Current,
+		bottom = new Canvas(),
+		rightOffset = window.Bounds.Width;
+
+	bottom.Background = Black;
+	bottom.Height = 90;
+	bottom.Width = window.Bounds.Width;
+	Canvas.SetTop(bottom, window.Bounds.Height - bottom.Height);
+	Canvas.SetLeft(bottom, 0);
+
+	for (var i = options.length - 1; i >= 0; i--) {
+		var option = options[i],
+			button = Button(option.text, option.handler),
+			xOffset = bottom.Height / 2 - button.Height / 2;
+
+		rightOffset -= button.Width + xOffset;
+		Canvas.SetTop(button, xOffset);
+		Canvas.SetLeft(button, rightOffset);
+		bottom.Children.Append(button);
+	}
+
+	return bottom;
+}

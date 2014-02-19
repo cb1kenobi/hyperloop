@@ -1,14 +1,9 @@
-var Button = require('../controls/button.hjs');
+var Tray = require('../controls/tray.hjs'),
+	share = require('./share.hjs');
 
+global.canvas = new Canvas();
 var transformOrigin = Point(.5, .5),
-	canvas,
-	deltas = [],
-	brushes = {
-		white: new SolidColorBrush(Colors.White),
-		red: new SolidColorBrush(Colors.Red),
-		green: new SolidColorBrush(Colors.Green),
-		blue: new SolidColorBrush(Colors.Blue)
-	};
+	deltas = [];
 
 /*
  Public API.
@@ -57,7 +52,7 @@ exports.show = show;
 	}
 ]);
 
-@class('PasteContinueTapHandler', null, [], [
+@class('PasteDoneTapHandler', null, [], [
 	{
 		name: 'PointerPressed',
 		forHandler: 'TappedEventHandler',
@@ -66,10 +61,10 @@ exports.show = show;
 			{ name: 'sender', type: 'Object^' },
 			{ name: 'e', type: 'TappedRoutedEventArgs^' }
 		],
-		action: function () {
+		action: function() {
 			var bitmap = new RenderTargetBitmap();
-			bitmap.RenderAsync(canvas).then(function() {
-				require('./share.hjs').show(bitmap);
+			bitmap.RenderAsync(global.canvas).then(function() {
+				share.show(bitmap);
 			});
 		}
 	}
@@ -126,13 +121,13 @@ var imageRoot = 'https://dl.dropboxusercontent.com/u/16441391/temp/hyperloopme/'
 
 			background.ImageSource = new BitmapImage(uri);
 			view.Background = background;
-			view.Width = width; 
+			view.Width = width;
 			view.Height = height;
-			Canvas.SetTop(view, (Math.random() * (canvas.Height - view.Height)) | 0);
-			Canvas.SetLeft(view, (Math.random() * (canvas.Width - view.Width)) | 0);
+			Canvas.SetTop(view, (Math.random() * (global.canvas.Height - view.Height)) | 0);
+			Canvas.SetLeft(view, (Math.random() * (global.canvas.Width - view.Width)) | 0);
 			view.ManipulationMode = ManipulationModes.All;
 			view.add_ManipulationDelta(delta);
-			canvas.Children.Append(view);
+			global.canvas.Children.Append(view);
 		}
 	}
 ]);
@@ -144,23 +139,31 @@ function show(image) {
 	var window = Window.Current,
 		background = new ImageBrush(),
 		container = new Canvas(),
-		buttons = new StackPanel(),
 		path = image.Path,
+		
 		uri = new Uri(path);
 
 	background.ImageSource = new BitmapImage(uri);
 
-	canvas = new Canvas();
+	global.canvas.Children.Clear();
 	deltas = [];
 
-	canvas.Width = window.Bounds.Width;
-	canvas.Height = window.Bounds.Height;
-	canvas.Background = background;
+	global.canvas.Width = window.Bounds.Width;
+	global.canvas.Height = window.Bounds.Height;
+	global.canvas.Background = background;
 
-	container.Children.Append(canvas);
-	buttons.Children.Append(Button.createView('Done', new TappedEventHandler(new PasteContinueTapHandler(), 'PointerPressed')));
-	buttons.Children.Append(Button.createView('Add', new TappedEventHandler(new PasteAddTapHandler(), 'PointerPressed')));
-	container.Children.Append(buttons);
+	container.Children.Append(global.canvas);
+
+	container.Children.Append(Tray([
+		{
+			text: 'Add',
+			handler: new TappedEventHandler(new PasteAddTapHandler(), 'PointerPressed')
+		},
+		{
+			text: 'Done',
+			handler: new TappedEventHandler(new PasteDoneTapHandler(), 'PointerPressed')
+		}
+	]));
 
 	window.Content = container;
 }

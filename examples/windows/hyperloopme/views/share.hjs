@@ -1,7 +1,4 @@
-var Button = require('../controls/button.hjs');
-var DataTransferType = @generic(TypedEventHandler, 'DataTransferManager^', 'DataRequestedEventArgs^');
-var lastBitmap;
-
+var Tray = require('../controls/tray.hjs');
 /*
  Public API.
  */
@@ -36,90 +33,29 @@ exports.show = show;
 		action: require('./launch.hjs').show
 	}
 ]);
-@class('ShareHandler', null, [], [
-	{
-		name: 'ShareTextHandler',
-		forHandler: DataTransferType,
-		returnType: 'void',
-		arguments: [
-			{ name: 'manager', type: 'DataTransferManager^' },
-			{ name: 'e', type: 'DataRequestedEventArgs^' }
-		],
-		action: function (params) {
-			if (!lastBitmap) {
-				return;
-			}
-			var e = params.e,
-				request = e.Request;
-		    request.Data.Properties.Title = 'You Hyperlooped Yourself!';
-		    request.Data.Properties.Description = 'Now share this awesome with the world.';
-			request.Data.SetDataProvider(StandardDataFormats.Bitmap,
-				new DataProviderHandler(shareHandler, 'OnDeferredImageRequestedHandler')); 
-		}
-	},
-	{
-		name: 'OnDeferredImageRequestedHandler',
-		forHandler: 'DataProviderHandler',
-		returnType: 'void',
-		arguments: [
-			{ name: 'request', type: 'DataProviderRequest^' }
-		],
-		action: function (params) {
-			if (!lastBitmap) {
-				return;
-			}
-			var request = params.request,
-				deferral = request.GetDeferral();
-
-			var stream = new InMemoryRandomAccessStream();
-            // Render to an image at the current system scale and retrieve pixel contents 
-            lastBitmap.GetPixelsAsync().then(function(pixelBuffer) {
-	            // Encode image to an in-memory stream 
-	            BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream).then(function(encoder) {
-		            encoder.SetPixelData(
-			            BitmapPixelFormat.Bgra8,
-			            BitmapAlphaMode.Ignore,
-			            lastBitmap.PixelWidth,
-			            lastBitmap.PixelHeight,
-			            DisplayInformation.GetForCurrentView().LogicalDpi,
-			            DisplayInformation.GetForCurrentView().LogicalDpi,
-			            pixelBuffer.ToArray()
-		            );
-		            encoder.FlushAsync().then(function() {
-			            // Set content of the DataProviderRequest to the encoded image in memory 
-			            request.SetData(RandomAccessStreamReference.CreateFromStream(stream));
-			            deferral.Complete();
-		            });
-	            });
-            });
-		}
-	}
-]);
-
-/*
- Events.
- */
-var shareHandler = new ShareHandler();
-DataTransferManager
-	.GetForCurrentView()
-	.add_DataRequested(new DataTransferType(shareHandler, 'ShareTextHandler'));
 
 /*
  Implementation.
  */
 function show(bitmap) {
-	lastBitmap = bitmap;
 	var window = Window.Current,
 		background = new ImageBrush(),
-		container = new StackPanel();
+		container = new Canvas();
 	
-	container.Margin = new Thickness(20, 20, 20, 20);
-
 	background.ImageSource = bitmap;
 	container.Background = background;
 
-	container.Children.Append(Button.createView('Share', new TappedEventHandler(new ShareShareTapHandler(), 'PointerPressed')));
-	container.Children.Append(Button.createView('Continue', new TappedEventHandler(new ShareContinueTapHandler(), 'PointerPressed')));
+	var tray = global.lastTray = Tray([
+		{
+			text: 'Share',
+			handler: new TappedEventHandler(new ShareShareTapHandler(), 'PointerPressed')
+		},
+		{
+			text: 'Continue',
+			handler: new TappedEventHandler(new ShareContinueTapHandler(), 'PointerPressed')
+		}
+	]);
+	container.Children.Append(tray);
 
 	window.Content = container;
 }
