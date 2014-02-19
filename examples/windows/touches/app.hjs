@@ -2,7 +2,12 @@ var transformOrigin = Point(.5, .5),
 	deltas = [],
 	window = Window.Current,
 	canvas = new Canvas(),
-	brush = new SolidColorBrush();
+	colors = {
+		red: new SolidColorBrush(Colors.Red),
+		green: new SolidColorBrush(Colors.Green),
+		blue: new SolidColorBrush(Colors.Blue),
+		yellow: new SolidColorBrush(Colors.Yellow)
+	};
 
 @class('ManipulationHandler', null, [], [
 	{
@@ -43,8 +48,7 @@ var transformOrigin = Point(.5, .5),
 	}
 ]);
 
-brush.Color = Colors.Blue;
-canvas.Background = brush;
+canvas.Background = colors.blue;
 canvas.Width = window.Bounds.Width;
 canvas.Height = window.Bounds.Height;
 
@@ -59,9 +63,7 @@ for (var i = 0; i < 3; i++) {
 	Canvas.SetLeft(view, (Math.random() * (canvas.Width - view.Width)) | 0);
 	view.ManipulationMode = ManipulationModes.All;
 	view.add_ManipulationDelta(delta);
-	brush = new SolidColorBrush();
-	brush.Color = [ Colors.Red, Colors.Yellow, Colors.Green ][i % 3];
-	view.Background = brush;
+	view.Background = colors[['red', 'yellow', 'green'][i % 3]];
 	canvas.Children.Append(view);
 }
 

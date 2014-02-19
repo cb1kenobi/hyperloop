@@ -1,7 +1,7 @@
 var window = Window.Current,
 	grid = new Grid(),
 	button = new Button(),
-	white = new SolidColorBrush(),
+	white = new SolidColorBrush(Colors.White),
 	text = new TextBlock();
 
 text.Text = "Click me, please!";
@@ -12,8 +12,6 @@ text.FontSize = 60;
 
 grid.Width = window.Bounds.Width;
 grid.Height = window.Bounds.Height;
-
-white.Color = Colors.White;
 
 button.Content = text;
 button.Width = 500;

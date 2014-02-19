@@ -4,16 +4,11 @@ var transformOrigin = Point(.5, .5),
 	canvas,
 	deltas = [],
 	brushes = {
-		white: new SolidColorBrush(),
-		red: new SolidColorBrush(),
-		green: new SolidColorBrush(),
-		blue: new SolidColorBrush()
+		white: new SolidColorBrush(Colors.White),
+		red: new SolidColorBrush(Colors.Red),
+		green: new SolidColorBrush(Colors.Green),
+		blue: new SolidColorBrush(Colors.Blue)
 	};
-
-brushes.white.Color = Colors.White;
-brushes.red.Color = Colors.Red;
-brushes.green.Color = Colors.Green;
-brushes.blue.Color = Colors.Blue;
 
 /*
  Public API.
