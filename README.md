@@ -35,7 +35,7 @@ sudo npm link
 
 ## Quick Start
 
-Assuming you have already satisfied the [requirements](https://github.com/appcelerator/hyperloop#requirements) for your target platform and installed hyperloop, launching a basic example app can be done like this:
+Assuming you have already satisfied the [requirements](https://github.com/appcelerator/hyperloop#requirements) for your target platform and installed hyperloop following the [clone and install](https://github.com/appcelerator/hyperloop#clone-and-install) instructions, launching a basic example app can be done like this:
 
 ```
 # let's launch the windows "helloworld" on Windows
