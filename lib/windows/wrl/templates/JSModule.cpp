@@ -344,9 +344,10 @@ HyperloopJS *HyperloopLoadJSWithLogger(JSContextRef ctx, HyperloopJS *parent, st
 		if (jscode.empty() && filepath.find("node_modules/") == -1)
 		{
 			// check node modules, by walking up from the current directory to the top of the directory
-			auto top = parent ? stringByDeletingLastPathComponent(parent->filename) : "";
-			do
+			auto top = parent ? parent->filename : "";
+			while (!top.empty())
 			{
+				top = stringByDeletingLastPathComponent(top);
 				auto fp = stringByAppendingPathComponent(top, "node_modules/" + filepath);
 				module = modules[stringByDeletingPathExtension(fp)];
 				if (module)
@@ -358,8 +359,7 @@ HyperloopJS *HyperloopLoadJSWithLogger(JSContextRef ctx, HyperloopJS *parent, st
 				{
 					return module;
 				}
-				top = stringByDeletingLastPathComponent(top);
-			} while (!top.empty());
+			}
 		}
 		if (jscode.empty()) {
 			return nullptr;
