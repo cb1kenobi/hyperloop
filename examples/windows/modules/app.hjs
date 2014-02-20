@@ -7,7 +7,7 @@ text.Text = '';
 text.TextAlignment = TextAlignment.Center;
 text.VerticalAlignment = VerticalAlignment.Center;
 text.HorizontalAlignment = HorizontalAlignment.Center;
-text.FontSize = 32;
+text.FontSize = 20;
 win.Content = text;
 win.Activate();
 
