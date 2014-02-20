@@ -345,7 +345,7 @@ HyperloopJS *HyperloopLoadJSWithLogger(JSContextRef ctx, HyperloopJS *parent, st
 		{
 			// check node modules, by walking up from the current directory to the top of the directory
 			auto top = parent ? stringByDeletingLastPathComponent(parent->filename) : "";
-			while (!top.empty())
+			do
 			{
 				auto fp = stringByAppendingPathComponent(top, "node_modules/" + filepath);
 				module = modules[stringByDeletingPathExtension(fp)];
@@ -359,7 +359,7 @@ HyperloopJS *HyperloopLoadJSWithLogger(JSContextRef ctx, HyperloopJS *parent, st
 					return module;
 				}
 				top = stringByDeletingLastPathComponent(top);
-			}
+			} while (!top.empty());
 		}
 		if (jscode.empty()) {
 			return nullptr;
