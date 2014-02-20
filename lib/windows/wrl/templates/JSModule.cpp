@@ -375,7 +375,7 @@ HyperloopJS *HyperloopLoadJSWithLogger(JSContextRef ctx, HyperloopJS *parent, st
 	module->exports = JSObjectMake(ctx, 0, 0);
 	module->prefix = prefix;
 
-	modules[filepath] = module;
+	modules[stringByDeletingPathExtension(filepath)] = module;
 
 	JSObjectRef moduleObjectRef = HyperloopMakeJSObject(ctx, module);
 	JSStringRef exportsProperty = JSStringCreateWithUTF8CString("exports");
