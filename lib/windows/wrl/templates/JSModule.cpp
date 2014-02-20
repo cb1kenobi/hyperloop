@@ -181,7 +181,7 @@ JSValueRef JSDispatchAsync(JSContextRef ctx, JSObjectRef function, JSObjectRef o
 	{
 		return HyperloopMakeException(ctx, "callback must be a function", exception);
 	}
-	CHECK_EXCEPTION(ctx, *exception, module->prefix);
+	CHECK_EXCEPTION(ctx, *exception);
 
 	JSObjectCallAsFunction(ctx, callback, object, 0, NULL, NULL);
 
@@ -391,7 +391,7 @@ HyperloopJS *HyperloopLoadJSWithLogger(JSContextRef ctx, HyperloopJS *parent, st
 
 		// load up our properties that we want to expose
 		JSPropertyNameArrayRef properties = JSObjectCopyPropertyNames(ctx, moduleObjectRef);
-		std:string propertyNames("");
+		std::string propertyNames("");
 		size_t count = JSPropertyNameArrayGetCount(properties);
 
 		JSStringRef parameterNames[1];
