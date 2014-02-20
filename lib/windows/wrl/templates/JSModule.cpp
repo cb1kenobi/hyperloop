@@ -361,104 +361,104 @@ HyperloopJS *HyperloopLoadJSWithLogger(JSContextRef ctx, HyperloopJS *parent, st
 				top = stringByDeletingLastPathComponent(top);
 			}
 		}
-		return nullptr;
+		if (jscode.empty()) {
+			return nullptr;
+		}
 	}
-	else
+
+	module = new HyperloopJS();
+	module->id = stringByDeletingPathExtension(hasPrefix(filepath, "./") ? filepath.substr(2) : filepath);
+	module->filename = module->id + ".js";
+	module->loaded = false;
+	module->parent = parent;
+	module->context = HyperloopGetGlobalContext(ctx);
+	module->exports = JSObjectMake(ctx, 0, 0);
+	module->prefix = prefix;
+
+	modules[filepath] = module;
+
+	JSObjectRef moduleObjectRef = HyperloopMakeJSObject(ctx, module);
+	JSStringRef exportsProperty = JSStringCreateWithUTF8CString("exports");
+	JSObjectSetProperty(ctx, moduleObjectRef, exportsProperty, module->exports, 0, 0);
+	JSStringRelease(exportsProperty);
+
+	// install our own logger
+	if (logger != nullptr)
 	{
-		HyperloopJS *module = new HyperloopJS();
-		module->id = stringByDeletingPathExtension(hasPrefix(filepath, "./") ? filepath.substr(2) : filepath);
-		module->filename = module->id + ".js";
-		module->loaded = false;
-		module->parent = parent;
-		module->context = HyperloopGetGlobalContext(ctx);
-		module->exports = JSObjectMake(ctx, 0, 0);
-		module->prefix = prefix;
-
-		modules[filepath] = module;
-
-		JSObjectRef moduleObjectRef = HyperloopMakeJSObject(ctx, module);
-		JSStringRef exportsProperty = JSStringCreateWithUTF8CString("exports");
-		JSObjectSetProperty(ctx, moduleObjectRef, exportsProperty, module->exports, 0, 0);
-		JSStringRelease(exportsProperty);
-
-		// install our own logger
-		if (logger != nullptr)
-		{
-			JSStringRef consoleProperty = JSStringCreateWithUTF8CString("console");
-			JSObjectSetProperty(ctx, moduleObjectRef, consoleProperty, logger, 0, 0);
-			JSStringRelease(consoleProperty);
-		}
-
-		// load up our properties that we want to expose
-		JSPropertyNameArrayRef properties = JSObjectCopyPropertyNames(ctx, moduleObjectRef);
-		std::string propertyNames("");
-		size_t count = JSPropertyNameArrayGetCount(properties);
-
-		JSStringRef parameterNames[1];
-		JSValueRef arguments[1];
-
-		parameterNames[0] = JSStringCreateWithUTF8CString("module");
-		arguments[0] = moduleObjectRef;
-
-		// loop through and put module related variables in a wrapper scope
-		for (size_t c = 0; c < count; c++)
-		{
-			JSStringRef propertyName = JSPropertyNameArrayGetNameAtIndex(properties, c);
-			auto sPropertyName = hyperloop::getSStr(hyperloop::getPlatformString(propertyName));
-			JSValueRef paramObject = JSObjectGetProperty(ctx, moduleObjectRef, propertyName, 0);
-			bool added = false;
-			if (JSValueIsObject(ctx, paramObject))
-			{
-				JSStringRef script = JSStringCreateWithUTF8CString(("(typeof this." + sPropertyName + " === 'function')").c_str());
-				JSValueRef result = JSEvaluateScript(ctx, script, moduleObjectRef, NULL, 0, 0);
-				if (JSValueToBoolean(ctx, result))
-				{
-					// make sure that the right scope (this object) is set for the function
-					propertyNames += ", " + sPropertyName + " = function " + sPropertyName + "() { return $self." + sPropertyName + ".apply($self, arguments); }";
-					added = true;
-				}
-				JSStringRelease(script);
-			}
-			if (added == false)
-			{
-				propertyNames += ", " + sPropertyName + " = this." + sPropertyName;
-			}
-			JSStringRelease(propertyName);
-		}
-
-		auto wrapper = "var $self = this" + propertyNames + ";\r\n" + jscode + ";";
-
-		JSStringRef fnName = JSStringCreateWithUTF8CString("require");
-		JSStringRef body = JSStringCreateWithUTF8CString(wrapper.c_str());
-
-		JSValueRef *exception = NULL;
-		JSStringRef filename = JSStringCreateWithUTF8CString(filepath.c_str());
-		JSObjectRef requireFn = JSObjectMakeFunction(ctx, fnName, 1, parameterNames, body, filename, 1, exception);
-		JSStringRelease(filename);
-
-		JSValueRef fnResult = JSObjectCallAsFunction(ctx, requireFn, moduleObjectRef, 1, arguments, exception);
-		JSStringRef pathRef = JSStringCreateWithUTF8CString(filepath.c_str());
-		JSStringRef prefixRef = JSStringCreateWithUTF8CString(prefix.c_str());
-
-		JSStringRelease(pathRef);
-		JSStringRelease(prefixRef);
-		JSStringRelease(fnName);
-		JSStringRelease(body);
-		JSStringRelease(parameterNames[0]);
-
-		module->loaded = true;
-
-		// we need to pull the exports in case it got assigned (such as setting a Class to exports)
-		JSStringRef exportsProp = JSStringCreateWithUTF8CString("exports");
-		JSValueRef exportsValueRef = JSObjectGetProperty(ctx, moduleObjectRef, exportsProp, 0);
-		if (JSValueIsObject(ctx, exportsValueRef))
-		{
-			module->exports = JSValueToObject(ctx, exportsValueRef, 0);
-		}
-		JSStringRelease(exportsProp);
-
-		return module;
+		JSStringRef consoleProperty = JSStringCreateWithUTF8CString("console");
+		JSObjectSetProperty(ctx, moduleObjectRef, consoleProperty, logger, 0, 0);
+		JSStringRelease(consoleProperty);
 	}
+
+	// load up our properties that we want to expose
+	JSPropertyNameArrayRef properties = JSObjectCopyPropertyNames(ctx, moduleObjectRef);
+	std::string propertyNames("");
+	size_t count = JSPropertyNameArrayGetCount(properties);
+
+	JSStringRef parameterNames[1];
+	JSValueRef arguments[1];
+
+	parameterNames[0] = JSStringCreateWithUTF8CString("module");
+	arguments[0] = moduleObjectRef;
+
+	// loop through and put module related variables in a wrapper scope
+	for (size_t c = 0; c < count; c++)
+	{
+		JSStringRef propertyName = JSPropertyNameArrayGetNameAtIndex(properties, c);
+		auto sPropertyName = hyperloop::getSStr(hyperloop::getPlatformString(propertyName));
+		JSValueRef paramObject = JSObjectGetProperty(ctx, moduleObjectRef, propertyName, 0);
+		bool added = false;
+		if (JSValueIsObject(ctx, paramObject))
+		{
+			JSStringRef script = JSStringCreateWithUTF8CString(("(typeof this." + sPropertyName + " === 'function')").c_str());
+			JSValueRef result = JSEvaluateScript(ctx, script, moduleObjectRef, NULL, 0, 0);
+			if (JSValueToBoolean(ctx, result))
+			{
+				// make sure that the right scope (this object) is set for the function
+				propertyNames += ", " + sPropertyName + " = function " + sPropertyName + "() { return $self." + sPropertyName + ".apply($self, arguments); }";
+				added = true;
+			}
+			JSStringRelease(script);
+		}
+		if (added == false)
+		{
+			propertyNames += ", " + sPropertyName + " = this." + sPropertyName;
+		}
+		JSStringRelease(propertyName);
+	}
+
+	auto wrapper = "var $self = this" + propertyNames + ";\r\n" + jscode + ";";
+
+	JSStringRef fnName = JSStringCreateWithUTF8CString("require");
+	JSStringRef body = JSStringCreateWithUTF8CString(wrapper.c_str());
+
+	JSValueRef *exception = NULL;
+	JSStringRef filename = JSStringCreateWithUTF8CString(filepath.c_str());
+	JSObjectRef requireFn = JSObjectMakeFunction(ctx, fnName, 1, parameterNames, body, filename, 1, exception);
+	JSStringRelease(filename);
+
+	JSValueRef fnResult = JSObjectCallAsFunction(ctx, requireFn, moduleObjectRef, 1, arguments, exception);
+	JSStringRef pathRef = JSStringCreateWithUTF8CString(filepath.c_str());
+	JSStringRef prefixRef = JSStringCreateWithUTF8CString(prefix.c_str());
+
+	JSStringRelease(pathRef);
+	JSStringRelease(prefixRef);
+	JSStringRelease(fnName);
+	JSStringRelease(body);
+	JSStringRelease(parameterNames[0]);
+
+	module->loaded = true;
+
+	// we need to pull the exports in case it got assigned (such as setting a Class to exports)
+	JSStringRef exportsProp = JSStringCreateWithUTF8CString("exports");
+	JSValueRef exportsValueRef = JSObjectGetProperty(ctx, moduleObjectRef, exportsProp, 0);
+	if (JSValueIsObject(ctx, exportsValueRef))
+	{
+		module->exports = JSValueToObject(ctx, exportsValueRef, 0);
+	}
+	JSStringRelease(exportsProp);
+
+	return module;
 }
 
 HyperloopJS *HyperloopLoadJS(JSContextRef ctx, HyperloopJS *parent, string path, string prefix)
