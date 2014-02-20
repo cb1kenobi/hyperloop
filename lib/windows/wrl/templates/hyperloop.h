@@ -13,6 +13,8 @@ public:
 	static std::wstring getWString(JSStringRef sValue);
 	static std::wstring getWString(JSContextRef ctx, JSValueRef ref);
 	static std::string getSStr(Platform::String^ string);
+	static const char* getCStr(Platform::String^ string);
+	static const char* getCStr(JSContextRef ctx, JSValueRef ref);
 	static Platform::String^ getPlatformString(std::string sValue);
 	static Platform::String^ getPlatformString(JSStringRef sValue);
 	static Platform::String^ getPlatformString(JSContextRef ctx, JSStringRef sValue);
