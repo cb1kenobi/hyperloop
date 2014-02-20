@@ -151,7 +151,7 @@ JSValueRef JSRequire(JSContextRef ctx, JSObjectRef function, JSObjectRef object,
 
 	if (js == nullptr)
 	{
-		HyperloopMakeException(ctx, hyperloop::getCStr("cannot find module '" + path + "'"), exception);
+		HyperloopMakeException(ctx, hyperloop::getSStr("cannot find module '" + path + "'").c_str(), exception);
 		JSStringRef codeProperty = JSStringCreateWithUTF8CString("code");
 		JSStringRef msgProperty = JSStringCreateWithUTF8CString("MODULE_NOT_FOUND");
 		JSObjectRef exceptionObject = JSValueToObject(ctx, *exception, 0);

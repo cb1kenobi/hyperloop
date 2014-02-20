@@ -23,20 +23,6 @@ std::string hyperloop::getSStr(Platform::String^ string) {
 	return std::string(string->Begin(), string->End());
 }
 
-const char* hyperloop::getCStr(Platform::String^ string) {
-	return std::string(string->Begin(), string->End()).c_str();
-}
-
-const char* hyperloop::getCStr(JSContextRef ctx, JSValueRef ref) {
-	JSStringRef sValue = JSValueToStringCopy(ctx, ref, NULL);
-	std::wstring w_str = hyperloop::getWString(sValue);
-	std::string s_str(w_str.begin(), w_str.end());
-	int length = sizeof(w_str);
-	char *c_str = new char[length];
-	strcpy_s(c_str, length, s_str.c_str());
-	return c_str;
-}
-
 String^ hyperloop::getPlatformString(std::string s_str) {
 	std::wstring b(s_str.begin(), s_str.end());
 	const wchar_t *wcString = b.c_str();
