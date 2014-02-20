@@ -1,0 +1,53 @@
+var window = Window.Current,
+	text = new TextBlock();
+
+text.Text = "Loading...";
+text.TextAlignment = TextAlignment.Center;
+text.TextWrapping = TextWrapping.Wrap;
+text.VerticalAlignment = VerticalAlignment.Center;
+text.HorizontalAlignment = HorizontalAlignment.Center;
+text.FontSize = 60;
+
+window.Content = text;
+window.Activate();
+
+console.log('Getting geoposition...');
+var geolocator = new Geolocator();
+geolocator.DesiredAccuracy = PositionAccuracy.High; // or, .Default
+geolocator.MovementThreshold = 10;
+geolocator.ReportInterval = 1000;
+geolocator.DesiredAccuracyInMeters = 100;
+geolocator.GetGeopositionAsync().then(handlePosition);
+
+/**
+ * Shows a new position in the log and in the UI.
+ * @param geoposition
+ */
+function handlePosition(geoposition) {
+	console.log('Geoposition received!');
+	var address = geoposition.CivicAddress,
+		coordinate = geoposition.Coordinate,
+		position = coordinate.Point.Position,
+		txt = guard(address.City) + ', ' + guard(address.State) + ' ' + guard(address.PostalCode)
+			+ '\r\n' + guard(address.Country)
+			+ '\r\n'
+			+ '\r\n (' + guard(position.Latitude) + ' lat, ' + guard(position.Longitude) + ' lon)'
+			+ '\r\n Accuracy: ' + guard(coordinate.Accuracy)
+			+ '\r\n Altitude: ' + guard(position.Altitude);
+	console.log(text.Text = txt);
+}
+
+/*
+ Utility.
+ */
+function guard(val) {
+	if (+val) {
+		return ((val * 1000) | 0) / 1000;
+	}
+	else if (val) {
+		return val;
+	}
+	else {
+		return '?';
+	}
+}
