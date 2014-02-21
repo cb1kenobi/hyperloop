@@ -14,7 +14,7 @@ function runNextExample() {
 	}
 	var example = examples[inReverse ? 'pop' : 'shift'](),
 		exampleName = example.substr(0, 1).toUpperCase() + example.slice(1),
-		command = 'hyperloop launch --src=' + path.join(__dirname, example) + ' --log-level=trace',
+		command = 'hyperloop launch --log-level=trace --debug --src="' + path.join(__dirname, example) + '"',
 		stopTimeout,
 		stopTriggers = [ 'Waiting for log messages.' ];
 
