@@ -26,4 +26,6 @@ client.GetStringAsync(uri).then(function handleResult(body) {
 	var weather = 'The weather in\nMountain View:\n\n' + result.weather[0].description;
 	console.log(weather);
 	text.Text = weather;
+}, function handleError(err) {
+	text.Text = 'We hit an error when communicating with the server!\n\n' + err;
 });

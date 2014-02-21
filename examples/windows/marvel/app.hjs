@@ -5,9 +5,9 @@ var md5 = require('./lib/md5');
 var window = Window.Current,
 
 	// Marvel API constants
-	PUBLIC_KEY = 'YOUR_MARVEL_PUBLIC_KEY',
-	PRIVATE_KEY = 'YOUR_MARVEL_PRIVATE_KEY',
-	API_LIMIT = '50',
+	PUBLIC_KEY = '6a686c2c818c0efedc8ea6cbc90e3d69',
+	PRIVATE_KEY = '2ca683b36980440b085416bbb4a4e8a251cbe697',
+	API_LIMIT = '1000',
 
 	// generic UI constants
 	ITEM_HEIGHT = 130,
@@ -69,6 +69,8 @@ client.GetStringAsync(uri).then(function handleResult(body) {
 		// create a new list item based on the model
 		createItem(model);
 	}
+}, function handleError(err) {
+	alert('HTTP Error', 'Did you configure the API keys in the marvel/app.hjs?\n\n' + err);
 });
 
 function createItem(model) {
