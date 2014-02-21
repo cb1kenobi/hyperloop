@@ -49,3 +49,29 @@ log(myConcat(",", "a", "b", "c", "d"));
 log('should be 2=', e);
 log('should be 1=', i);
 log('should be 1=', fl);
+
+alert('This is an alert!');
+
+var timeoutID = setTimeout(function() {
+	log('Oops... 2s timeout fired, so it was not cleared properly.');
+}, 2000);
+
+setTimeout(function() {
+	log('500ms setTimeout fired.');
+	log('Clearing 2s setTimeout.');
+	clearTimeout(timeoutID);
+}, 500);
+
+
+var intervalCount = 0,
+	intervalID = setInterval(function() {
+		intervalCount += 1;
+		log('1s setInterval fired: ' + intervalCount + 's elapsed.');
+		if (intervalCount === 5) {
+			log('clearInterval firing.');
+			clearInterval(intervalID);
+		}
+	}, 1000);
+
+log('timeoutID: ' + timeoutID);
+log('intervalID: ' + intervalID);

@@ -2,8 +2,14 @@
 #include "hyperloop.h"
 #include "Logger.h"
 #include "nan.h"
+#include <collection.h>
+#include <algorithm>
 using namespace Platform;
 using namespace Platform::Details;
+using namespace Platform::Collections;
+using namespace Windows::Foundation;
+using namespace Windows::Foundation::Collections;
+using namespace Windows::UI::Xaml;
 
 std::wstring hyperloop::getWString(JSStringRef sValue) {
 	size_t sLength = JSStringGetMaximumUTF8CStringSize(sValue);
@@ -332,40 +338,209 @@ JSValueRef HyperloopLogger (JSContextRef ctx, JSObjectRef function, JSObjectRef 
 	return JSValueMakeUndefined(ctx);
 }
 
+JSValueRef HyperloopAlerter (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
+{
+	if (argumentCount <= 0) {
+		return JSValueMakeUndefined(ctx);
+	}
+	auto title = argumentCount == 1 ? "Alert" : HyperloopToString(ctx, arguments[0]);
+	auto message = HyperloopToString(ctx, arguments[argumentCount == 1 ? 0 : 1]);
+	try {
+		(ref new Windows::UI::Popups::MessageDialog(message, title))->ShowAsync();
+	}
+	catch (Exception ^ex) {
+		HyperloopRaiseNativeToJSException(ctx, exception, ex, __FILE__, __FUNCTION__, __LINE__);
+	}
+	return JSValueMakeUndefined(ctx);
+}
+
+/*
+ Timeout and Interval Implementation.
+*/
+
+private class TimerState {
+public:
+	bool isInterval;
+	int id;
+	JSGlobalContextRef gctx;
+	JSObjectRef thisObject;
+	JSObjectRef callback;
+};
+
+static int timerCount;
+static auto timers = ref new Map<int, DispatcherTimer ^>();
+static auto timerStates = new std::map<int, TimerState *>();
+
+private ref class TimerDoneCallback sealed {
+private:
+	int id;
+public:
+	TimerDoneCallback(int id) {
+		this->id = id;
+	};
+	void EventCallback(Object^ sender, Object^ e);
+};
+
+static auto timerHandlers = ref new Map<int, TimerDoneCallback ^>();
+
+void TimerDoneCallback::EventCallback(Object^ sender, Object^ e) {
+	if (!timers->HasKey(id)) {
+		return;
+	}
+	auto state = timerStates->at(id);
+	JSValueRef exception = NULL;
+	JSValueProtect(state->gctx, state->thisObject);
+	JSValueProtect(state->gctx, state->callback);
+	JSObjectCallAsFunction(state->gctx, state->callback, state->thisObject, 0, 0, &exception);
+	JSValueUnprotect(state->gctx, state->thisObject);
+	JSValueUnprotect(state->gctx, state->callback);
+	if (!timers->HasKey(id)) {
+		return;
+	}
+	CHECK_EXCEPTION(state->gctx, exception);
+	if (!state->isInterval) {
+		timers->Lookup(id)->Stop();
+		JSValueUnprotect(state->gctx, state->thisObject);
+		JSValueUnprotect(state->gctx, state->callback);
+		timers->Remove(id);
+		timerStates->erase(id);
+		timerHandlers->Remove(id);
+	}
+}
+
+JSValueRef HyperloopSetTimeoutOrInterval(bool isInterval, JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
+	if (argumentCount <= 0) {
+		return JSValueMakeUndefined(ctx);
+	}
+	auto id = timerCount++;
+	auto gctx = HyperloopGetGlobalContext(ctx);
+	auto callback = JSValueToObject(ctx, arguments[0], exception);
+	auto timerDone = ref new TimerDoneCallback(id);
+	auto handler = ref new Windows::Foundation::EventHandler<Object^>(timerDone, &TimerDoneCallback::EventCallback);
+
+	auto timerState = new TimerState();
+	timerState->isInterval = isInterval;
+	timerState->id = id;
+	timerState->gctx = gctx;
+	timerState->thisObject = thisObject;
+	timerState->callback = callback;
+	timerStates->insert(std::make_pair(id, timerState));
+
+	JSValueProtect(gctx, callback);
+	JSValueProtect(gctx, thisObject);
+	timerHandlers->Insert(id, timerDone);
+	TimeSpan timeout;
+	timeout.Duration = (argumentCount == 1 ? 0 : JSValueToNumber(ctx, arguments[1], exception)) * 10000;
+	auto timer = ref new DispatcherTimer();
+	timer->Tick += handler;
+	timer->Interval = timeout;
+	timer->Start();
+	timers->Insert(id, timer);
+	return JSValueMakeNumber(ctx, id);
+}
+
+JSValueRef HyperloopSetTimeout(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
+{
+	return HyperloopSetTimeoutOrInterval(false, ctx, function, thisObject, argumentCount, arguments, exception);
+}
+
+JSValueRef HyperloopSetInterval(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
+{
+	return HyperloopSetTimeoutOrInterval(true, ctx, function, thisObject, argumentCount, arguments, exception);
+}
+
+JSValueRef HyperloopClearIntervalOrTimeout(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
+{
+	if (argumentCount <= 0) {
+		return JSValueMakeUndefined(ctx);
+	}
+	auto id = JSValueToNumber(ctx, arguments[0], exception);
+	if (id > timerCount || !timers->HasKey(id)) {
+		return JSValueMakeUndefined(ctx);
+	}
+	auto timer = timers->Lookup(id);
+	if (timer->IsEnabled) {
+		timer->Stop();
+	}
+	auto state = timerStates->at(id);
+	JSValueUnprotect(state->gctx, state->thisObject);
+	JSValueUnprotect(state->gctx, state->callback);
+	timers->Remove(id);
+	timerStates->erase(id);
+	timerHandlers->Remove(id);
+	return JSValueMakeUndefined(ctx);
+}
+
 /**
  * create a hyperloop VM
  */
 
-JSGlobalContextRef HyperloopCreateVM(JSGlobalContextRef globalContextRef, JSObjectRef globalObjectref, String ^name, String ^prefix)
+JSGlobalContextRef HyperloopCreateVM(JSGlobalContextRef globalContextRef, JSObjectRef globalObjectRef, String ^name, String ^prefix)
 {
-	// inject a simple console logger
-	JSObjectRef consoleObject = JSObjectMake(globalContextRef, 0, 0);
-	JSStringRef logProperty = JSStringCreateWithUTF8CString("log");
-	JSStringRef consoleProperty = JSStringCreateWithUTF8CString("console");
-	JSObjectRef logFunction = JSObjectMakeFunctionWithCallback(globalContextRef, logProperty, HyperloopLogger);
+	// inject...
+	// ... console.log.
+	auto consoleObject = JSObjectMake(globalContextRef, 0, 0);
+	auto logProperty = JSStringCreateWithUTF8CString("log");
+	auto consoleProperty = JSStringCreateWithUTF8CString("console");
+	auto logFunction = JSObjectMakeFunctionWithCallback(globalContextRef, logProperty, HyperloopLogger);
 	JSObjectSetProperty(globalContextRef, consoleObject, logProperty, logFunction, kJSPropertyAttributeNone, 0);
-	JSObjectSetProperty(globalContextRef, globalObjectref, consoleProperty, consoleObject, kJSPropertyAttributeNone, 0);
+	JSObjectSetProperty(globalContextRef, globalObjectRef, consoleProperty, consoleObject, kJSPropertyAttributeNone, 0);
 	JSStringRelease(logProperty);
 	JSStringRelease(consoleProperty);
 
+	// ... alert.
+	auto alertObject = JSObjectMake(globalContextRef, 0, 0);
+	auto alertProperty = JSStringCreateWithUTF8CString("alert");
+	auto alertFunction = JSObjectMakeFunctionWithCallback(globalContextRef, alertProperty, HyperloopAlerter);
+	JSObjectSetProperty(globalContextRef, globalObjectRef, alertProperty, alertFunction, kJSPropertyAttributeNone, 0);
+	JSStringRelease(alertProperty);
+
+	// ... setTimeout.
+	auto setTimeoutObject = JSObjectMake(globalContextRef, 0, 0);
+	auto setTimeoutProperty = JSStringCreateWithUTF8CString("setTimeout");
+	auto setTimeoutFunction = JSObjectMakeFunctionWithCallback(globalContextRef, setTimeoutProperty, HyperloopSetTimeout);
+	JSObjectSetProperty(globalContextRef, globalObjectRef, setTimeoutProperty, setTimeoutFunction, kJSPropertyAttributeNone, 0);
+	JSStringRelease(setTimeoutProperty);
+
+	// ... setInterval.
+	auto setIntervalObject = JSObjectMake(globalContextRef, 0, 0);
+	auto setIntervalProperty = JSStringCreateWithUTF8CString("setInterval");
+	auto setIntervalFunction = JSObjectMakeFunctionWithCallback(globalContextRef, setIntervalProperty, HyperloopSetInterval);
+	JSObjectSetProperty(globalContextRef, globalObjectRef, setIntervalProperty, setIntervalFunction, kJSPropertyAttributeNone, 0);
+	JSStringRelease(setIntervalProperty);
+
+	// ... clearTimeout.
+	auto clearTimeoutObject = JSObjectMake(globalContextRef, 0, 0);
+	auto clearTimeoutProperty = JSStringCreateWithUTF8CString("clearTimeout");
+	auto clearTimeoutFunction = JSObjectMakeFunctionWithCallback(globalContextRef, clearTimeoutProperty, HyperloopClearIntervalOrTimeout);
+	JSObjectSetProperty(globalContextRef, globalObjectRef, clearTimeoutProperty, clearTimeoutFunction, kJSPropertyAttributeNone, 0);
+	JSStringRelease(clearTimeoutProperty);
+
+	// ... clearInterval.
+	auto clearIntervalObject = JSObjectMake(globalContextRef, 0, 0);
+	auto clearIntervalProperty = JSStringCreateWithUTF8CString("clearInterval");
+	auto clearIntervalFunction = JSObjectMakeFunctionWithCallback(globalContextRef, clearIntervalProperty, HyperloopClearIntervalOrTimeout);
+	JSObjectSetProperty(globalContextRef, globalObjectRef, clearIntervalProperty, clearIntervalFunction, kJSPropertyAttributeNone, 0);
+	JSStringRelease(clearIntervalProperty);
+
 	// create a hook into our global context
-	JSClassDefinition def = kJSClassDefinitionEmpty;
-	JSClassRef classDef = JSClassCreate(&def);
-	JSObjectRef wrapper = JSObjectMake(globalContextRef, classDef, globalContextRef);
-	JSStringRef prop = JSStringCreateWithUTF8CString("hyperloop$global");
-	JSObjectSetProperty(globalContextRef, globalObjectref, prop, wrapper, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum | kJSPropertyAttributeDontDelete, 0);
+	auto def = kJSClassDefinitionEmpty;
+	auto classDef = JSClassCreate(&def);
+	auto wrapper = JSObjectMake(globalContextRef, classDef, globalContextRef);
+	auto prop = JSStringCreateWithUTF8CString("hyperloop$global");
+	JSObjectSetProperty(globalContextRef, globalObjectRef, prop, wrapper, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum | kJSPropertyAttributeDontDelete, 0);
 	JSStringRelease(prop);
 
 	// setup our globals object
-	JSStringRef globalProperty = JSStringCreateWithUTF8CString("global");
-	JSObjectSetProperty(globalContextRef, globalObjectref, globalProperty, globalObjectref, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete, 0);
+	auto globalProperty = JSStringCreateWithUTF8CString("global");
+	JSObjectSetProperty(globalContextRef, globalObjectRef, globalProperty, globalObjectRef, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete, 0);
 	JSStringRelease(globalProperty);
 
 	// retain it
 	JSGlobalContextRetain(globalContextRef);
 
 	// load the app into the context
-	HyperloopJS *module = HyperloopLoadJS(globalContextRef, nullptr, hyperloop::getSStr(name), hyperloop::getSStr(prefix));
+	auto module = HyperloopLoadJS(globalContextRef, nullptr, hyperloop::getSStr(name), hyperloop::getSStr(prefix));
 	if (module == nullptr)
 	{
 		return nullptr;

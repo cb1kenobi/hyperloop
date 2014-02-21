@@ -61,88 +61,67 @@ window.Activate();
 
 // the render function
 var ctr = 0;
-var EventHandler = @generic(EventHandler, 'Object^'),
-	lastReport = Date.now();
+var lastReport = Date.now();
 
-@class('TickHandler', null, [], [
-	{
-		name: 'Tick',
-		forHandler: EventHandler,
-		returnType: 'void',
-		arguments: [
-			{ name: 'sender', type: 'Object^' },
-			{ name: 'e', type: 'Object^' }
-		],
-		action: function update(params) {
-			var x, y, cell;
+function update(params) {
+	var x, y, cell;
 
-			// render current generation
-			for (x = 0; x < xSize; x++) {
-				for (y = 0; y < ySize; y++) {
-					cell = cells[x][y];
+	// render current generation
+	for (x = 0; x < xSize; x++) {
+		for (y = 0; y < ySize; y++) {
+			cell = cells[x][y];
 
-					// minimize number of times we need to modify the proxy object
-					if (cell.alive !== cell.lastAlive) {
-						cell.proxy.Visibility = cell.alive ? Visibility.Visible : Visibility.Collapsed;
-						//cell.proxy.setHidden(!cell.alive);
-					}
-
-					// save the state
-					cell.lastAlive = cell.alive;
-				}
+			// minimize number of times we need to modify the proxy object
+			if (cell.alive !== cell.lastAlive) {
+				cell.proxy.Visibility = cell.alive ? Visibility.Visible : Visibility.Collapsed;
+				//cell.proxy.setHidden(!cell.alive);
 			}
 
-			// build next generation
-			for (x = 0; x < xSize; x++) {
-				for (y = 0; y < ySize; y++) {
-					cell = cells[x][y];
-					cell.alive = getNextState(x, y, cell.lastAlive);
-				}
-			}
-
-			// show the average FPS
-			if (!(++ctr % FPS_INTERVAL)) {
-				ctr = 1;
-				var currentReport = Date.now(),
-					fps = 1.0 / (currentReport - lastReport);
-				label.Text = 'FPS: ' + Math.round(FPS_INTERVAL * 10 * fps) / 10;
-				lastReport = currentReport;
-			}
+			// save the state
+			cell.lastAlive = cell.alive;
 		}
-
 	}
-]);
 
-var timer = new DispatcherTimer(),
-	tickHandler = new TickHandler(),
-	timeSpan = new TimeSpan(),
-	handler = new EventHandler(tickHandler, 'Tick');
+	// build next generation
+	for (x = 0; x < xSize; x++) {
+		for (y = 0; y < ySize; y++) {
+			cell = cells[x][y];
+			cell.alive = getNextState(x, y, cell.lastAlive);
+		}
+	}
 
-timeSpan.Duration = 10000000 / FPS_INTERVAL; // Unit is 100-nanoseconds.
-timer.Interval = timeSpan;
-timer.add_Tick(handler);
-timer.Start();
+	// show the average FPS
+	if (!(++ctr % FPS_INTERVAL)) {
+		ctr = 1;
+		var currentReport = Date.now(),
+			fps = 1.0 / (currentReport - lastReport);
+		label.Text = 'FPS: ' + Math.round(FPS_INTERVAL * 10 * fps) / 10;
+		lastReport = currentReport;
+	}
+}
 
 // calculate the next state of each cell
 function getNextState(x, y, alive) {
 	var count = 0,
 		xm1 = x > 0,
-		xp1 = x+1 < xSize,
+		xp1 = x + 1 < xSize,
 		ym1 = y > 0,
-		yp1 = y+1 < ySize;
+		yp1 = y + 1 < ySize;
 
 	if (xm1) {
-		if (ym1 && cells[x-1][y-1].lastAlive) { count++; }
-		if (cells[x-1][y].lastAlive) { count++; }
-		if (yp1 && cells[x-1][y+1].lastAlive) { count++; }
+		if (ym1 && cells[x - 1][y - 1].lastAlive) { count++; }
+		if (cells[x - 1][y].lastAlive) { count++; }
+		if (yp1 && cells[x - 1][y + 1].lastAlive) { count++; }
 	}
 	if (xp1) {
-		if (ym1 && cells[x+1][y-1].lastAlive) { count++; }
-		if (cells[x+1][y].lastAlive) { count++; }
-		if (yp1 && cells[x+1][y+1].lastAlive) { count++; }
+		if (ym1 && cells[x + 1][y - 1].lastAlive) { count++; }
+		if (cells[x + 1][y].lastAlive) { count++; }
+		if (yp1 && cells[x + 1][y + 1].lastAlive) { count++; }
 	}
-	if (ym1 && cells[x][y-1].lastAlive) { count++; }
-	if (yp1 && cells[x][y+1].lastAlive) { count++; }
+	if (ym1 && cells[x][y - 1].lastAlive) { count++; }
+	if (yp1 && cells[x][y + 1].lastAlive) { count++; }
 
 	return (alive && (count === 2 || count === 3)) || (!alive && count === 3);
 }
+
+setInterval(update, 1000 / FPS_INTERVAL);
