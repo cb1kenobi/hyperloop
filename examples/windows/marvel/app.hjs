@@ -1,0 +1,126 @@
+// CommonJS modules
+var md5 = require('./lib/md5');
+
+// Constants
+var window = Window.Current,
+
+	// Marvel API constants
+	PUBLIC_KEY = 'YOUR_MARVEL_PUBLIC_KEY',
+	PRIVATE_KEY = 'YOUR_MARVEL_PRIVATE_KEY',
+	API_LIMIT = '50',
+
+	// generic UI constants
+	ITEM_HEIGHT = 130,
+	X_PADDING = 20,
+	Y_PADDING = 5,
+	CONTENT_HEIGHT = ITEM_HEIGHT - (Y_PADDING*2),
+
+	// image constants
+	IMAGE_SIZE = CONTENT_HEIGHT,
+
+	// name textblock constants
+	NAME_FONT = 42,
+	NAME_LEFT = IMAGE_SIZE + (X_PADDING*2),
+	NAME_WIDTH = 500,
+
+	// description textblock constants
+	DESC_FONT = 26,
+	DESC_LEFT = IMAGE_SIZE + NAME_WIDTH + (X_PADDING*3),
+	DESC_WIDTH = window.Bounds.Width - DESC_LEFT - X_PADDING,
+
+	// listview separator constants
+	SEP_HEIGHT = 1;
+
+// load the list and activate the app
+var list = new ListView();
+window.Content = list;
+window.Activate();
+
+// Compose API request
+var ts = '1',
+	hash = md5(ts + PRIVATE_KEY + PUBLIC_KEY),
+	apiUrl = 'http://gateway.marvel.com/v1/public/characters?ts=' + ts + '&apikey=' + PUBLIC_KEY + '&hash=' +
+		hash + '&modifiedSince=2013-01-01&limit=' + API_LIMIT,
+	client = new HttpClient(),
+	uri = new Uri(apiUrl);
+
+// Query REST API
+client.GetStringAsync(uri).then(function handleResult(body) {
+	var results = JSON.parse(body).data.results,
+		len = results.length,
+		texts = new Array(len),
+		model, result, i;
+
+	// iterate through each result
+	for (i = 0; i < len; i++) {
+		var result = results[i];
+
+		// make sure the result has all the data
+		if (!result.name || !result.description || !result.thumbnail) { continue; }
+
+		// create a basic data model
+		model = {
+			name: result.name,
+			description: result.description,
+			image: result.thumbnail.path + '.' + result.thumbnail.extension
+		};
+		console.log(JSON.stringify(model, null, ' '));
+
+		// create a new list item based on the model
+		createItem(model);
+	}
+});
+
+function createItem(model) {
+	// create BitmapImage from remote URI
+	var bitmap = new BitmapImage(new Uri(model.image));
+	bitmap.DecodePixelWidth = IMAGE_SIZE;
+
+	// create items container
+	var item = new Canvas();
+	item.Height = ITEM_HEIGHT;
+	item.Width = window.Bounds.Width;
+	list.Items.Append(item);
+
+	// add character image
+	var image = new Image();
+	image.Width = IMAGE_SIZE;
+	image.Height = IMAGE_SIZE;
+	Canvas.SetTop(image, Y_PADDING);
+	Canvas.SetLeft(image, X_PADDING);
+	image.Source = bitmap;
+	item.Children.Append(image);
+
+	// add character name to list
+	var name = new TextBlock();
+	name.Text = model.name;
+	name.FontSize = NAME_FONT;
+	name.Width = NAME_WIDTH;
+	name.Height = CONTENT_HEIGHT;
+	name.TextTrimming = 2; //TextBlock.TextTrimmingProperty.WordEllipsis;
+	name.TextWrapping = TextBlock.TextWrappingProperty.Wrap;
+	Canvas.SetTop(name, Y_PADDING);
+	Canvas.SetLeft(name, NAME_LEFT);
+	item.Children.Append(name);
+
+	// add character description
+	var desc = new TextBlock();
+	desc.Text = model.description;
+	desc.FontSize = DESC_FONT;
+	desc.Width = DESC_WIDTH;
+	desc.Height = ITEM_HEIGHT - (Y_PADDING*2);
+	desc.TextTrimming = 2; //TextBlock.TextTrimmingProperty.WordEllipsis;
+	desc.TextWrapping = TextBlock.TextWrappingProperty.Wrap;
+	Canvas.SetTop(desc, Y_PADDING);
+	Canvas.SetLeft(desc, DESC_LEFT);
+	item.Children.Append(desc);
+
+	// separator
+	var sep = new Canvas();
+	sep.Background = new SolidColorBrush(Colors.Gray);
+	sep.Height = SEP_HEIGHT;
+	sep.Width = window.Bounds.Width - (X_PADDING*2);
+	Canvas.SetTop(sep, ITEM_HEIGHT-SEP_HEIGHT);
+	Canvas.SetLeft(sep, X_PADDING);
+	item.Children.Append(sep);
+}
