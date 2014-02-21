@@ -42,7 +42,7 @@ Assuming you have already satisfied the [requirements](https://github.com/appcel
 hyperloop launch --src="examples\windows\helloworld"
 
 # or try the ios spritekit example on OSX
-hyperloop launch --src="examples\ios\spritekit"
+hyperloop launch --src="examples/ios/spritekit"
 ```
 
 Based on your target platform, you may be asked to create certificates, licenses, etc... Hyperloop should walk you through that. The initial compile will take a minute or so to generate the AST for the system frameworks. However, subsequent compiles will be almost instantaneous as it will be cached.  In the future, we plan on speeding this up greatly. If all goes well you'll see this on your local machine (Windows) or iOS simulator (Mac OSX), respectively.
