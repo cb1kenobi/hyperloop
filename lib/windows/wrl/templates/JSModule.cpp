@@ -156,6 +156,7 @@ JSValueRef JSRequire(JSContextRef ctx, JSObjectRef function, JSObjectRef object,
 		JSStringRef msgProperty = JSStringCreateWithUTF8CString("MODULE_NOT_FOUND");
 		JSObjectRef exceptionObject = JSValueToObject(ctx, *exception, 0);
 		JSObjectSetProperty(ctx, exceptionObject, codeProperty, JSValueMakeString(ctx, msgProperty), 0, 0);
+		CHECK_EXCEPTION(ctx, *exception);
 		JSStringRelease(codeProperty);
 		JSStringRelease(msgProperty);
 		return JSValueMakeUndefined(ctx);
