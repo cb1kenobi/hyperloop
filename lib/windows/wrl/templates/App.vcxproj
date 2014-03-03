@@ -168,6 +168,8 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="PFX" />
+    <% for (var i = 0, len = hyperloopFiles.length; i < len; i++) { %>
+    <Text Include="<%= hyperloopFiles[i] %>"/><% } %>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />

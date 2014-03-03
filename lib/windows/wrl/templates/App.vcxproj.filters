@@ -33,6 +33,8 @@
     <AppxManifest Include="Package.appxmanifest" />
   </ItemGroup>
   <ItemGroup>
+    <% for (var i = 0, len = hyperloopFiles.length; i < len; i++) { %>
+    <Text Include="<%= hyperloopFiles[i] %>"/><% } %>
     <None Include="PFX" />
   </ItemGroup>
   <ItemGroup>
