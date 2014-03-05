@@ -1,6 +1,7 @@
 <%- renderTemplate('jsc/templates/doc.ejs') %>
 #include <map>
 #include <regex>
+#include <sstream>
 #include "JSModule.h"
 #include "hyperloop.h"
 #include "GeneratedApp.h"
@@ -76,8 +77,37 @@ string stringByDeletingPathExtension(string path)
 		return path.substr(0, dotIndex);
 	}
 }
-string resolveDotDotSlash(string path) {
-	return regex_replace(path, regex("/[^/]+/\\.\\."), "");;
+
+string resolveDotDotSlash(string s) {
+	vector<string> elems;
+	stringstream ss(s);
+	ostringstream newPath;
+	string item;
+
+	// tokenize path
+	while (getline(ss, item, '/')) {
+
+		// if we encounter "..", remove the last path part
+		if (item == "..") {
+			if (elems.size() > 0) {
+				elems.pop_back();
+			}
+
+		// add the current path part
+		} else {
+			elems.push_back(item);
+		}
+	}
+
+	// create new path
+	for (vector<string>::const_iterator i = elems.begin(); i != elems.end(); i++) {
+		if (i != elems.begin()) {
+			newPath << "/";
+		}
+		newPath << *i;
+	}
+
+	return newPath.str();
 }
 
 /*

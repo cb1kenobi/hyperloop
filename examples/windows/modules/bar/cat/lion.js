@@ -6,3 +6,4 @@ Lion.prototype.sound = function() {
 
 module.exports = Lion;
 
+require('../../mod2');
