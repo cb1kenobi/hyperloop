@@ -179,6 +179,7 @@ describe('lib/util.js', function() {
 	});
 
 	describe('#downloadResourceIfNecessary', function() {
+		this.timeout(30 * 1000);
 
 		var NAME = 'ios-sim',
 			VERSION = '1',
