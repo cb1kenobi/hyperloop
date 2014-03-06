@@ -15,9 +15,10 @@ describe("ilparser", function() {
 	if (process.platform === 'win32')
 	it("should parse Windows.winmd", function(done) {
 		this.timeout(30000);
-		var ref = finder.find('Windows.winmd');
+		var ref = finder.find('Windows.winmd', '8.1');
 		should.exist(ref, 'Windows.winmd not found at ' + ref);
-		programs.ildasm(ref, 'windows.il', function(ref) {
+		programs.ildasm(ref, 'windows.il', function(err, ref) {
+			if (err) return done(err);
 			should.exist(ref, 'windows.il does not exist at ' + ref);
 			ilparser.parseFile(ref, function(err, ast) {
 				if (err) {
